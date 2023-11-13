@@ -1,4 +1,4 @@
 altair
 pandas
 streamlit
-PyPDF2
+PyPDF2==1.26.0
