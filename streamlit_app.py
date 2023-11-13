@@ -10,7 +10,7 @@ import os
 image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
 
 # Código HTML para ajustar a largura da imagem para 20% da largura da coluna
-html_code = f'<img src="{image_url}" alt="Imagem" style="width:20%;"/>'
+html_code = f'<img src="{image_url}" alt="Imagem" style="width:100%;"/>'
 
 # Centralizar o texto abaixo da imagem
 st.markdown("<h1 style='text-align: center;'>DIRETORIA DE ADMINISTRAÇÃO DA AERONÁUTICA</h1>", unsafe_allow_html=True)
