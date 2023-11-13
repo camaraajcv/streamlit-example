@@ -66,9 +66,7 @@ def processar_pdf(pdf_content):
     numero_sb = st.text_input("Número do Subelemento :", max_chars=2, key='numero_sb')
     cpf_responsavel = st.text_input("CPF do Responsável:", key='cpf_responsavel')
 
-    # Adicione um botão para exportar o DataFrame para um arquivo Excel
-    if st.button("Exportar para Excel", key='exportar_excel'):
-        exportar_excel(df_final, numero_ne, cpf_responsavel)
+    
 
     # Remover o arquivo temporário após o processamento
     os.remove(temp_pdf_path)
