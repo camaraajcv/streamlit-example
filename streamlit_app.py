@@ -58,11 +58,11 @@ def processar_pdf(pdf_content):
     df_final = df.drop('Texto_Após_CNPJ', axis=1)
     st.dataframe(df_final)
 
-    
+
 # Adicione um formulário para capturar variáveis
     st.subheader("Formulário para Captura de Variáveis")
-    numero_ne = st.text_input("Número da NE (Campo texto com 12 espaços):", max_chars=12)
-    cpf_responsavel = st.text_input("CPF do Responsável:")
+    numero_ne = st.text_input("Número da NE (Campo texto com 12 espaços):", max_chars=12, key='numero_ne')
+    cpf_responsavel = st.text_input("CPF do Responsável:", key='cpf_responsavel')
 
     # Adicione um botão para exportar o DataFrame para um arquivo Excel
     if st.button("Exportar para Excel"):
