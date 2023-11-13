@@ -1,13 +1,17 @@
 import re
 import pandas as pd
-import fitz  # PyMuPDF
+import fitz
 import io
+import tempfile
 import streamlit as st
 
 # Função para processar o PDF e exibir o resultado
 def processar_pdf(pdf_content):
-    pdf_file = io.BytesIO(pdf_content)
-    pdf_reader = fitz.open(pdf_file)
+    with tempfile.NamedTemporaryFile(delete=False) as temp_pdf:
+        temp_pdf.write(pdf_content)
+        temp_pdf_path = temp_pdf.name
+
+    pdf_reader = fitz.open(temp_pdf_path)
 
     if pdf_reader.needs_pass:
         st.error("O arquivo PDF possui senha. Você precisa desbloqueá-lo primeiro.")
@@ -54,6 +58,9 @@ def processar_pdf(pdf_content):
     # Adicione um botão para exportar o DataFrame para um arquivo Excel
     if st.button("Exportar para Excel"):
         exportar_excel(df_final)
+
+    # Remover o arquivo temporário após o processamento
+    temp_pdf.unlink()
 
 # Função para exportar o DataFrame para um arquivo Excel (.xls)
 def exportar_excel(df_final):
