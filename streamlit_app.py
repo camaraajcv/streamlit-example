@@ -5,7 +5,8 @@ import io
 import tempfile
 import streamlit as st
 import os
-
+# Texto explicativo
+st.write("Desconto Externo Civil - Extração dados PDF SIAPE para SIAFI")
 # Função para processar o PDF e exibir o resultado
 def processar_pdf(pdf_content):
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_pdf:
@@ -57,6 +58,18 @@ def processar_pdf(pdf_content):
     df_final = df.drop('Texto_Após_CNPJ', axis=1)
     st.dataframe(df_final)
 
+    
+# Adicione um formulário para capturar variáveis
+    st.subheader("Formulário para Captura de Variáveis")
+    numero_ne = st.text_input("Número da NE (Campo texto com 12 espaços):", max_chars=12)
+    cpf_responsavel = st.text_input("CPF do Responsável:")
+
+    # Adicione um botão para exportar o DataFrame para um arquivo Excel
+    if st.button("Exportar para Excel"):
+        exportar_excel(df_final, numero_ne, cpf_responsavel)
+
+    # Remover o arquivo temporário após o processamento
+    os.remove(temp_pdf_path)
     # Adicione um botão para exportar o DataFrame para um arquivo Excel
     if st.button("Exportar para Excel"):
         exportar_excel(df_final)
