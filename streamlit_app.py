@@ -9,7 +9,7 @@ import os
 image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
 
 #Código HTML e CSS para ajustar a largura da imagem para 20% da largura da coluna e centralizar
-html_code = f'<div style="display: flex; justify-content: center;"><img src="{image_url}" alt="Imagem" style="width:10vw;"/></div>'
+html_code = f'<div style="display: flex; justify-content: center;"><img src="{image_url}" alt="Imagem" style="width:5vw;"/></div>'
 
 
 # Exibir a imagem usando HTML
@@ -17,9 +17,9 @@ st.markdown(html_code, unsafe_allow_html=True)
 
 
 # Centralizar o texto abaixo da imagem
-st.markdown("<h1 style='text-align: center;'>DIRETORIA DE ADMINISTRAÇÃO DA AERONÁUTICA</h1>", unsafe_allow_html=True)
-st.markdown("<h2 style='text-align: center;'>SUBDIRETORIA DE PAGAMENTO DE PESSOAL</h2>", unsafe_allow_html=True)
-st.markdown("<h3 style='text-align: center;'>PP1 - DIVISÃO DE DESCONTOS</h3>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; font-size: 1.5em;'>SUBDIRETORIA DE PAGAMENTO DE PESSOAL</h1>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: center; font-size: 1.2em;'>PP1 - DIVISÃO DE DESCONTOS</h2>", unsafe_allow_html=True)
+st.markdown("<h3 style='text-align: center; font-size: 1em; text-decoration: underline;'>Título H3 Sublinhado</h3>", unsafe_allow_html=True)
 
 # Texto explicativo
 st.write("Desconto Externo Civil - Extração dados PDF SIAPE para SIAFI")
@@ -115,7 +115,7 @@ def exportar_xml(df_final, numero_ne, numero_sb, cpf_responsavel):
     st.success("Arquivo XML gerado com sucesso.")
 
 # Solicitar ao usuário o upload do arquivo PDF
-uploaded_file = st.file_uploader("Selecione um arquivo PDF", type="pdf")
+uploaded_file = st.file_uploader("Faça o UPLOAD do arquivo PDF do SIPE gerado na transação GRCOCGRECO", type="pdf")
 
 # Obter o conteúdo do arquivo PDF
 if uploaded_file:
