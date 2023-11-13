@@ -5,8 +5,10 @@ import io
 import tempfile
 import streamlit as st
 import os
+
 # Texto explicativo
 st.write("Desconto Externo Civil - Extração dados PDF SIAPE para SIAFI")
+
 # Função para processar o PDF e exibir o resultado
 def processar_pdf(pdf_content):
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_pdf:
@@ -58,29 +60,27 @@ def processar_pdf(pdf_content):
     df_final = df.drop('Texto_Após_CNPJ', axis=1)
     st.dataframe(df_final)
 
-
-# Adicione um formulário para capturar variáveis
+    # Adicione um formulário para capturar variáveis
     st.subheader("Formulário para Captura de Variáveis")
     numero_ne = st.text_input("Número da NE (Campo texto com 12 espaços):", max_chars=12, key='numero_ne')
     cpf_responsavel = st.text_input("CPF do Responsável:", key='cpf_responsavel')
 
     # Adicione um botão para exportar o DataFrame para um arquivo Excel
-    if st.button("Exportar para Excel"):
+    if st.button("Exportar para Excel", key='exportar_excel'):
         exportar_excel(df_final, numero_ne, cpf_responsavel)
-
-    # Remover o arquivo temporário após o processamento
-    os.remove(temp_pdf_path)
-    # Adicione um botão para exportar o DataFrame para um arquivo Excel
-    if st.button("Exportar para Excel"):
-        exportar_excel(df_final)
 
     # Remover o arquivo temporário após o processamento
     os.remove(temp_pdf_path)
 
 # Função para exportar o DataFrame para um arquivo Excel (.xls)
-def exportar_excel(df_final):
+def exportar_excel(df_final, numero_ne, cpf_responsavel):
     df_final.to_excel("output.xls", index=False)
     st.success("DataFrame exportado para 'output.xls'")
+
+    # Exibir variáveis capturadas
+    st.subheader("Variáveis Capturadas:")
+    st.write(f"Número da NE: {numero_ne}")
+    st.write(f"CPF do Responsável: {cpf_responsavel}")
 
 # Solicitar ao usuário o upload do arquivo PDF
 uploaded_file = st.file_uploader("Selecione um arquivo PDF", type="pdf")
