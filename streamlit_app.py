@@ -72,15 +72,7 @@ def processar_pdf(pdf_content):
     # Remover o arquivo temporário após o processamento
     os.remove(temp_pdf_path)
 
-# Função para exportar o DataFrame para um arquivo Excel (.xls)
-def exportar_excel(df_final, numero_ne, cpf_responsavel):
-    df_final.to_excel("output.xls", index=False)
-    st.success("DataFrame exportado para 'output.xls'")
 
-    # Exibir variáveis capturadas
-    st.subheader("Variáveis Capturadas:")
-    st.write(f"Número da NE: {numero_ne}")
-    st.write(f"CPF do Responsável: {cpf_responsavel}")
 
 # Solicitar ao usuário o upload do arquivo PDF
 uploaded_file = st.file_uploader("Selecione um arquivo PDF", type="pdf")
