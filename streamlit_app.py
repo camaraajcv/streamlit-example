@@ -4,10 +4,11 @@ import fitz
 import io
 import tempfile
 import streamlit as st
+import os
 
 # Função para processar o PDF e exibir o resultado
 def processar_pdf(pdf_content):
-    with tempfile.NamedTemporaryFile(delete=False) as temp_pdf:
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_pdf:
         temp_pdf.write(pdf_content)
         temp_pdf_path = temp_pdf.name
 
@@ -15,6 +16,7 @@ def processar_pdf(pdf_content):
 
     if pdf_reader.needs_pass:
         st.error("O arquivo PDF possui senha. Você precisa desbloqueá-lo primeiro.")
+        os.remove(temp_pdf_path)
         return
 
     text = ""
@@ -60,7 +62,7 @@ def processar_pdf(pdf_content):
         exportar_excel(df_final)
 
     # Remover o arquivo temporário após o processamento
-    temp_pdf.unlink()
+    os.remove(temp_pdf_path)
 
 # Função para exportar o DataFrame para um arquivo Excel (.xls)
 def exportar_excel(df_final):
