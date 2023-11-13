@@ -61,23 +61,22 @@ def processar_pdf(pdf_content):
     st.dataframe(df_final)
 
     # Adicione um formulário para capturar variáveis
-    with st.form(key='my_form'):
-        # Organize os elementos do formulário em duas colunas
-        col1, col2 = st.beta_columns(2)
+with st.form(key='my_form'):
+    # Organize os elementos do formulário em duas colunas
+    col1, col2 = st.columns(2)
 
-        # Coluna 1
-        with col1:
-            st.subheader("Formulário para Geração de Arquivos .XML")
-            numero_ne = st.text_input("Número da NE:", max_chars=12, key='numero_ne')
-            numero_sb = st.text_input("Número do Subelemento:", max_chars=2, key='numero_sb')
-            
-        # Coluna 2
-        with col2:
-            cpf_responsavel = st.text_input("CPF do Responsável:", key='cpf_responsavel')
+    # Coluna 1
+    with col1:
+        st.subheader("Formulário para Geração de Arquivos .XML")
+        numero_ne = st.text_input("Número da NE:", max_chars=12, key='numero_ne')
+        numero_sb = st.text_input("Número do Subelemento:", max_chars=2, key='numero_sb')
+        
+    # Coluna 2
+    with col2:
+        cpf_responsavel = st.text_input("CPF do Responsável:", key='cpf_responsavel')
 
-        # Botão para enviar o formulário
-        submit_button = st.form_submit_button(label='Exportar para XML')
-
+    # Botão para enviar o formulário
+    submit_button = st.form_submit_button(label='Exportar para XML')
     # Remover o arquivo temporário após o processamento
     os.remove(temp_pdf_path)
 
