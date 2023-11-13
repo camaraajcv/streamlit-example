@@ -74,16 +74,16 @@ def processar_pdf(pdf_content):
         # Coluna 2
         with col2:
             cpf_responsavel = st.text_input("CPF do Responsável:", key='cpf_responsavel')
-
+            data_previsao_pagamento = st.date_input("Data de Previsão de Pagamento", key='data_previsao_pagamento')
         # Botão para enviar o formulário
-        submit_button = st.form_submit_button(label='Exportar para XML')
+        submit_button = st.form_submit_button(label='Gerar XML para FL')
 
     # Remover o arquivo temporário após o processamento
     os.remove(temp_pdf_path)
 
     # Se o formulário foi enviado, chame a função para exportar XML
     if submit_button:
-        exportar_xml(df_final, numero_ne, numero_sb, cpf_responsavel)
+        exportar_xml(df_final, numero_ne, numero_sb, cpf_responsavel,data_previsao_pagamento)
 
 # Função para exportar o DataFrame para um arquivo XML
 def exportar_xml(df_final, numero_ne, numero_sb, cpf_responsavel):
