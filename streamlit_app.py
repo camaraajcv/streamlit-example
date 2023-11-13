@@ -1,38 +1,24 @@
-import altair as alt
-import numpy as np
-import pandas as pd
-import streamlit as st
-import PyPDF2
-"""
-# Welcome to Streamlit!
-
-Edit `/streamlit_app.py` to customize this app to your heart's desire :heart:.
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
-
-In the meantime, below is an example of what you can do with just a few lines of code:
-"""
 import re
 import pandas as pd
-import PyPDF2
+import fitz  # PyMuPDF
 import io
 import streamlit as st
 
 # Função para processar o PDF e exibir o resultado
 def processar_pdf(pdf_content):
     pdf_file = io.BytesIO(pdf_content)
-    pdf_reader = PyPDF2.PdfReader(pdf_file)
+    pdf_reader = fitz.open(pdf_file)
 
-    if pdf_reader.is_encrypted:
+    if pdf_reader.needs_pass:
         st.error("O arquivo PDF possui senha. Você precisa desbloqueá-lo primeiro.")
         return
 
     text = ""
-    num_pages = len(pdf_reader.pages)
+    num_pages = pdf_reader.page_count
 
-    for i, page in enumerate(pdf_reader.pages):
-        st.text(f"Processando página {i + 1} de {num_pages}")
-        text += page.extract_text()
+    for i in range(num_pages):
+        page = pdf_reader.load_page(i)
+        text += page.get_text()
 
     match = re.search(r'VALOR\s+LIQUIDO\.{3,}:\s*([\d.,]+)', text)
 
@@ -81,7 +67,3 @@ uploaded_file = st.file_uploader("Selecione um arquivo PDF", type="pdf")
 if uploaded_file:
     pdf_content = uploaded_file.read()
     processar_pdf(pdf_content)
-
-
-
-
