@@ -5,24 +5,14 @@ import io
 import tempfile
 import streamlit as st
 import os
-from PIL import Image
-import requests
-from io import BytesIO
-
 # URL da imagem
 image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
 
-# Baixar a imagem
-response = requests.get(image_url)
-img = Image.open(BytesIO(response.content))
+# Código HTML e CSS para ajustar a largura da imagem para 20% da largura da coluna
+html_code = f'<img src="{image_url}" alt="Imagem" style="width:20vw;"/>'
 
-# Redimensionar a imagem para 20% do tamanho original
-width, height = img.size
-new_size = (int(width * 0.2), int(height * 0.2))
-resized_img = img.resize(new_size)
-
-# Exibir a imagem redimensionada no Streamlit
-st.image(resized_img, caption="DIRETORIA DE ADMINISTRAÇÃO DA AERONÁUTICA", use_column_width=True)
+# Exibir a imagem usando HTML
+st.markdown(html_code, unsafe_allow_html=True)
 
 
 # Centralizar o texto abaixo da imagem
