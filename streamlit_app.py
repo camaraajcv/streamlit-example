@@ -9,7 +9,7 @@ import os
 image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
 
 #Código HTML e CSS para ajustar a largura da imagem para 20% da largura da coluna e centralizar
-html_code = f'<div style="display: flex; justify-content: center;"><img src="{image_url}" alt="Imagem" style="width:5vw;"/></div>'
+html_code = f'<div style="display: flex; justify-content: center;"><img src="{image_url}" alt="Imagem" style="width:8vw;"/></div>'
 
 
 # Exibir a imagem usando HTML
@@ -115,7 +115,7 @@ def exportar_xml(df_final, numero_ne, numero_sb, cpf_responsavel):
     st.success("Arquivo XML gerado com sucesso.")
 
 # Solicitar ao usuário o upload do arquivo PDF
-uploaded_file = st.file_uploader("Faça o UPLOAD do arquivo PDF do SIPE gerado na transação GRCOCGRECO", type="pdf")
+uploaded_file = st.file_uploader("Faça o UPLOAD do arquivo PDF do SIAPE gerado na transação GRCOCGRECO", type="pdf")
 
 # Obter o conteúdo do arquivo PDF
 if uploaded_file:
