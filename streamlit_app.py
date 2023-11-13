@@ -5,6 +5,13 @@ import io
 import tempfile
 import streamlit as st
 import os
+# Centralizar a imagem na parte superior
+st.image("https://www.fab.mil.br/om/logo/mini/dirad2.jpg", use_column_width=True)
+
+# Centralizar o texto abaixo da imagem
+st.markdown("<h1 style='text-align: center;'>DIRETORIA DE ADMINISTRAÇÃO DA AERONÁUTICA</h1>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: center;'>SUBDIRETORIA DE PAGAMENTO DE PESSOAL</h2>", unsafe_allow_html=True)
+st.markdown("<h3 style='text-align: center;'>PP1 - DIVISÃO DE DESCONTOS</h3>", unsafe_allow_html=True)
 
 # Texto explicativo
 st.write("Desconto Externo Civil - Extração dados PDF SIAPE para SIAFI")
