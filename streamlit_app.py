@@ -61,8 +61,9 @@ def processar_pdf(pdf_content):
     st.dataframe(df_final)
 
     # Adicione um formulário para capturar variáveis
-    st.subheader("Formulário para Captura de Variáveis")
-    numero_ne = st.text_input("Número da NE (Campo texto com 12 espaços):", max_chars=12, key='numero_ne')
+    st.subheader("Formulário para Geração de Arquivos .XML")
+    numero_ne = st.text_input("Número da NE :", max_chars=12, key='numero_ne')
+    numero_sb = st.text_input("Número do Subelemento :", max_chars=2, key='numero_sb')
     cpf_responsavel = st.text_input("CPF do Responsável:", key='cpf_responsavel')
 
     # Adicione um botão para exportar o DataFrame para um arquivo Excel
