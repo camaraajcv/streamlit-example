@@ -63,7 +63,7 @@ def processar_pdf(pdf_content):
     # Adicione um formulário para capturar variáveis
     with st.form(key='my_form'):
         # Organize os elementos do formulário em duas colunas
-        col1, col2 = st.beta_columns(2)
+        col1, col2 = st.columns(2)
 
         # Coluna 1
         with col1:
