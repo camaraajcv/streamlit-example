@@ -6,7 +6,11 @@ import tempfile
 import streamlit as st
 import os
 # Centralizar a imagem na parte superior
-st.image("https://www.fab.mil.br/om/logo/mini/dirad2.jpg", width=0.2,use_column_width=True)
+# URL da imagem
+image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
+
+# Código HTML para ajustar a largura da imagem para 20% da largura da coluna
+html_code = f'<img src="{image_url}" alt="Imagem" style="width:20%;"/>'
 
 # Centralizar o texto abaixo da imagem
 st.markdown("<h1 style='text-align: center;'>DIRETORIA DE ADMINISTRAÇÃO DA AERONÁUTICA</h1>", unsafe_allow_html=True)
