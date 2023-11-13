@@ -61,17 +61,43 @@ def processar_pdf(pdf_content):
     st.dataframe(df_final)
 
     # Adicione um formulário para capturar variáveis
-    st.subheader("Formulário para Geração de Arquivos .XML")
-    numero_ne = st.text_input("Número da NE :", max_chars=12, key='numero_ne')
-    numero_sb = st.text_input("Número do Subelemento :", max_chars=2, key='numero_sb')
-    cpf_responsavel = st.text_input("CPF do Responsável:", key='cpf_responsavel')
+    with st.form(key='my_form'):
+        # Organize os elementos do formulário em duas colunas
+        col1, col2 = st.beta_columns(2)
 
-    
+        # Coluna 1
+        with col1:
+            st.subheader("Formulário para Geração de Arquivos .XML")
+            numero_ne = st.text_input("Número da NE:", max_chars=12, key='numero_ne')
+            numero_sb = st.text_input("Número do Subelemento:", max_chars=2, key='numero_sb')
+            
+        # Coluna 2
+        with col2:
+            cpf_responsavel = st.text_input("CPF do Responsável:", key='cpf_responsavel')
+
+        # Botão para enviar o formulário
+        submit_button = st.form_submit_button(label='Exportar para XML')
 
     # Remover o arquivo temporário após o processamento
     os.remove(temp_pdf_path)
 
+    # Se o formulário foi enviado, chame a função para exportar XML
+    if submit_button:
+        exportar_xml(df_final, numero_ne, numero_sb, cpf_responsavel)
 
+# Função para exportar o DataFrame para um arquivo XML
+def exportar_xml(df_final, numero_ne, numero_sb, cpf_responsavel):
+    # Lógica para gerar o arquivo XML com base nas variáveis fornecidas
+    # Substitua esta lógica pela sua implementação real para gerar o XML
+
+    # Exemplo básico:
+    xml_content = f"<root><NE>{numero_ne}</NE><Subelemento>{numero_sb}</Subelemento><Responsavel>{cpf_responsavel}</Responsavel></root>"
+
+    # Salvar o conteúdo do XML em um arquivo
+    with open("output.xml", "w") as xml_file:
+        xml_file.write(xml_content)
+
+    st.success("Arquivo XML gerado com sucesso.")
 
 # Solicitar ao usuário o upload do arquivo PDF
 uploaded_file = st.file_uploader("Selecione um arquivo PDF", type="pdf")
