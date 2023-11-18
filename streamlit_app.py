@@ -125,6 +125,11 @@ st.write("Desconto Externo Civil - Extração dados PDF SIAPE para SIAFI")
 
 # Função para processar o PDF e exibir o resultado
 def processar_pdf(pdf_content):
+    global ultimo_sequencial, data_geracao  # Declare as variables as global
+
+    data_geracao = datetime.now().strftime("%d/%m/%Y")
+    ultimo_sequencial += 1
+    
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_pdf:
         temp_pdf.write(pdf_content)
         temp_pdf_path = temp_pdf.name
@@ -155,7 +160,6 @@ def processar_pdf(pdf_content):
     cnpj_pattern = r'\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}'
     cnpjs = re.findall(cnpj_pattern, text)
     text_parts = re.split(cnpj_pattern, text)
-    data_geracao = datetime.now().strftime("%d/%m/%Y")
     data = {'CNPJ': cnpjs, 'Texto_Após_CNPJ': text_parts[1:]}
     df = pd.DataFrame(data)
     df['Empresa'] = df['Texto_Após_CNPJ'].str[:33]
@@ -206,7 +210,7 @@ def exportar_xml(df_final, numero_ne, numero_sb, cpf_responsavel, data_previsao_
 
     # Exemplo básico:
     # Atualizar o sequencial
-    ultimo_sequencial += 1
+    
     xml_content = f"""
 <sb:arquivo xmlns:ns2="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/" xmlns:sb="http://www.tesouro.gov.br/siafi/submissao">
   <sb:header>
