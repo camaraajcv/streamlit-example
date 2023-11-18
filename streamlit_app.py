@@ -5,6 +5,7 @@ import io
 import tempfile
 import streamlit as st
 import os
+from datetime import datetime
 # URL da imagem
 image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
 
@@ -56,7 +57,9 @@ def processar_pdf(pdf_content):
     cnpj_pattern = r'\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}'
     cnpjs = re.findall(cnpj_pattern, text)
     text_parts = re.split(cnpj_pattern, text)
+    # Defining global variables
     ultimo_sequencial = 0
+    data_geracao = ""
     data = {'CNPJ': cnpjs, 'Texto_Após_CNPJ': text_parts[1:]}
     df = pd.DataFrame(data)
     df['Empresa'] = df['Texto_Após_CNPJ'].str[:33]
@@ -100,14 +103,7 @@ def processar_pdf(pdf_content):
     if submit_button:
         exportar_xml(df_final, numero_ne, numero_sb, cpf_responsavel,data_previsao_pagamento)
 
-import re
-import pandas as pd
-import fitz
-import io
-import tempfile
-import streamlit as st
-import os
-from datetime import datetime
+
 # URL da imagem
 image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
 
@@ -201,7 +197,7 @@ def processar_pdf(pdf_content):
 
     # Se o formulário foi enviado, chame a função para exportar XML
     if submit_button:
-        exportar_xml(df_final, numero_ne, numero_sb, cpf_responsavel,data_previsao_pagamento)
+        exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento)
 
 # Função para exportar o DataFrame para um arquivo XML
 def exportar_xml(df_final, numero_ne, numero_sb, cpf_responsavel, data_previsao_pagamento):
