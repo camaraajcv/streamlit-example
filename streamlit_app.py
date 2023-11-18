@@ -291,11 +291,3 @@ uploaded_file = st.file_uploader("Faça o UPLOAD do arquivo PDF do SIAPE gerado 
 if uploaded_file:
     pdf_content = uploaded_file.read()
     processar_pdf(pdf_content)
-
-# Solicitar ao usuário o upload do arquivo PDF
-uploaded_file = st.file_uploader("Faça o UPLOAD do arquivo PDF do SIAPE gerado na transação GRCOCGRECO", type="pdf")
-
-# Obter o conteúdo do arquivo PDF
-if uploaded_file:
-    pdf_content = uploaded_file.read()
-    processar_pdf(pdf_content)
