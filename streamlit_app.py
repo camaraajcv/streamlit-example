@@ -257,7 +257,17 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
   </sb:trailler>
 </sb:arquivo>
 """
+      # Crie um buffer de bytes para o arquivo XML
+    buffer = BytesIO()
+    buffer.write(xml_content.encode())
+    buffer.seek(0)
 
+    # Crie um link para download
+    xml_filename = f"output_{numero_ne}_{numero_sb}_{ano_empenho}.xml"
+    xml_link = f'<a href="data:application/xml;base64,{base64.b64encode(buffer.read()).decode()}" download="{xml_filename}">Clique aqui para baixar o arquivo XML</a>'
+
+    # Exiba o link no Streamlit
+    st.markdown(xml_link, unsafe_allow_html=True)
     # Salvar o conteúdo do XML em um arquivo
     with open("output.xml", "w") as xml_file:
         xml_file.write(xml_content)
