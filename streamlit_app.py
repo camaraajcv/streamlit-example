@@ -56,7 +56,7 @@ def processar_pdf(pdf_content):
     cnpj_pattern = r'\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}'
     cnpjs = re.findall(cnpj_pattern, text)
     text_parts = re.split(cnpj_pattern, text)
-
+    ultimo_sequencial = 0
     data = {'CNPJ': cnpjs, 'Texto_Após_CNPJ': text_parts[1:]}
     df = pd.DataFrame(data)
     df['Empresa'] = df['Texto_Após_CNPJ'].str[:33]
@@ -107,6 +107,7 @@ import io
 import tempfile
 import streamlit as st
 import os
+from datetime import datetime
 # URL da imagem
 image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
 
@@ -158,7 +159,7 @@ def processar_pdf(pdf_content):
     cnpj_pattern = r'\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}'
     cnpjs = re.findall(cnpj_pattern, text)
     text_parts = re.split(cnpj_pattern, text)
-
+    data_geracao = datetime.now().strftime("%d/%m/%Y")
     data = {'CNPJ': cnpjs, 'Texto_Após_CNPJ': text_parts[1:]}
     df = pd.DataFrame(data)
     df['Empresa'] = df['Texto_Após_CNPJ'].str[:33]
@@ -187,7 +188,7 @@ def processar_pdf(pdf_content):
             st.subheader("Formulário para Geração de Arquivos .XML")
             numero_ne = st.text_input("Número da NE:", max_chars=12, key='numero_ne')
             numero_sb = st.text_input("Número do Subelemento:", max_chars=2, key='numero_sb')
-            
+            ano_referencia = st.text_input("Ano de Referência (4 dígitos):", max_chars=4, key='ano_referencia')
         # Coluna 2
         with col2:
             cpf_responsavel = st.text_input("CPF do Responsável:", key='cpf_responsavel')
@@ -208,12 +209,14 @@ def exportar_xml(df_final, numero_ne, numero_sb, cpf_responsavel, data_previsao_
     # Substitua esta lógica pela sua implementação real para gerar o XML
 
     # Exemplo básico:
+    # Atualizar o sequencial
+    ultimo_sequencial += 1
     xml_content = f"""
 <sb:arquivo xmlns:ns2="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/" xmlns:sb="http://www.tesouro.gov.br/siafi/submissao">
   <sb:header>
     <sb:codigoLayout>DH001</sb:codigoLayout>
-    <sb:dataGeracao>11/11/2023</sb:dataGeracao>
-    <sb:sequencialGeracao>1</sb:sequencialGeracao>
+    <sb:dataGeracao>{data_geracao}</sb:dataGeracao>
+    <sb:sequencialGeracao>{ultimo_sequencial}</sb:sequencialGeracao>
     <sb:anoReferencia>2023</sb:anoReferencia>
     <sb:ugResponsavel>120052</sb:ugResponsavel>
     <sb:cpfResponsavel>{cpf_responsavel}</sb:cpfResponsavel>
@@ -228,7 +231,7 @@ def exportar_xml(df_final, numero_ne, numero_sb, cpf_responsavel, data_previsao_
           <dtEmis>{df_final['DtEmis'][0]}</dtEmis>
           <dtVenc>{df_final['DtVenc'][0]}</dtVenc>
           <codUgPgto>{df_final['CodUgPgto'][0]}</codUgPgto>
-          <vlr>{df_final['Vlr'][0]}</vlr>
+          <vlr>{valor_liquido}</vlr>
           <txtObser>{df_final['TxtObser'][0]}</txtObser>
           <txtProcesso>{df_final['TxtProcesso'][0]}</txtProcesso>
           <dtAteste>{df_final['DtAteste'][0]}</dtAteste>
