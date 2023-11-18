@@ -110,6 +110,7 @@ def processar_pdf(pdf_content):
             file_name="output.xml",
             key='download_button'
         )
+        st.success("Arquivo XML gerado com sucesso.")
 # Função para processar o PDF e exibir o resultado
 def processar_pdf(pdf_content):
     global ultimo_sequencial, data_geracao  # Declare as variables as global
@@ -258,7 +259,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
 </sb:arquivo>
 """
     return xml_content
-    st.success("Arquivo XML gerado com sucesso.")
+
 
 
 # Solicitar ao usuário o upload do arquivo PDF
