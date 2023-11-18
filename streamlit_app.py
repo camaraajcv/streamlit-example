@@ -188,7 +188,7 @@ def processar_pdf(pdf_content):
             st.subheader("Formulário para Geração de Arquivos .XML")
             numero_ne = st.text_input("Número da NE:", max_chars=12, key='numero_ne')
             numero_sb = st.text_input("Número do Subelemento:", max_chars=2, key='numero_sb')
-            ano_referencia = st.text_input("Ano de Referência (4 dígitos):", max_chars=4, key='ano_referencia')
+            ano_empenho = st.text_input("Ano de Referência (4 dígitos):", max_chars=4, key='ano_empenho')
         # Coluna 2
         with col2:
             cpf_responsavel = st.text_input("CPF do Responsável:", key='cpf_responsavel')
@@ -217,7 +217,7 @@ def exportar_xml(df_final, numero_ne, numero_sb, cpf_responsavel, data_previsao_
     <sb:codigoLayout>DH001</sb:codigoLayout>
     <sb:dataGeracao>{data_geracao}</sb:dataGeracao>
     <sb:sequencialGeracao>{ultimo_sequencial}</sb:sequencialGeracao>
-    <sb:anoReferencia>2023</sb:anoReferencia>
+    <sb:anoReferencia>{ano_empenho}</sb:anoReferencia>
     <sb:ugResponsavel>120052</sb:ugResponsavel>
     <sb:cpfResponsavel>{cpf_responsavel}</sb:cpfResponsavel>
   </sb:header>
