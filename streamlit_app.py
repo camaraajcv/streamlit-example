@@ -202,10 +202,10 @@ def processar_pdf(pdf_content):
 
     # Se o formulário foi enviado, chame a função para exportar XML
     if submit_button:
-        exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento)
+        exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento,valor_liquido)
 
 # Função para exportar o DataFrame para um arquivo XML
-def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento):
+def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido):
     # Lógica para gerar o arquivo XML com base nas variáveis fornecidas
     # Substitua esta lógica pela sua implementação real para gerar o XML
 
