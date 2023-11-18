@@ -205,7 +205,7 @@ def processar_pdf(pdf_content):
         exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento)
 
 # Função para exportar o DataFrame para um arquivo XML
-def exportar_xml(df_final, numero_ne, numero_sb, cpf_responsavel, data_previsao_pagamento):
+def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento):
     # Lógica para gerar o arquivo XML com base nas variáveis fornecidas
     # Substitua esta lógica pela sua implementação real para gerar o XML
 
