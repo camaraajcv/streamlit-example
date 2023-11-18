@@ -102,8 +102,14 @@ def processar_pdf(pdf_content):
 
     # Se o formulário foi enviado, chame a função para exportar XML
     if submit_button:
-        exportar_xml(df_final, numero_ne, numero_sb, cpf_responsavel,data_previsao_pagamento)
-
+        xml_content=exportar_xml(df_final, numero_ne, numero_sb, cpf_responsavel,data_previsao_pagamento)
+        # Oferecer um botão de download para o usuário
+        st.download_button(
+            label="Baixar XML",
+            data=xml_content.encode('utf-8'),
+            file_name="output.xml",
+            key='download_button'
+        )
 # Função para processar o PDF e exibir o resultado
 def processar_pdf(pdf_content):
     global ultimo_sequencial, data_geracao  # Declare as variables as global
@@ -183,14 +189,7 @@ def processar_pdf(pdf_content):
     # Se o formulário foi enviado, chame a função para exportar XML
     if submit_button:
         exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento,valor_liquido)
-        # Offer download button
-    st.download_button(
-        label="Download XML",
-        data=xml_content.encode('utf-8'),
-        file_name="output.xml",
-        key='download_button'
-    )
-# Função para exportar o DataFrame para um arquivo XML
+        # Função para exportar o DataFrame para um arquivo XML
 def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido):
    
     xml_content = f"""
@@ -258,7 +257,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
   </sb:trailler>
 </sb:arquivo>
 """
-     
+    return xml_content
     st.success("Arquivo XML gerado com sucesso.")
 
 
