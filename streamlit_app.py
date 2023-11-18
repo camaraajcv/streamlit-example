@@ -254,17 +254,16 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
 """
      
     st.success("Arquivo XML gerado com sucesso.")
-    # Cria um objeto BytesIO para armazenar o conteúdo do XML
-    xml_io = io.BytesIO(xml_content.encode())
-
     # Adiciona um link de download para o arquivo XML
-    st.download_button(
-        label="Baixar XML",
-        data=xml_io,
-        key='download_button',
-        file_name=f"xml_output_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
-        mime="text/xml"
-    )
+    st.markdown(get_binary_file_downloader_html(xml_io, 'XML Download', 'xml'), unsafe_allow_html=True)
+
+# Função auxiliar para criar um link de download
+def get_binary_file_downloader_html(bin_file, file_label='File', button_label='Save as', key='download_link'):
+    with st.spinner(f'Gerando link de download...'):
+        bin_str = bin_file.getvalue()
+        bin_str = bin_str.decode()
+        href = f'data:application/octet-stream;base64,{bin_str}'
+        return f'<a href="{href}" download="{file_label}.xml"><button>{button_label}</button></a>'
 
 # Solicitar ao usuário o upload do arquivo PDF
 uploaded_file = st.file_uploader("Faça o UPLOAD do arquivo PDF do SIAPE gerado na transação GRCOCGRECO", type="pdf")
