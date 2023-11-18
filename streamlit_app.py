@@ -224,48 +224,48 @@ def exportar_xml(df_final, numero_ne, numero_sb, cpf_responsavel, data_previsao_
   <sb:detalhes>
     <sb:detalhe>
       <ns2:CprDhCadastrar>
-        <codUgEmit>{df_final['CodigoUG'][0]}</codUgEmit>
-        <anoDH>{df_final['AnoDH'][0]}</anoDH>
-        <codTipoDH>{df_final['CodTipoDH'][0]}</codTipoDH>
+        <codUgEmit>120052</codUgEmit>
+        <anoDH>{ano_empenho}</anoDH>
+        <codTipoDH></codTipoDH>
         <dadosBasicos>
-          <dtEmis>{df_final['DtEmis'][0]}</dtEmis>
-          <dtVenc>{df_final['DtVenc'][0]}</dtVenc>
-          <codUgPgto>{df_final['CodUgPgto'][0]}</codUgPgto>
+          <dtEmis>{data_geracao}</dtEmis>
+          <dtVenc></dtVenc>
+          <codUgPgto></codUgPgto>
           <vlr>{valor_liquido}</vlr>
-          <txtObser>{df_final['TxtObser'][0]}</txtObser>
-          <txtProcesso>{df_final['TxtProcesso'][0]}</txtProcesso>
-          <dtAteste>{df_final['DtAteste'][0]}</dtAteste>
-          <codCredorDevedor>{df_final['CodCredorDevedor'][0]}</codCredorDevedor>
-          <dtPgtoReceb>{df_final['DtPgtoReceb'][0]}</dtPgtoReceb>
+          <txtObser></txtObser>
+          <txtProcesso></txtProcesso>
+          <dtAteste></dtAteste>
+          <codCredorDevedor></codCredorDevedor>
+          <dtPgtoReceb></dtPgtoReceb>
           <docOrigem>
-            <codIdentEmit>{df_final['CodIdentEmit'][0]}</codIdentEmit>
-            <dtEmis>{df_final['DtEmisDocOrigem'][0]}</dtEmis>
-            <numDocOrigem>{df_final['NumDocOrigem'][0]}</numDocOrigem>
-            <vlr>{df_final['VlrDocOrigem'][0]}</vlr>
+            <codIdentEmit></codIdentEmit>
+            <dtEmis></dtEmis>
+            <numDocOrigem></numDocOrigem>
+            <vlr></vlr>
           </docOrigem>
         </dadosBasicos>
         <pco>
-          <numSeqItem>{df_final['NumSeqItem'][0]}</numSeqItem>
-          <codSit>{df_final['CodSit'][0]}</codSit>
-          <codUgEmpe>{df_final['CodUgEmpe'][0]}</codUgEmpe>
+          <numSeqItem>{ultimo_sequencial}</numSeqItem>
+          <codSit></codSit>
+          <codUgEmpe></codUgEmpe>
           <pcoItem>
-            <numSeqItem>{df_final['NumSeqItemPco'][0]}</numSeqItem>
-            <numEmpe>{df_final['NumEmpe'][0]}</numEmpe>
-            <codSubItemEmpe>{df_final['CodSubItemEmpe'][0]}</codSubItemEmpe>
-            <vlr>{df_final['VlrPcoItem'][0]}</vlr>
-            <numClassA>{df_final['NumClassA'][0]}</numClassA>
+            <numSeqItem></numSeqItem>
+            <numEmpe></numEmpe>
+            <codSubItemEmpe></codSubItemEmpe>
+            <vlr></vlr>
+            <numClassA></numClassA>
           </pcoItem>
         </pco>
         <centroCusto>
-          <numSeqItem>{df_final['NumSeqItemCentroCusto'][0]}</numSeqItem>
-          <codCentroCusto>{df_final['CodCentroCusto'][0]}</codCentroCusto>
-          <mesReferencia>{df_final['MesReferencia'][0]}</mesReferencia>
-          <anoReferencia>{df_final['AnoReferencia'][0]}</anoReferencia>
-          <codUgBenef>{df_final['CodUgBenef'][0]}</codUgBenef>
+          <numSeqItem></numSeqItem>
+          <codCentroCusto></codCentroCusto>
+          <mesReferencia></mesReferencia>
+          <anoReferencia></anoReferencia>
+          <codUgBenef></codUgBenef>
           <relPcoItem>
-            <numSeqPai>{df_final['NumSeqPai'][0]}</numSeqPai>
-            <numSeqItem>{df_final['NumSeqItemCentroCustoRel'][0]}</numSeqItem>
-            <vlr>{df_final['VlrCentroCusto'][0]}</vlr>
+            <numSeqPai></numSeqPai>
+            <numSeqItem></numSeqItem>
+            <vlr></vlr>
           </relPcoItem>
         </centroCusto>
       </ns2:CprDhCadastrar>
