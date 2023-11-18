@@ -12,6 +12,8 @@ image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
 #Código HTML e CSS para ajustar a largura da imagem para 20% da largura da coluna e centralizar
 html_code = f'<div style="display: flex; justify-content: center;"><img src="{image_url}" alt="Imagem" style="width:8vw;"/></div>'
 
+ultimo_sequencial = 0
+data_geracao = ""
 
 # Exibir a imagem usando HTML
 st.markdown(html_code, unsafe_allow_html=True)
@@ -57,9 +59,8 @@ def processar_pdf(pdf_content):
     cnpj_pattern = r'\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}'
     cnpjs = re.findall(cnpj_pattern, text)
     text_parts = re.split(cnpj_pattern, text)
-    # Defining global variables
-    ultimo_sequencial = 0
-    data_geracao = ""
+  
+  
     data = {'CNPJ': cnpjs, 'Texto_Após_CNPJ': text_parts[1:]}
     df = pd.DataFrame(data)
     df['Empresa'] = df['Texto_Após_CNPJ'].str[:33]
