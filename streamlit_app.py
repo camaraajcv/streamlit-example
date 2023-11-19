@@ -126,13 +126,13 @@ def processar_pdf(pdf_content):
         with col2:
             cpf_responsavel = st.text_input("CPF do Responsável:", key='cpf_responsavel')
 
-        # Adicione a verificação do CPF
-        if len(cpf_responsavel) == 11 and cpf_valido(cpf_responsavel):
-            st.success("CPF válido.")
-        elif len(cpf_responsavel) == 0:
-            st.warning("CPF do Responsável é obrigatório.")
-        else:
-            st.error("CPF inválido. Certifique-se de inserir 11 dígitos válidos.")
+            # Adicione a verificação do CPF
+            if len(cpf_responsavel) == 11 and cpf_valido(cpf_responsavel):
+                st.success("CPF válido.")
+            elif len(cpf_responsavel) == 0:
+                st.warning("CPF do Responsável é obrigatório.")
+            else:
+                st.error("CPF inválido. Certifique-se de inserir 11 dígitos válidos.")
             data_previsao_pagamento = st.date_input("Data de Previsão de Pagamento", key='data_previsao_pagamento')
             data_vencimento = st.date_input("Data Vencimento", key='data_vencimento')
 
