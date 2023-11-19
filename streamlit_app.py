@@ -120,7 +120,7 @@ def processar_pdf(pdf_content):
             ano_empenho = st.text_input("Ano de Referência (4 dígitos):", max_chars=4, key='ano_empenho')
         # Coluna 2
         with col2:
-            cpf_responsavel = st.text_input("CPF do Responsável:", key='cpf_responsavel')
+            cpf_responsavel = st.text_input("CPF do Responsável:",max_chars=11, key='cpf_responsavel')
             data_previsao_pagamento = st.date_input("Data de Previsão de Pagamento", key='data_previsao_pagamento')
             data_vencimento = st.date_input("Data Vencimento", key='data_vencimento')
         # Botão para enviar o formulário
