@@ -132,8 +132,8 @@ def processar_pdf(pdf_content):
       resto = total % 11
       digito2 = 11 - resto if resto >= 2 else 0
 
-    # Verifica se os dígitos verificadores estão corretos
-    return digito1 == int(cpf[9]) and digito2 == int(cpf[10])
+      # Verifica se os dígitos verificadores estão corretos
+      return digito1 == int(cpf[9]) and digito2 == int(cpf[10])
     # Adicione um formulário para capturar variáveis
     with st.form(key=f'my_form_{time.time()}'):  # Modifique a chave
         # Organize os elementos do formulário em duas colunas
