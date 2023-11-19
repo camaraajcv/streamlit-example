@@ -122,6 +122,7 @@ def processar_pdf(pdf_content):
         with col2:
             cpf_responsavel = st.text_input("CPF do Responsável:", key='cpf_responsavel')
             data_previsao_pagamento = st.date_input("Data de Previsão de Pagamento", key='data_previsao_pagamento')
+            data_vencimento = st.date_input("Data Vencimento", key='data_vencimento')
         # Botão para enviar o formulário
         submit_button = st.form_submit_button(label='Gerar XML para FL')
 
@@ -130,10 +131,10 @@ def processar_pdf(pdf_content):
 
     # Se o formulário foi enviado, chame a função para exportar XML
     if submit_button:
-        exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento,valor_liquido)
+        exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento,valor_liquido,data_vencimento)
         
 # Função para exportar o DataFrame para um arquivo XML
-def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido):
+def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento):
    
     xml_content = f"""
 <sb:arquivo xmlns:ns2="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/" xmlns:sb="http://www.tesouro.gov.br/siafi/submissao">
@@ -150,11 +151,11 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
       <ns2:CprDhCadastrar>
         <codUgEmit>120052</codUgEmit>
         <anoDH>{ano_empenho}</anoDH>
-        <codTipoDH></codTipoDH>
+        <codTipoDH>FL</codTipoDH>
         <dadosBasicos>
           <dtEmis>{data_geracao}</dtEmis>
-          <dtVenc></dtVenc>
-          <codUgPgto></codUgPgto>
+          <dtVenc>{data_vencimento}</dtVenc>
+          <codUgPgto>120052</codUgPgto>
           <vlr>{valor_liquido}</vlr>
           <txtObser></txtObser>
           <txtProcesso></txtProcesso>
