@@ -27,8 +27,19 @@ st.markdown("<h3 style='text-align: center; font-size: 1em; text-decoration: und
 # Texto explicativo
 st.write("Desconto Externo Civil - Extração dados PDF SIAPE para SIAFI")
 
+def remove_newlines(text):
+    # Expressão regular para lidar com diferentes formas de nova linha
+    newline_patterns = [r'\n', r'\r\n', r'\r']
+
+    # Itera sobre os padrões e substitui cada ocorrência por uma string vazia
+    for pattern in newline_patterns:
+        text = re.sub(pattern, '', text)
+
+    return text
+
 # Função para processar o PDF e exibir o resultado
 def processar_pdf(pdf_content):
+  
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_pdf:
         temp_pdf.write(pdf_content)
         temp_pdf_path = temp_pdf.name
@@ -46,7 +57,7 @@ def processar_pdf(pdf_content):
     for i in range(num_pages):
         page = pdf_reader.load_page(i)
         text += page.get_text()
-
+        text = remove_newlines(text)
     match = re.search(r'VALOR\s+LIQUIDO\.{3,}:\s*([\d.,]+)', text)
 
     if match:
@@ -64,19 +75,35 @@ def processar_pdf(pdf_content):
     data = {'CNPJ': cnpjs, 'Texto_Após_CNPJ': text_parts[1:]}
     df = pd.DataFrame(data)
     df['Empresa'] = df['Texto_Após_CNPJ'].str[:33]
-    df['Qtd.Serv'] = df['Texto_Após_CNPJ'].str[38:43]
+    df['Qtd.Serv'] = df['Texto_Após_CNPJ'].str[38:46]
     df['Valor Bruto'] = df['Texto_Após_CNPJ'].str[46:60]
-    df['Rubrica'] = df['Texto_Após_CNPJ'].str[61:68]
-    df['BCO'] = df['Texto_Após_CNPJ'].str[219:222]
-    df['AG'] = df['Texto_Após_CNPJ'].str[223:229]
-    df['Conta'] = df['Texto_Após_CNPJ'].str[230:244]
-    df['Valor Líquido'] = df['Texto_Após_CNPJ'].str[279:297]
+    df['Rubrica'] = df['Texto_Após_CNPJ'].str[60:67]
+    df['tipo'] = df['Texto_Após_CNPJ'].str[86:112]
+    df['Qtd.Linha'] = df['Texto_Após_CNPJ'].str[116:122]
+    df['ValorLinha'] = df['Texto_Após_CNPJ'].str[127:138]
+    df['ValorSerpro'] = df['Texto_Após_CNPJ'].str[208:216]
+    df['BCO'] = df['Texto_Após_CNPJ'].str[216:219]
+    df['AG'] = df['Texto_Após_CNPJ'].str[220:226]
+    df['Conta'] = df['Texto_Após_CNPJ'].str[227:241]
+    df['Valor Líquido'] = df['Texto_Após_CNPJ'].str[279:295]
 
+    # Remova os pontos dos milhares e substitua a vírgula pelo ponto
     df['Valor Líquido'] = df['Valor Líquido'].str.replace('.', '').str.replace(',', '.')
+    df['ValorLinha'] = df['ValorLinha'].str.replace('.', '').str.replace(',', '.')
+    df['ValorSerpro'] = df['ValorSerpro'].str.replace('.', '').str.replace(',', '.')
+    df['Qtd.Serv'] = df['Qtd.Serv'].str.replace('.', '').str.replace(',', '.')
+    df['Qtd.Linha'] = df['Qtd.Linha'].str.replace('.', '').str.replace(',', '.')
+    df['Valor Bruto'] = df['Valor Bruto'].str.replace('.', '').str.replace(',', '.')
+    # Converta a coluna para tipo float
     df['Valor Líquido'] = df['Valor Líquido'].astype(float)
+    df['ValorSerpro'] = df['ValorSerpro'].astype(float)
+    df['Qtd.Serv'] = df['Qtd.Serv'].astype(float)
+    df['Qtd.Linha'] = df['Qtd.Linha'].astype(float)
+    df['Valor Bruto'] = df['Valor Bruto'].astype(float)
+    # Use a função str.replace() para remover "." (ponto), "/" (barra) e "-" (hífen) da coluna 'CNPJ'
     df['CNPJ'] = df['CNPJ'].str.replace('.', '').str.replace('/', '').str.replace('-', '')
 
-    df_final = df.drop('Texto_Após_CNPJ', axis=1)
+    df_final=df.drop('Texto_Após_CNPJ', axis=1)
     st.dataframe(df_final)
 
     # Adicione um formulário para capturar variáveis
@@ -103,61 +130,6 @@ def processar_pdf(pdf_content):
     # Se o formulário foi enviado, chame a função para exportar XML
     if submit_button:
         exportar_xml(df_final, numero_ne, numero_sb, cpf_responsavel,data_previsao_pagamento)
-
-# Função para processar o PDF e exibir o resultado
-def processar_pdf(pdf_content):
-    global ultimo_sequencial, data_geracao  # Declare as variables as global
-
-    data_geracao = datetime.now().strftime("%d/%m/%Y")
-    ultimo_sequencial += 1
-    
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_pdf:
-        temp_pdf.write(pdf_content)
-        temp_pdf_path = temp_pdf.name
-
-    pdf_reader = fitz.open(temp_pdf_path)
-
-    if pdf_reader.needs_pass:
-        st.error("O arquivo PDF possui senha. Você precisa desbloqueá-lo primeiro.")
-        os.remove(temp_pdf_path)
-        return
-
-    text = ""
-    num_pages = pdf_reader.page_count
-
-    for i in range(num_pages):
-        page = pdf_reader.load_page(i)
-        text += page.get_text()
-
-    match = re.search(r'VALOR\s+LIQUIDO\.{3,}:\s*([\d.,]+)', text)
-
-    if match:
-        valor_liquido = match.group(1)
-        valor_liquido = valor_liquido.replace('.', '').replace(',', '.')
-        st.success(f"Valor Líquido: {valor_liquido}")
-    else:
-        st.warning("Valor Líquido não encontrado.")
-
-    cnpj_pattern = r'\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}'
-    cnpjs = re.findall(cnpj_pattern, text)
-    text_parts = re.split(cnpj_pattern, text)
-    data = {'CNPJ': cnpjs, 'Texto_Após_CNPJ': text_parts[1:]}
-    df = pd.DataFrame(data)
-    df['Empresa'] = df['Texto_Após_CNPJ'].str[:33]
-    df['Qtd.Serv'] = df['Texto_Após_CNPJ'].str[38:43]
-    df['Valor Bruto'] = df['Texto_Após_CNPJ'].str[46:60]
-    df['Rubrica'] = df['Texto_Após_CNPJ'].str[61:68]
-    df['BCO'] = df['Texto_Após_CNPJ'].str[219:222]
-    df['AG'] = df['Texto_Após_CNPJ'].str[223:229]
-    df['Conta'] = df['Texto_Após_CNPJ'].str[230:244]
-    df['Valor Líquido'] = df['Texto_Após_CNPJ'].str[279:297]
-
-    df['Valor Líquido'] = df['Valor Líquido'].str.replace('.', '').str.replace(',', '.')
-    df['Valor Líquido'] = df['Valor Líquido'].astype(float)
-    df['CNPJ'] = df['CNPJ'].str.replace('.', '').str.replace('/', '').str.replace('-', '')
-
-    df_final = df.drop('Texto_Após_CNPJ', axis=1)
-    st.dataframe(df_final)
 
     # Adicione um formulário para capturar variáveis
     with st.form(key='my_form'):
