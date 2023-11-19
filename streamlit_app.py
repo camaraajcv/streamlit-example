@@ -106,27 +106,23 @@ def processar_pdf(pdf_content):
 
     df_final=df.drop('Texto_Após_CNPJ', axis=1)
     st.dataframe(df_final)
-
-    # Mova o título fora do bloco do formulário
     st.subheader("Formulário para Geração de Arquivos .XML")
-
-    # Adicione um formulário para capturar variáveis
-    with st.form(key=f'my_form_{time.time()}'):  # Modifique a chave
+       # Adicione um formulário para capturar variáveis
+    with st.form(key='my_form'):
         # Organize os elementos do formulário em duas colunas
         col1, col2 = st.columns(2)
 
         # Coluna 1
         with col1:
+            
             numero_ne = st.text_input("Número da NE:", max_chars=12, key='numero_ne')
             numero_sb = st.text_input("Número do Subelemento:", max_chars=2, key='numero_sb')
             ano_empenho = st.text_input("Ano de Referência (4 dígitos):", max_chars=4, key='ano_empenho')
-
         # Coluna 2
         with col2:
             cpf_responsavel = st.text_input("CPF do Responsável:", key='cpf_responsavel')
             data_previsao_pagamento = st.date_input("Data de Previsão de Pagamento", key='data_previsao_pagamento')
             data_vencimento = st.date_input("Data Vencimento", key='data_vencimento')
-
         # Botão para enviar o formulário
         submit_button = st.form_submit_button(label='Gerar XML para FL')
 
