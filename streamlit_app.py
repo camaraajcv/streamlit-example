@@ -110,7 +110,30 @@ def processar_pdf(pdf_content):
 
     # Mova o título fora do bloco do formulário
     st.subheader("Formulário para Geração de Arquivos .XML")
+    def cpf_valido(cpf):
+    # Verifica se o CPF tem 11 dígitos
+      if len(cpf) != 11:
+          return False
 
+      # Verifica se todos os dígitos são iguais
+      if cpf == cpf[0] * 11:
+          return False
+
+      # Calcula os dois dígitos verificadores
+      total = 0
+      for i in range(9):
+          total += int(cpf[i]) * (10 - i)
+      resto = total % 11
+      digito1 = 11 - resto if resto >= 2 else 0
+
+      total = 0
+      for i in range(10):
+          total += int(cpf[i]) * (11 - i)
+      resto = total % 11
+      digito2 = 11 - resto if resto >= 2 else 0
+
+    # Verifica se os dígitos verificadores estão corretos
+    return digito1 == int(cpf[9]) and digito2 == int(cpf[10])
     # Adicione um formulário para capturar variáveis
     with st.form(key=f'my_form_{time.time()}'):  # Modifique a chave
         # Organize os elementos do formulário em duas colunas
@@ -125,14 +148,6 @@ def processar_pdf(pdf_content):
         # Coluna 2
         with col2:
             cpf_responsavel = st.text_input("CPF do Responsável:", key='cpf_responsavel')
-
-            # Adicione a verificação do CPF
-            if len(cpf_responsavel) == 11 and cpf_valido(cpf_responsavel):
-                st.success("CPF válido.")
-            elif len(cpf_responsavel) == 0:
-                st.warning("CPF do Responsável é obrigatório.")
-            else:
-                st.error("CPF inválido. Certifique-se de inserir 11 dígitos válidos.")
             data_previsao_pagamento = st.date_input("Data de Previsão de Pagamento", key='data_previsao_pagamento')
             data_vencimento = st.date_input("Data Vencimento", key='data_vencimento')
 
@@ -145,7 +160,8 @@ def processar_pdf(pdf_content):
     # Se o formulário foi enviado, chame a função para exportar XML
     if submit_button:
         exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento,valor_liquido,data_vencimento)
-        
+        if not cpf_responsavel or len(cpf_responsavel) != 11 or not cpf_valido(cpf_responsavel):
+            st.error("CPF inválido. Certifique-se de inserir 11 dígitos válidos.")
 # Função para exportar o DataFrame para um arquivo XML
 def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento):
    
