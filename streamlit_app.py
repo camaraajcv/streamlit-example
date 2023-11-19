@@ -6,7 +6,6 @@ import tempfile
 import streamlit as st
 import os
 from datetime import datetime
-import time
 # URL da imagem
 image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
 
@@ -110,7 +109,7 @@ def processar_pdf(pdf_content):
 
     # Mova o título fora do bloco do formulário
     st.subheader("Formulário para Geração de Arquivos .XML")
-    
+
     # Adicione um formulário para capturar variáveis
     with st.form(key=f'my_form_{time.time()}'):  # Modifique a chave
         # Organize os elementos do formulário em duas colunas
