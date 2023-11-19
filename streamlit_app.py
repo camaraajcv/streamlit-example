@@ -12,7 +12,8 @@ image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
 #Código HTML e CSS para ajustar a largura da imagem para 20% da largura da coluna e centralizar
 html_code = f'<div style="display: flex; justify-content: center;"><img src="{image_url}" alt="Imagem" style="width:8vw;"/></div>'
 
-data_geracao = datetime.now().strftime('%d-%m-%Y')
+data_geracao = datetime.now().strftime('%Y-%m-%d')
+data_geracao2 = datetime.now().strftime('%d-%m-%Y')
 ultimo_sequencial = 0
 
 # Exibir a imagem usando HTML
@@ -138,7 +139,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
 <sb:arquivo xmlns:ns2="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/" xmlns:sb="http://www.tesouro.gov.br/siafi/submissao">
   <sb:header>
     <sb:codigoLayout>DH001</sb:codigoLayout>
-    <sb:dataGeracao>{data_geracao}</sb:dataGeracao>
+    <sb:dataGeracao>{data_geracao2}</sb:dataGeracao>
     <sb:sequencialGeracao>{ultimo_sequencial}</sb:sequencialGeracao>
     <sb:anoReferencia>{ano_empenho}</sb:anoReferencia>
     <sb:ugResponsavel>120052</sb:ugResponsavel>
@@ -157,9 +158,9 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
           <vlr>{valor_liquido}</vlr>
           <txtObser></txtObser>
           <txtProcesso></txtProcesso>
-          <dtAteste></dtAteste>
+          <dtAteste>{data_geracao}</dtAteste>
           <codCredorDevedor></codCredorDevedor>
-          <dtPgtoReceb></dtPgtoReceb>
+          <dtPgtoReceb>{data_previsao_pagamento}</dtPgtoReceb>
           <docOrigem>
             <codIdentEmit></codIdentEmit>
             <dtEmis></dtEmis>
