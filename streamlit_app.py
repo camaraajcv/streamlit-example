@@ -275,7 +275,5 @@ if uploaded_file:
     pdf_content = uploaded_file.read()
     processar_pdf(pdf_content)
 if st.session_state.url_triggered == 'download_cabecalho':
-    exportar_xml_cabecalho()
+    exportar_xml()
 
-if st.session_state.url_triggered == 'download_detalhes':
-    exportar_xml_detalhes_cabecalho()
