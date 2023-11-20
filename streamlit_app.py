@@ -7,11 +7,10 @@ import streamlit as st
 import os
 from datetime import datetime
 
-
 # URL da imagem
 image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
 
-#Código HTML e CSS para ajustar a largura da imagem para 20% da largura da coluna e centralizar
+# Código HTML e CSS para ajustar a largura da imagem para 20% da largura da coluna e centralizar
 html_code = f'<div style="display: flex; justify-content: center;"><img src="{image_url}" alt="Imagem" style="width:8vw;"/></div>'
 
 data_geracao = datetime.now().strftime('%Y-%m-%d')
@@ -20,7 +19,6 @@ ultimo_sequencial = 0
 
 # Exibir a imagem usando HTML
 st.markdown(html_code, unsafe_allow_html=True)
-
 
 # Centralizar o texto abaixo da imagem
 st.markdown("<h1 style='text-align: center; font-size: 1.5em;'>DIRETORIA DE ADMINISTRAÇÃO DA AERONÁUTICA</h1>", unsafe_allow_html=True)
@@ -42,7 +40,6 @@ def remove_newlines(text):
 
 # Função para processar o PDF e exibir o resultado
 def processar_pdf(pdf_content):
-   
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_pdf:
         temp_pdf.write(pdf_content)
         temp_pdf_path = temp_pdf.name
@@ -73,7 +70,6 @@ def processar_pdf(pdf_content):
     cnpj_pattern = r'\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}'
     cnpjs = re.findall(cnpj_pattern, text)
     text_parts = re.split(cnpj_pattern, text)
-  
   
     data = {'CNPJ': cnpjs, 'Texto_Após_CNPJ': text_parts[1:]}
     df = pd.DataFrame(data)
@@ -109,171 +105,85 @@ def processar_pdf(pdf_content):
     df_final=df.drop('Texto_Após_CNPJ', axis=1)
     st.dataframe(df_final)
     st.subheader("Formulário para Geração de Arquivos .XML")
-       # Adicione um formulário para capturar variáveis
-    with st.form(key='my_form'):
-        # Organize os elementos do formulário em duas colunas
-        col1, col2 = st.columns(2)
+    
+    # Renderizar o formulário e obter dados
+    numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, data_vencimento, submit_button = renderizar_formulario()
 
-        # Coluna 1
-        with col1:
-            
-            numero_ne = st.text_input("Número da NE:", max_chars=12, key='numero_ne')
-            numero_sb = st.text_input("Número do Subelemento:", max_chars=2, key='numero_sb')
-            ano_empenho = st.text_input("Ano de Referência (4 dígitos):", max_chars=4, key='ano_empenho')
-        # Coluna 2
-        with col2:
-            cpf_responsavel = st.text_input("CPF do Responsável:",max_chars=11, key='cpf_responsavel')
-            data_previsao_pagamento = st.date_input("Data de Previsão de Pagamento", key='data_previsao_pagamento')
-            data_vencimento = st.date_input("Data Vencimento", key='data_vencimento')
-        # Botão para enviar o formulário
-        submit_button = st.form_submit_button(label='Gerar XML para FL')
+    # Se o formulário foi enviado, chame a função para exportar XML
+    if submit_button:
+        exportar_xml(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento)
+        exportar_xml_detalhes(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento)
 
     # Remover o arquivo temporário após o processamento
     os.remove(temp_pdf_path)
 
-    # Se o formulário foi enviado, chame a função para exportar XML
-    if submit_button:
-        exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento,valor_liquido,data_vencimento)
-        exportar_xml_detalhes(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento)
 # Função para exportar o DataFrame para um arquivo XML
-def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento):
-  
-    xml_content = f"""
-<sb:arquivo xmlns:ns2="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/" xmlns:sb="http://www.tesouro.gov.br/siafi/submissao">
-  <sb:header>
-    <sb:codigoLayout>DH001</sb:codigoLayout>
-    <sb:dataGeracao>{data_geracao2}</sb:dataGeracao>
-    <sb:sequencialGeracao>{ultimo_sequencial}</sb:sequencialGeracao>
-    <sb:anoReferencia>{ano_empenho}</sb:anoReferencia>
-    <sb:ugResponsavel>120052</sb:ugResponsavel>
-    <sb:cpfResponsavel>{cpf_responsavel}</sb:cpfResponsavel>
-  </sb:header>
-  <sb:detalhes>
-    <sb:detalhe>
-      <ns2:CprDhCadastrar>
-        <codUgEmit>120052</codUgEmit>
-        <anoDH>{ano_empenho}</anoDH>
-        <codTipoDH>FL</codTipoDH>
-        <dadosBasicos>
-          <dtEmis>{data_geracao}</dtEmis>
-          <dtVenc>{data_vencimento}</dtVenc>
-          <codUgPgto>120052</codUgPgto>
-          <vlr>{valor_liquido}</vlr>
-          <txtObser></txtObser>
-          <txtProcesso></txtProcesso>
-          <dtAteste>{data_geracao}</dtAteste>
-          <codCredorDevedor></codCredorDevedor>
-          <dtPgtoReceb>{data_previsao_pagamento}</dtPgtoReceb>
-          <docOrigem>
-            <codIdentEmit></codIdentEmit>
-            <dtEmis></dtEmis>
-            <numDocOrigem></numDocOrigem>
-            <vlr></vlr>
-          </docOrigem>
-        </dadosBasicos>
-        <pco>
-          <numSeqItem>{ultimo_sequencial}</numSeqItem>
-          <codSit></codSit>
-          <codUgEmpe></codUgEmpe>
-          <pcoItem>
-            <numSeqItem></numSeqItem>
-            <numEmpe></numEmpe>
-            <codSubItemEmpe></codSubItemEmpe>
-            <vlr></vlr>
-            <numClassA></numClassA>
-          </pcoItem>
-        </pco>
-        <centroCusto>
-          <numSeqItem></numSeqItem>
-          <codCentroCusto></codCentroCusto>
-          <mesReferencia></mesReferencia>
-          <anoReferencia></anoReferencia>
-          <codUgBenef></codUgBenef>
-          <relPcoItem>
-            <numSeqPai></numSeqPai>
-            <numSeqItem></numSeqItem>
-            <vlr></vlr>
-          </relPcoItem>
-        </centroCusto>
-      </ns2:CprDhCadastrar>
-    </sb:detalhe>
-  </sb:detalhes>
-  <sb:trailler>
-    <sb:quantidadeDetalhe>1</sb:quantidadeDetalhe>
-  </sb:trailler>
-</sb:arquivo>
-"""
-    st.success(f"Arquivo XML com DataFrame gerado com sucesso. [Baixar XML (FL-Principal)](sandbox:/download_cabecalho)")
-    st.success(f"Arquivo XML com DataFrame gerado com sucesso.") 
+def exportar_xml(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento):
+    # ... (seu código anterior)
+
+    st.success(f"Arquivo XML com DataFrame gerado com sucesso.")
     # Adiciona um botão de download para o arquivo XML
-    # Cria um objeto BytesIO para armazenar o conteúdo do XML
     xml_io = io.BytesIO(xml_content.encode())
+    st.download_button(
+        label="Baixar XML (Cabeçalho e Trailler)",
+        data=xml_io,
+        file_name=f"xml_cabecalho_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
+        mime="text/xml",
+        key=f'download_button_cabecalho_{datetime.now().strftime("%Y%m%d%H%M%S")}'
+    )
 
-    # Adiciona um botão de download para o arquivo XML
-    if st.button("Baixar XML (Cabeçalho e Trailler)"):
-        xml_io = io.BytesIO(xml_content.encode())
-        st.download_button(
-            label="Baixar XML (Cabeçalho e Trailler)",
-            data=xml_io,
-            file_name=f"xml_cabecalho_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
-            mime="text/xml",
-            key=f'download_button_cabecalho_{datetime.now().strftime("%Y%m%d%H%M%S")}'
-        )
+# Função para exportar detalhes do DataFrame para um arquivo XML
 def exportar_xml_detalhes(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento):
-    
-    xml_content = f"""
-<sb:arquivo xmlns:ns2="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/" xmlns:sb="http://www.tesouro.gov.br/siafi/submissao">
-  <sb:detalhes>
-"""
-
-    for index, row in df_final.iterrows():
-        xml_content += f"""
-    <sb:detalhe>
-      <ns2:CprDhCadastrar>
-        <!-- ... (restante do código do detalhe) ... -->
-        <pco>
-          <!-- ... (restante do código do pco) ... -->
-        </pco>
-        <centroCusto>
-          <!-- ... (restante do código do centroCusto) ... -->
-        </centroCusto>
-      </ns2:CprDhCadastrar>
-    </sb:detalhe>
-"""
-
-    xml_content += """
-  </sb:detalhes>
-  <sb:trailler>
-    <sb:quantidadeDetalhe>{len(df_final)}</sb:quantidadeDetalhe>
-  </sb:trailler>
-</sb:arquivo>
-"""
+    # ... (seu código anterior)
 
     st.success(f"Arquivo XML com detalhes do DataFrame gerado com sucesso.")
+    # Adiciona um botão de download para o arquivo XML de detalhes
     xml_io = io.BytesIO(xml_content.encode())
+    st.download_button(
+        label="Baixar XML (Detalhes)",
+        data=xml_io,
+        file_name=f"xml_detalhes_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
+        mime="text/xml",
+        key=f'download_button_detalhes_{datetime.now().strftime("%Y%m%d%H%M%S")}'
+    )
 
-    if st.button("Baixar XML (Detalhes)"):
-        xml_io = io.BytesIO(xml_content.encode())
-        st.download_button(
-            label="Baixar XML (Detalhes)",
-            data=xml_io,
-            file_name=f"xml_detalhes_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
-            mime="text/xml",
-            key=f'download_button_detalhes_{datetime.now().strftime("%Y%m%d%H%M%S")}'
-        )
 # Função auxiliar para criar um link de download
 def get_binary_file_downloader_html(bin_file, file_label='File', button_label='Save as', key='download_link'):
     bin_str = bin_file.getvalue()
     bin_str = bin_str.decode()
     href = f'data:application/octet-stream;base64,{bin_str}'
     return f'<a href="{href}" download="{file_label}.xml"><button>{button_label}</button></a>'
+
+# Função para renderizar o formulário
+def renderizar_formulario():
+    # Adicione um formulário para capturar variáveis
+    with st.form(key='my_form'):
+        # Organize os elementos do formulário em duas colunas
+        col1, col2 = st.columns(2)
+
+        # Coluna 1
+        with col1:
+            numero_ne = st.text_input("Número da NE:", max_chars=12, key='numero_ne')
+            numero_sb = st.text_input("Número do Subelemento:", max_chars=2, key='numero_sb')
+            ano_empenho = st.text_input("Ano de Referência (4 dígitos):", max_chars=4, key='ano_empenho')
+
+        # Coluna 2
+        with col2:
+            cpf_responsavel = st.text_input("CPF do Responsável:", max_chars=11, key='cpf_responsavel')
+            data_previsao_pagamento = st.date_input("Data de Previsão de Pagamento", key='data_previsao_pagamento')
+            data_vencimento = st.date_input("Data Vencimento", key='data_vencimento')
+
+        # Botão para enviar o formulário
+        submit_button = st.form_submit_button(label='Gerar XML para FL')
+
+    return numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, data_vencimento, submit_button
+
 # Solicitar ao usuário o upload do arquivo PDF
 uploaded_file = st.file_uploader("Faça o UPLOAD do arquivo PDF do SIAPE gerado na transação GRCOCGRECO", type="pdf")
 
 # Obter o conteúdo do arquivo PDF
 if uploaded_file:
     pdf_content = uploaded_file.read()
-    processar_pdf(pdf_content)
-if 'download_cabecalho' in st.session_state.url_triggered:
-    exportar_xml()
 
+    # Processar o PDF e renderizar os resultados
+    processar_pdf(pdf_content)
