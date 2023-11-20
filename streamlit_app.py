@@ -218,13 +218,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
     # Adiciona um botão de download para o arquivo XML
     xml_io = io.BytesIO(xml_content.encode())
     xml_filename = f"xml_FL_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml"
-    st.download_button(
-        label="Baixar XML",
-        data=xml_io,
-        key='download_button',
-        file_name=xml_filename,
-        mime="text/xml"
-    )
+    
     
     return xml_filename
   
@@ -246,13 +240,7 @@ def exportar_xml_com_dataframe(df_final, xml_filename):
     tree.write(xml_filename_dataframe)
 
     # Adicione um botão de download para o arquivo XML do DataFrame
-    st.download_button(
-        label="Baixar XML com DataFrame",
-        data=xml_filename_dataframe,
-        key='download_button_dataframe',
-        file_name=xml_filename_dataframe,
-        mime="text/xml"
-    )
+    
     st.success(f"Arquivo XML com DataFrame gerado com sucesso. Baixe aqui: [{xml_filename_dataframe}](./{xml_filename_dataframe})")
     return xml_filename_dataframe
 
