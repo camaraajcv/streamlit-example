@@ -223,7 +223,8 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
     return xml_filename
   
 # Função para exportar o DataFrame para um arquivo XML
-def exportar_xml_com_dataframe(df_final, xml_filename):
+# Função original para exportar XML com os dados do DataFrame
+def exportar_xml_com_dataframe(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento):
     root = ET.Element("root")
 
     for index, row in df_final.iterrows():
@@ -235,14 +236,12 @@ def exportar_xml_com_dataframe(df_final, xml_filename):
 
     tree = ET.ElementTree(root)
 
-    # Salve o arquivo XML do DataFrame
-    xml_filename_dataframe = f"xml_output_dataframe_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml"
-    tree.write(xml_filename_dataframe)
+    # Salve o arquivo XML
+    xml_filename = f"xml_output_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_com_dataframe.xml"
+    tree.write(xml_filename)
 
-    # Adicione um botão de download para o arquivo XML do DataFrame
-    
-    st.success(f"Arquivo XML com DataFrame gerado com sucesso. Baixe aqui: [{xml_filename_dataframe}](./{xml_filename_dataframe})")
-    return xml_filename_dataframe
+    st.success(f"Arquivo XML com DataFrame gerado com sucesso. Baixe aqui: [{xml_filename}](./{xml_filename})")
+
 
     
 
