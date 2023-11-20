@@ -7,8 +7,7 @@ import streamlit as st
 import os
 from datetime import datetime
 
-xml_timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-xml_io = None
+
 # URL da imagem
 image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
 
@@ -108,7 +107,6 @@ def processar_pdf(pdf_content):
     df['CNPJ'] = df['CNPJ'].str.replace('.', '').str.replace('/', '').str.replace('-', '')
 
     df_final=df.drop('Texto_Após_CNPJ', axis=1)
-  
     st.dataframe(df_final)
     st.subheader("Formulário para Geração de Arquivos .XML")
        # Adicione um formulário para capturar variáveis
@@ -135,10 +133,10 @@ def processar_pdf(pdf_content):
 
     # Se o formulário foi enviado, chame a função para exportar XML
     if submit_button:
-        exportar_xml(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento, xml_timestamp)
-        exportar_xml_detalhes(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento, xml_timestamp)
+        exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento,valor_liquido,data_vencimento)
+        exportar_xml_detalhes(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento)
 # Função para exportar o DataFrame para um arquivo XML
-def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento, xml_timestamp):
+def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento):
   
     xml_content = f"""
 <sb:arquivo xmlns:ns2="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/" xmlns:sb="http://www.tesouro.gov.br/siafi/submissao">
@@ -205,20 +203,23 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
   </sb:trailler>
 </sb:arquivo>
 """
+    st.success(f"Arquivo XML com DataFrame gerado com sucesso.")
+    st.success(f"Arquivo XML com DataFrame gerado com sucesso.") 
+    # Adiciona um botão de download para o arquivo XML
+    # Cria um objeto BytesIO para armazenar o conteúdo do XML
+    xml_io = io.BytesIO(xml_content.encode())
+
+    # Adiciona um botão de download para o arquivo XML
     if st.button("Baixar XML (Cabeçalho e Trailler)"):
         xml_io = io.BytesIO(xml_content.encode())
         st.download_button(
             label="Baixar XML (Cabeçalho e Trailler)",
             data=xml_io,
-            file_name=f"xml_cabecalho_{xml_timestamp}.xml",
+            file_name=f"xml_cabecalho_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
             mime="text/xml",
-            key=f'download_button_cabecalho_{xml_timestamp}'
+            key=f'download_button_cabecalho_{datetime.now().strftime("%Y%m%d%H%M%S")}'
         )
-    # Cria um objeto BytesIO para armazenar o conteúdo do XML
-    xml_io = io.BytesIO(xml_content.encode())
-
-    
-def exportar_xml_detalhes(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento, xml_timestamp):
+def exportar_xml_detalhes(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento):
     
     xml_content = f"""
 <sb:arquivo xmlns:ns2="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/" xmlns:sb="http://www.tesouro.gov.br/siafi/submissao">
@@ -226,7 +227,6 @@ def exportar_xml_detalhes(df_final, numero_ne, numero_sb, ano_empenho, cpf_respo
 """
 
     for index, row in df_final.iterrows():
-        quantidade_detalhe = len(df_final)
         xml_content += f"""
     <sb:detalhe>
       <ns2:CprDhCadastrar>
@@ -244,32 +244,29 @@ def exportar_xml_detalhes(df_final, numero_ne, numero_sb, ano_empenho, cpf_respo
     xml_content += """
   </sb:detalhes>
   <sb:trailler>
-    <sb:quantidadeDetalhe>{quantidade_detalhe}</sb:quantidadeDetalhe>
+    <sb:quantidadeDetalhe>{len(df_final)}</sb:quantidadeDetalhe>
   </sb:trailler>
 </sb:arquivo>
 """
+
+    st.success(f"Arquivo XML com detalhes do DataFrame gerado com sucesso.")
+    xml_io = io.BytesIO(xml_content.encode())
 
     if st.button("Baixar XML (Detalhes)"):
         xml_io = io.BytesIO(xml_content.encode())
         st.download_button(
             label="Baixar XML (Detalhes)",
             data=xml_io,
-            file_name=f"xml_detalhes_{xml_timestamp}.xml",
+            file_name=f"xml_detalhes_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
             mime="text/xml",
-            key=f'download_button_detalhes_{xml_timestamp}'
+            key=f'download_button_detalhes_{datetime.now().strftime("%Y%m%d%H%M%S")}'
         )
-    xml_io = io.BytesIO(xml_content.encode())
-
-    
 # Função auxiliar para criar um link de download
 def get_binary_file_downloader_html(bin_file, file_label='File', button_label='Save as', key='download_link'):
-    if bin_file is not None:
-        bin_str = bin_file.getvalue()
-        bin_str = bin_str.decode()
-        href = f'data:application/octet-stream;base64,{bin_str}'
-        return f'<a href="{href}" download="{file_label}.xml"><button>{button_label}</button></a>'
-    else:
-        return f'<button disabled>{button_label}</button>'
+    bin_str = bin_file.getvalue()
+    bin_str = bin_str.decode()
+    href = f'data:application/octet-stream;base64,{bin_str}'
+    return f'<a href="{href}" download="{file_label}.xml"><button>{button_label}</button></a>'
 # Solicitar ao usuário o upload do arquivo PDF
 uploaded_file = st.file_uploader("Faça o UPLOAD do arquivo PDF do SIAPE gerado na transação GRCOCGRECO", type="pdf")
 
@@ -277,7 +274,3 @@ uploaded_file = st.file_uploader("Faça o UPLOAD do arquivo PDF do SIAPE gerado 
 if uploaded_file:
     pdf_content = uploaded_file.read()
     processar_pdf(pdf_content)
-
-# Adicione links na aba lateral para os XMLs gerados
-st.sidebar.markdown(get_binary_file_downloader_html(xml_io, f"xml_cabecalho_{xml_timestamp}", "Baixar XML Cabeçalho"))
-st.sidebar.markdown(get_binary_file_downloader_html(xml_io, f"xml_detalhes_{xml_timestamp}", "Baixar XML Detalhes"))
