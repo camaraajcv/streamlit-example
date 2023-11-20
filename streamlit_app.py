@@ -6,6 +6,8 @@ import tempfile
 import streamlit as st
 import os
 from datetime import datetime
+
+
 # URL da imagem
 image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
 
@@ -40,7 +42,7 @@ def remove_newlines(text):
 
 # Função para processar o PDF e exibir o resultado
 def processar_pdf(pdf_content):
-  
+   
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_pdf:
         temp_pdf.write(pdf_content)
         temp_pdf_path = temp_pdf.name
@@ -132,10 +134,10 @@ def processar_pdf(pdf_content):
     # Se o formulário foi enviado, chame a função para exportar XML
     if submit_button:
         exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento,valor_liquido,data_vencimento)
-        
+        exportar_xml_detalhes(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento)
 # Função para exportar o DataFrame para um arquivo XML
 def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento):
-   
+  
     xml_content = f"""
 <sb:arquivo xmlns:ns2="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/" xmlns:sb="http://www.tesouro.gov.br/siafi/submissao">
   <sb:header>
@@ -201,21 +203,64 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
   </sb:trailler>
 </sb:arquivo>
 """
-     
-    st.success(f"Arquivo XML com DataFrame gerado com sucesso. Baixe aqui: [{xml_filename}](./{xml_filename})")
+    
+    st.success(f"Arquivo XML com DataFrame gerado com sucesso.") 
     # Adiciona um botão de download para o arquivo XML
     # Cria um objeto BytesIO para armazenar o conteúdo do XML
     xml_io = io.BytesIO(xml_content.encode())
 
     # Adiciona um botão de download para o arquivo XML
-    st.download_button(
-        label="Baixar XML",
-        data=xml_io,
-        key='download_button',
-        file_name=f"xml_output_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
-        mime="text/xml"
-    )
+    if st.button("Baixar XML (Cabeçalho e Trailler)"):
+        xml_io = io.BytesIO(xml_content.encode())
+        st.download_button(
+            label="Baixar XML (Cabeçalho e Trailler)",
+            data=xml_io,
+            file_name=f"xml_cabecalho_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
+            mime="text/xml",
+            key=f'download_button_cabecalho_{datetime.now().strftime("%Y%m%d%H%M%S")}'
+        )
+def exportar_xml_detalhes(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento):
+    
+    xml_content = f"""
+<sb:arquivo xmlns:ns2="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/" xmlns:sb="http://www.tesouro.gov.br/siafi/submissao">
+  <sb:detalhes>
+"""
 
+    for index, row in df_final.iterrows():
+        xml_content += f"""
+    <sb:detalhe>
+      <ns2:CprDhCadastrar>
+        <!-- ... (restante do código do detalhe) ... -->
+        <pco>
+          <!-- ... (restante do código do pco) ... -->
+        </pco>
+        <centroCusto>
+          <!-- ... (restante do código do centroCusto) ... -->
+        </centroCusto>
+      </ns2:CprDhCadastrar>
+    </sb:detalhe>
+"""
+
+    xml_content += """
+  </sb:detalhes>
+  <sb:trailler>
+    <sb:quantidadeDetalhe>{len(df_final)}</sb:quantidadeDetalhe>
+  </sb:trailler>
+</sb:arquivo>
+"""
+
+    st.success(f"Arquivo XML com detalhes do DataFrame gerado com sucesso.")
+    xml_io = io.BytesIO(xml_content.encode())
+
+    if st.button("Baixar XML (Detalhes)"):
+        xml_io = io.BytesIO(xml_content.encode())
+        st.download_button(
+            label="Baixar XML (Detalhes)",
+            data=xml_io,
+            file_name=f"xml_detalhes_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
+            mime="text/xml",
+            key=f'download_button_detalhes_{datetime.now().strftime("%Y%m%d%H%M%S")}'
+        )
 # Função auxiliar para criar um link de download
 def get_binary_file_downloader_html(bin_file, file_label='File', button_label='Save as', key='download_link'):
     bin_str = bin_file.getvalue()
