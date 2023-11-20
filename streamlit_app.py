@@ -278,10 +278,13 @@ def exportar_xml_detalhes(df_final, numero_ne, numero_sb, ano_empenho, cpf_respo
         )
 # Função auxiliar para criar um link de download
 def get_binary_file_downloader_html(bin_file, file_label='File', button_label='Save as', key='download_link'):
-    bin_str = bin_file.getvalue()
-    bin_str = bin_str.decode()
-    href = f'data:application/octet-stream;base64,{bin_str}'
-    return f'<a href="{href}" download="{file_label}.xml"><button>{button_label}</button></a>'
+    if bin_file is not None:
+        bin_str = bin_file.getvalue()
+        bin_str = bin_str.decode()
+        href = f'data:application/octet-stream;base64,{bin_str}'
+        return f'<a href="{href}" download="{file_label}.xml"><button>{button_label}</button></a>'
+    else:
+        return f'<button disabled>{button_label}</button>'
 # Solicitar ao usuário o upload do arquivo PDF
 uploaded_file = st.file_uploader("Faça o UPLOAD do arquivo PDF do SIAPE gerado na transação GRCOCGRECO", type="pdf")
 
