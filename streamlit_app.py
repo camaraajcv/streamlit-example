@@ -133,8 +133,9 @@ def processar_pdf(pdf_content):
 
     # Se o formulário foi enviado, chame a função para exportar XML
     if submit_button:
-        exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento,valor_liquido,data_vencimento)
-        exportar_xml_com_dataframe(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento)
+      xml_filename = f"xml_output_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml"
+      exportar_xml(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento, xml_filename)
+      exportar_xml_com_dataframe(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento)
 # Função para exportar o DataFrame para um arquivo XML
 def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento):
    
@@ -214,7 +215,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
         label="Baixar XML",
         data=xml_io,
         key='download_button',
-        file_name=f"xml_output_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
+        file_name=xml_filename,
         mime="text/xml"
     )
 
