@@ -5,6 +5,8 @@ import tempfile
 import streamlit as st
 import os
 from datetime import datetime
+import regex as re
+
 # URL da imagem
 image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
 
