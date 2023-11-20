@@ -133,9 +133,9 @@ def processar_pdf(pdf_content):
 
     # Se o formulário foi enviado, chame a função para exportar XML
     if submit_button:
-      xml_filename = f"xml_output_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml"
-      exportar_xml(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento, xml_filename)
-      exportar_xml_com_dataframe(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento)
+      xml_filename = exportar_xml(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento)
+      exportar_xml_com_dataframe(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento, xml_filename)
+
 # Função para exportar o DataFrame para um arquivo XML
 def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento):
    
@@ -210,7 +210,8 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
     # Cria um objeto BytesIO para armazenar o conteúdo do XML
     xml_io = io.BytesIO(xml_content.encode())
 
-    # Adiciona um botão de download para o arquivo XML
+     # Adiciona um botão de download para o arquivo XML
+    xml_filename = f"xml_output_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml"
     st.download_button(
         label="Baixar XML",
         data=xml_io,
@@ -218,9 +219,10 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
         file_name=xml_filename,
         mime="text/xml"
     )
+    return xml_filename  # Adiciona o retorno da variável xml_filename
 
 # Função para exportar o DataFrame para um arquivo XML
-def exportar_xml_com_dataframe(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento):
+def exportar_xml_com_dataframe(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento, xml_filename):
     root = ET.Element("root")
 
     for index, row in df_final.iterrows():
