@@ -231,8 +231,8 @@ def exportar_xml_com_dataframe(df_final, numero_ne, numero_sb, ano_empenho, cpf_
     tree = ET.ElementTree(root)
 
     # Salve o arquivo XML
-    xml_filename = f"xml_output_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_com_dataframe.xml"
-    tree.write(xml_filename)
+    xml_filename_df = f"xml_output_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_com_dataframe.xml"
+    tree.write(xml_filename_df)
 
     st.success(f"Arquivo XML com DataFrame gerado com sucesso. Baixe aqui: [{xml_filename}](./{xml_filename})")
 # Função auxiliar para criar um link de download
