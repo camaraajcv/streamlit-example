@@ -8,6 +8,7 @@ import os
 from datetime import datetime
 
 xml_timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+xml_io = None
 # URL da imagem
 image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
 
