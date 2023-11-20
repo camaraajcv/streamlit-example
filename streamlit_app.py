@@ -274,6 +274,6 @@ uploaded_file = st.file_uploader("Faça o UPLOAD do arquivo PDF do SIAPE gerado 
 if uploaded_file:
     pdf_content = uploaded_file.read()
     processar_pdf(pdf_content)
-if st.session_state.url_triggered == 'download_cabecalho':
+if 'download_cabecalho' in st.session_state.url_triggered:
     exportar_xml()
 
