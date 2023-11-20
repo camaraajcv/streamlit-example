@@ -203,7 +203,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
   </sb:trailler>
 </sb:arquivo>
 """
-    
+    st.success(f"Arquivo XML com DataFrame gerado com sucesso. [Baixar XML (FL-Principal)](sandbox:/download_cabecalho)")
     st.success(f"Arquivo XML com DataFrame gerado com sucesso.") 
     # Adiciona um botão de download para o arquivo XML
     # Cria um objeto BytesIO para armazenar o conteúdo do XML
