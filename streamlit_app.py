@@ -6,6 +6,8 @@ import tempfile
 import streamlit as st
 import os
 from datetime import datetime
+import xml.etree.ElementTree as ET
+
 # URL da imagem
 image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
 
@@ -132,7 +134,7 @@ def processar_pdf(pdf_content):
     # Se o formulário foi enviado, chame a função para exportar XML
     if submit_button:
         exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento,valor_liquido,data_vencimento)
-        
+        exportar_xml_com_dataframe(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento)
 # Função para exportar o DataFrame para um arquivo XML
 def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento):
    
@@ -215,7 +217,34 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
         file_name=f"xml_output_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
         mime="text/xml"
     )
+ #Função original para exportar XML com os dados do DataFrame
+# Função para exportar o DataFrame para um arquivo XML
+def exportar_xml_com_dataframe(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento):
+    root = ET.Element("root")
 
+    for index, row in df_final.iterrows():
+        detalhe = ET.SubElement(root, "detalhe")
+
+        ET.SubElement(detalhe, "CNPJ").text = row['CNPJ']
+        ET.SubElement(detalhe, "Empresa").text = row['Empresa']
+        # Adicione mais elementos conforme necessário
+
+    tree = ET.ElementTree(root)
+
+    # Salve o arquivo XML do DataFrame
+    xml_filename_dataframe = f"xml_output_dataframe_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml"
+    tree.write(xml_filename_dataframe)
+
+    # Adicione um botão de download para o arquivo XML do DataFrame
+    st.download_button(
+        label="Baixar XML com DataFrame",
+        data=xml_filename_dataframe,
+        key='download_button_dataframe',
+        file_name=xml_filename_dataframe,
+        mime="text/xml"
+    )
+
+    st.success(f"Arquivo XML com DataFrame gerado com sucesso. Baixe aqui: [{xml_filename}](./{xml_filename})")
 # Função auxiliar para criar um link de download
 def get_binary_file_downloader_html(bin_file, file_label='File', button_label='Save as', key='download_link'):
     bin_str = bin_file.getvalue()
