@@ -202,7 +202,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
 </sb:arquivo>
 """
      
-    st.success("Arquivo XML gerado com sucesso.")
+    st.success(f"Arquivo XML com DataFrame gerado com sucesso. Baixe aqui: [{xml_filename}](./{xml_filename})")
     # Adiciona um botão de download para o arquivo XML
     # Cria um objeto BytesIO para armazenar o conteúdo do XML
     xml_io = io.BytesIO(xml_content.encode())
