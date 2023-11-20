@@ -1,4 +1,3 @@
-import re
 import pandas as pd
 import fitz
 import io
@@ -42,8 +41,6 @@ def remove_newlines(text):
 
 # Função para processar o PDF e exibir o resultado
 def processar_pdf(pdf_content):
-    global ultimo_sequencial
-    ultimo_sequencial += 1
   
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_pdf:
         temp_pdf.write(pdf_content)
@@ -135,13 +132,9 @@ def processar_pdf(pdf_content):
 
     # Se o formulário foi enviado, chame a função para exportar XML
     if submit_button:
-      xml_filename = exportar_xml(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento)
-      exportar_xml_com_dataframe(df_final, xml_filename)
-    # Adiciona um botão de download para o arquivo XML inicial fora do formulário
-    if 'download_button' not in st.session_state:
-      st.session_state.download_button = False
-
-
+        exportar_xml(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento)
+        exportar_xml_com_dataframe(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento)
+        
 # Função para exportar o DataFrame para um arquivo XML
 def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento):
    
@@ -211,18 +204,19 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
 </sb:arquivo>
 """
      
-    st.success("Arquivo XML para FL gerado com sucesso.")
+    st.success("Arquivo XML gerado com sucesso.")
+    # Adiciona um botão de download para o arquivo XML
     # Cria um objeto BytesIO para armazenar o conteúdo do XML
     xml_io = io.BytesIO(xml_content.encode())
 
     # Adiciona um botão de download para o arquivo XML
-    xml_io = io.BytesIO(xml_content.encode())
-    xml_filename = f"xml_FL_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml"
-    
-    
-    return xml_filename
-  
-# Função para exportar o DataFrame para um arquivo XML
+    st.download_button(
+        label="Baixar XML",
+        data=xml_io,
+        key='download_button',
+        file_name=f"xml_output_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
+        mime="text/xml"
+    )
 # Função original para exportar XML com os dados do DataFrame
 def exportar_xml_com_dataframe(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento):
     root = ET.Element("root")
@@ -241,10 +235,6 @@ def exportar_xml_com_dataframe(df_final, numero_ne, numero_sb, ano_empenho, cpf_
     tree.write(xml_filename)
 
     st.success(f"Arquivo XML com DataFrame gerado com sucesso. Baixe aqui: [{xml_filename}](./{xml_filename})")
-
-
-    
-
 # Função auxiliar para criar um link de download
 def get_binary_file_downloader_html(bin_file, file_label='File', button_label='Save as', key='download_link'):
     bin_str = bin_file.getvalue()
