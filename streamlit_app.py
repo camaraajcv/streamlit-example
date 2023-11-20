@@ -216,16 +216,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
     # Cria um objeto BytesIO para armazenar o conteúdo do XML
     xml_io = io.BytesIO(xml_content.encode())
 
-    # Adiciona um botão de download para o arquivo XML
-    if st.button("Baixar XML (Cabeçalho e Trailler)"):
-        xml_io = io.BytesIO(xml_content.encode())
-        st.download_button(
-            label="Baixar XML (Cabeçalho e Trailler)",
-            data=xml_io,
-            file_name=f"xml_cabecalho_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
-            mime="text/xml",
-            key=f'download_button_cabecalho_{datetime.now().strftime("%Y%m%d%H%M%S")}'
-        )
+    
 def exportar_xml_detalhes(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento, xml_timestamp):
     
     xml_content = f"""
@@ -267,15 +258,7 @@ def exportar_xml_detalhes(df_final, numero_ne, numero_sb, ano_empenho, cpf_respo
         )
     xml_io = io.BytesIO(xml_content.encode())
 
-    if st.button("Baixar XML (Detalhes)"):
-        xml_io = io.BytesIO(xml_content.encode())
-        st.download_button(
-            label="Baixar XML (Detalhes)",
-            data=xml_io,
-            file_name=f"xml_detalhes_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
-            mime="text/xml",
-            key=f'download_button_detalhes_{datetime.now().strftime("%Y%m%d%H%M%S")}'
-        )
+    
 # Função auxiliar para criar um link de download
 def get_binary_file_downloader_html(bin_file, file_label='File', button_label='Save as', key='download_link'):
     if bin_file is not None:
