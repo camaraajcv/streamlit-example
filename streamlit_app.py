@@ -5,8 +5,6 @@ import tempfile
 import streamlit as st
 import os
 from datetime import datetime
-import xml.etree.ElementTree as ET
-
 # URL da imagem
 image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
 
@@ -132,8 +130,7 @@ def processar_pdf(pdf_content):
 
     # Se o formulário foi enviado, chame a função para exportar XML
     if submit_button:
-        exportar_xml(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento)
-        exportar_xml_com_dataframe(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento)
+        exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento,valor_liquido,data_vencimento)
         
 # Função para exportar o DataFrame para um arquivo XML
 def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento):
@@ -217,24 +214,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
         file_name=f"xml_output_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
         mime="text/xml"
     )
-# Função original para exportar XML com os dados do DataFrame
-def exportar_xml_com_dataframe(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento):
-    root = ET.Element("root")
 
-    for index, row in df_final.iterrows():
-        detalhe = ET.SubElement(root, "detalhe")
-
-        ET.SubElement(detalhe, "CNPJ").text = row['CNPJ']
-        ET.SubElement(detalhe, "Empresa").text = row['Empresa']
-        # Adicione mais elementos conforme necessário
-
-    tree = ET.ElementTree(root)
-
-    # Salve o arquivo XML
-    xml_filename_df = f"xml_output_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_com_dataframe.xml"
-    tree.write(xml_filename_df)
-
-    st.success(f"Arquivo XML com DataFrame gerado com sucesso. Baixe aqui: [{xml_filename}](./{xml_filename})")
 # Função auxiliar para criar um link de download
 def get_binary_file_downloader_html(bin_file, file_label='File', button_label='Save as', key='download_link'):
     bin_str = bin_file.getvalue()
