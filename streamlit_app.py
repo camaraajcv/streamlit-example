@@ -132,7 +132,7 @@ def processar_pdf(pdf_content):
     # Se o formulário foi enviado, chame a função para exportar XML
     if submit_button:
         exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento,valor_liquido,data_vencimento)
-        
+        processar_dataframe_e_gerar_xml(df_final)
 # Função para exportar o DataFrame para um arquivo XML
 def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento):
    
@@ -277,6 +277,4 @@ def processar_dataframe_e_gerar_xml(df):
 
 # ...
 
-# Use a função processar_dataframe_e_gerar_xml passando seu DataFrame
-# Supondo que df_final é o seu DataFrame
-processar_dataframe_e_gerar_xml(df_final)
+
