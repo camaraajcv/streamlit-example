@@ -108,6 +108,7 @@ def processar_pdf(pdf_content):
     df['CNPJ'] = df['CNPJ'].str.replace('.', '').str.replace('/', '').str.replace('-', '')
 
     df_final=df.drop('Texto_Após_CNPJ', axis=1)
+  
     st.dataframe(df_final)
     st.subheader("Formulário para Geração de Arquivos .XML")
        # Adicione um formulário para capturar variáveis
@@ -225,6 +226,7 @@ def exportar_xml_detalhes(df_final, numero_ne, numero_sb, ano_empenho, cpf_respo
 """
 
     for index, row in df_final.iterrows():
+        quantidade_detalhe = len(df_final)
         xml_content += f"""
     <sb:detalhe>
       <ns2:CprDhCadastrar>
@@ -242,7 +244,7 @@ def exportar_xml_detalhes(df_final, numero_ne, numero_sb, ano_empenho, cpf_respo
     xml_content += """
   </sb:detalhes>
   <sb:trailler>
-    <sb:quantidadeDetalhe>{len(df_final)}</sb:quantidadeDetalhe>
+    <sb:quantidadeDetalhe>{quantidade_detalhe}</sb:quantidadeDetalhe>
   </sb:trailler>
 </sb:arquivo>
 """
