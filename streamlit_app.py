@@ -135,9 +135,22 @@ def processar_pdf(pdf_content):
     if submit_button:
       xml_filename = exportar_xml(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento)
       exportar_xml_com_dataframe(df_final, xml_filename)
-    # Adiciona um botão de download para o arquivo XML inicial fora do formulário
-    if 'download_button' not in st.session_state:
-      st.session_state.download_button = False
+     # Adiciona um botão de download para ambos os arquivos XML
+      st.download_button(
+          label="Baixar XML",
+          data=xml_io,
+          key='download_button',
+          file_name=f"xml_output_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
+          mime="text/xml"
+      )
+
+      st.download_button(
+          label="Baixar XML com DataFrame",
+          data=xml_io_dataframe,
+          key='download_button_dataframe',
+          file_name=f"xml_output_dataframe_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
+          mime="text/xml"
+      )
 
 
 # Função para exportar o DataFrame para um arquivo XML
@@ -213,17 +226,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
     # Cria um objeto BytesIO para armazenar o conteúdo do XML
     xml_io = io.BytesIO(xml_content.encode())
 
-    # Adiciona um botão de download para o arquivo XML
-    xml_io = io.BytesIO(xml_content.encode())
-    xml_filename = f"xml_FL_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml"
-    st.download_button(
-        label="Baixar XML",
-        data=xml_io,
-        key='download_button',
-        file_name=xml_filename,
-        mime="text/xml"
-    )
-    
+        
     return xml_filename
     
   
@@ -246,14 +249,7 @@ def exportar_xml_com_dataframe(df_final, xml_filename):
     xml_filename_dataframe = f"xml_output_dataframe_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml"
     tree.write(xml_filename_dataframe)
 
-    # Adicione um botão de download para o arquivo XML do DataFrame
-    st.download_button(
-        label="Baixar XML com DataFrame",
-        data=xml_filename_dataframe,
-        key='download_button_dataframe',
-        file_name=xml_filename_dataframe,
-        mime="text/xml"
-    )
+    
     return xml_filename_dataframe
 
     st.success(f"Arquivo XML com DataFrame gerado com sucesso. Baixe aqui: [{xml_filename_dataframe}](./{xml_filename_dataframe})")
