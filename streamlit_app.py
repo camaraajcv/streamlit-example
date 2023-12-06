@@ -106,7 +106,10 @@ def processar_pdf(pdf_content):
     df['CNPJ'] = df['CNPJ'].str.replace('.', '').str.replace('/', '').str.replace('-', '')
 
     df_final=df.drop('Texto_Após_CNPJ', axis=1)
-    
+    # Calcula a soma da coluna 'Valor Líquido'
+    soma_valor_liquido = df_final['Valor Líquido'].sum()
+    # Calcula a diferença entre a soma da coluna 'Valor Líquido' e o valor extraído
+    diferenca_valor = soma_valor_liquido - float(valor_liquido)
     # Função para formatar um valor como moeda brasileira (R$)
     def formatar_moeda(valor):
         try:
