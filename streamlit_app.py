@@ -108,8 +108,8 @@ def processar_pdf(pdf_content):
     df_final=df.drop('Texto_Após_CNPJ', axis=1)
     
     # Defina uma configuração de locale que funcione em seu sistema
-    # Por exemplo, 'en_US.UTF-8' pode ser uma opção comum
-    locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+    # Por exemplo, 'C' pode ser uma opção comum
+    locale.setlocale(locale.LC_ALL, 'C')
 
     # Formatação dos valores
     valor_formatado = locale.currency(valor_liquido, grouping=True, symbol=None)
