@@ -132,7 +132,7 @@ def processar_pdf(pdf_content):
     # Se o formulário foi enviado, chame a função para exportar XML
     if submit_button:
         exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento,valor_liquido,data_vencimento)
-        processar_dataframe_e_gerar_xml(df_final)
+        
 # Função para exportar o DataFrame para um arquivo XML
 def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento):
    
@@ -229,52 +229,3 @@ uploaded_file = st.file_uploader("Faça o UPLOAD do arquivo PDF do SIAPE gerado 
 if uploaded_file:
     pdf_content = uploaded_file.read()
     processar_pdf(pdf_content)
-
-# Função para gerar XML com base em uma linha do DataFrame
-def gerar_xml_por_linha(row):
-    xml_content = f"""
-    <sb:arquivo xmlns:ns2="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/" xmlns:sb="http://www.tesouro.gov.br/siafi/submissao">
-      <sb:header>
-        <!-- Adicione aqui os campos do header com base nos dados da linha -->
-        <sb:codigoLayout>DH001</sb:codigoLayout>
-        <sb:dataGeracao>{data_geracao2}</sb:dataGeracao>
-        <!-- Adicione outros campos conforme necessário -->
-      </sb:header>
-      <sb:detalhes>
-        <sb:detalhe>
-          <ns2:CprDhCadastrar>
-            <!-- Adicione aqui os campos específicos para os dados da linha -->
-            <codUgEmit>120052</codUgEmit>
-            <anoDH>{row['Ano']}</anoDH>
-            <!-- Adicione outros campos conforme necessário -->
-          </ns2:CprDhCadastrar>
-        </sb:detalhe>
-      </sb:detalhes>
-      <sb:trailler>
-        <sb:quantidadeDetalhe>1</sb:quantidadeDetalhe>
-      </sb:trailler>
-    </sb:arquivo>
-    """
-    return xml_content
-
-# ...
-
-# Função para processar o DataFrame e gerar XMLs para cada linha
-def processar_dataframe_e_gerar_xml(df):
-    for index, row in df.iterrows():
-        xml_content = gerar_xml_por_linha(row)
-        st.success(f"Arquivo XML para linha {index + 1} gerado com sucesso.")
-        
-        # Adiciona um botão de download para cada arquivo XML
-        xml_io = io.BytesIO(xml_content.encode())
-        st.download_button(
-            label=f"Baixar XML - Linha {index + 1}",
-            data=xml_io,
-            key=f'download_button_{index}',
-            file_name=f"xml_output_{index + 1}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
-            mime="text/xml"
-        )
-
-# ...
-
-
