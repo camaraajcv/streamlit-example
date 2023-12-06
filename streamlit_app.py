@@ -106,9 +106,7 @@ def processar_pdf(pdf_content):
     df['CNPJ'] = df['CNPJ'].str.replace('.', '').str.replace('/', '').str.replace('-', '')
 
     df_final=df.drop('Texto_Após_CNPJ', axis=1)
-    # Configuração da formatação de números para o formato brasileiro
-    locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
-
+    
     # Defina uma configuração de locale que funcione em seu sistema
     # Por exemplo, 'en_US.UTF-8' pode ser uma opção comum
     locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
