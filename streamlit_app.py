@@ -15,7 +15,7 @@ html_code = f'<div style="display: flex; justify-content: center;"><img src="{im
 
 data_geracao = datetime.now().strftime('%Y-%m-%d')
 data_geracao2 = datetime.now().strftime('%d-%m-%Y')
-ultimo_sequencial = 0
+
 
 # Exibir a imagem usando HTML
 st.markdown(html_code, unsafe_allow_html=True)
@@ -106,6 +106,15 @@ def processar_pdf(pdf_content):
     df['CNPJ'] = df['CNPJ'].str.replace('.', '').str.replace('/', '').str.replace('-', '')
 
     df_final=df.drop('Texto_Após_CNPJ', axis=1)
+    # Obter o índice da primeira linha do DataFrame df_final
+    primeiro_indice = df_final.index[0]
+
+    # Obter a posição do índice
+    posicao_indice = df_final.index.get_loc(primeiro_indice)
+
+    # Somar 1 à posição do índice
+    indice_mais_um = posicao_indice + 1
+
     # Calcula a soma da coluna 'Valor Líquido'
     soma_valor_liquido = df_final['Valor Líquido'].sum()
     # Calcula a diferença entre a soma da coluna 'Valor Líquido' e o valor extraído
@@ -140,11 +149,18 @@ def processar_pdf(pdf_content):
             numero_ne = st.text_input("Número da NE:", max_chars=12, key='numero_ne')
             numero_sb = st.text_input("Número do Subelemento:", max_chars=2, key='numero_sb')
             ano_empenho = st.text_input("Ano de Referência (4 dígitos):", max_chars=4, key='ano_empenho')
+            sequencial_fl = st.text_input("Número Sequencial da FL:", max_chars=4, key='sequencial_fl')
+            texto_obs = st.text_input("Texto Observação:", key='texto_obs')
+            mes_referencia_cc = st.text_input("Número Mês Referência CC ):",max_chars=2, key='mes_referencia_cc')
+            
         # Coluna 2
         with col2:
             cpf_responsavel = st.text_input("CPF do Responsável:",max_chars=11, key='cpf_responsavel')
             data_previsao_pagamento = st.date_input("Data de Previsão de Pagamento", key='data_previsao_pagamento')
             data_vencimento = st.date_input("Data Vencimento", key='data_vencimento')
+            sequencial_deducao = st.text_input("Número Sequencial da Dedução:", max_chars=4, key='sequencial_deducao')
+            processo = st.text_input("Processo:", key='processo')
+            ano_referencia_cc = st.text_input("Número Ano Referência CC ):",max_chars=4, key='ano_referencia_cc')
         # Botão para enviar o formulário
         submit_button = st.form_submit_button(label='Gerar XML para FL')
 
@@ -153,17 +169,17 @@ def processar_pdf(pdf_content):
 
     # Se o formulário foi enviado, chame a função para exportar XML
     if submit_button:
-        exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento,valor_liquido,data_vencimento)
+        exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento,valor_liquido,data_vencimento,sequencial_fl,sequencial_deducao,texto_obs,processo,indice_mais_um,soma_valor_liquido,mes_referencia_cc,ano_referencia_cc)
         
 # Função para exportar o DataFrame para um arquivo XML
-def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento):
+def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento,sequencial_fl,sequencial_deducao,texto_obs,processo,indice_mais_um,soma_valor_liquido,mes_referencia_cc,ano_referencia_cc):
    
     xml_content = f"""
 <sb:arquivo xmlns:ns2="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/" xmlns:sb="http://www.tesouro.gov.br/siafi/submissao">
   <sb:header>
     <sb:codigoLayout>DH001</sb:codigoLayout>
     <sb:dataGeracao>{data_geracao2}</sb:dataGeracao>
-    <sb:sequencialGeracao>{ultimo_sequencial}</sb:sequencialGeracao>
+    <sb:sequencialGeracao>{sequencial_fl}</sb:sequencialGeracao>
     <sb:anoReferencia>{ano_empenho}</sb:anoReferencia>
     <sb:ugResponsavel>120052</sb:ugResponsavel>
     <sb:cpfResponsavel>{cpf_responsavel}</sb:cpfResponsavel>
@@ -179,8 +195,8 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
           <dtVenc>{data_vencimento}</dtVenc>
           <codUgPgto>120052</codUgPgto>
           <vlr>{valor_liquido}</vlr>
-          <txtObser></txtObser>
-          <txtProcesso></txtProcesso>
+          <txtObser>{texto_obs}</txtObser>
+          <txtProcesso>{processo}</txtProcesso>
           <dtAteste>{data_geracao}</dtAteste>
           <codCredorDevedor></codCredorDevedor>
           <dtPgtoReceb>{data_previsao_pagamento}</dtPgtoReceb>
@@ -192,27 +208,27 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
           </docOrigem>
         </dadosBasicos>
         <pco>
-          <numSeqItem>{ultimo_sequencial}</numSeqItem>
-          <codSit></codSit>
-          <codUgEmpe></codUgEmpe>
+          <numSeqItem>{indice_mais_um}</numSeqItem>
+          <codSit>DFL001</codSit>
+          <codUgEmpe>120052</codUgEmpe>
           <pcoItem>
-            <numSeqItem></numSeqItem>
-            <numEmpe></numEmpe>
-            <codSubItemEmpe></codSubItemEmpe>
-            <vlr></vlr>
-            <numClassA></numClassA>
+            <numSeqItem>1</numSeqItem>
+            <numEmpe>{numero_ne}</numEmpe>
+            <codSubItemEmpe>{numero_sb}</codSubItemEmpe>
+            <vlr>{soma_valor_liquido}</vlr>
+            <numClassA>311110100</numClassA>
           </pcoItem>
         </pco>
         <centroCusto>
-          <numSeqItem></numSeqItem>
-          <codCentroCusto></codCentroCusto>
-          <mesReferencia></mesReferencia>
-          <anoReferencia></anoReferencia>
-          <codUgBenef></codUgBenef>
+          <numSeqItem>1</numSeqItem>
+          <codCentroCusto>310200</codCentroCusto>
+          <mesReferencia>{mes_referencia_cc}</mesReferencia>
+          <anoReferencia>{ano_referencia_cc}</anoReferencia>
+          <codUgBenef>120052</codUgBenef>
           <relPcoItem>
-            <numSeqPai></numSeqPai>
-            <numSeqItem></numSeqItem>
-            <vlr></vlr>
+            <numSeqPai>1</numSeqPai>
+            <numSeqItem>1</numSeqItem>
+            <vlr>{soma_valor_liquido}</vlr>
           </relPcoItem>
         </centroCusto>
       </ns2:CprDhCadastrar>
