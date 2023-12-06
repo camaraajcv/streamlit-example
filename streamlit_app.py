@@ -107,9 +107,13 @@ def processar_pdf(pdf_content):
 
     df_final=df.drop('Texto_Após_CNPJ', axis=1)
     
-    # Formatação manual dos valores como moeda brasileira (R$)
+    # Função para formatar um valor como moeda brasileira (R$)
     def formatar_moeda(valor):
-        return f'R$ {valor:,.2f}'.replace(',', '_').replace('.', ',').replace('_', '.')
+        try:
+            valor = float(valor)
+            return f'R$ {valor:,.2f}'.replace(',', '_').replace('.', ',').replace('_', '.')
+        except ValueError:
+            return valor  # Em caso de erro, retorna o valor original
 
     # Formatação dos valores
     valor_formatado = formatar_moeda(valor_liquido)
