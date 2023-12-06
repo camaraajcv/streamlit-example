@@ -109,6 +109,10 @@ def processar_pdf(pdf_content):
     # Configuração da formatação de números para o formato brasileiro
     locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
+    # Defina uma configuração de locale que funcione em seu sistema
+    # Por exemplo, 'en_US.UTF-8' pode ser uma opção comum
+    locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+
     # Formatação dos valores
     valor_formatado = locale.currency(valor_liquido, grouping=True, symbol=None)
     soma_valor_formatado = locale.currency(soma_valor_liquido, grouping=True, symbol=None)
