@@ -6,6 +6,7 @@ import tempfile
 import streamlit as st
 import os
 from datetime import datetime
+import locale
 # URL da imagem
 image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
 
@@ -105,6 +106,18 @@ def processar_pdf(pdf_content):
     df['CNPJ'] = df['CNPJ'].str.replace('.', '').str.replace('/', '').str.replace('-', '')
 
     df_final=df.drop('Texto_Após_CNPJ', axis=1)
+    # Configuração da formatação de números para o formato brasileiro
+    locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+
+    # Formatação dos valores
+    valor_formatado = locale.currency(valor_liquido, grouping=True, symbol=None)
+    soma_valor_formatado = locale.currency(soma_valor_liquido, grouping=True, symbol=None)
+    diferenca_valor_formatado = locale.currency(diferenca_valor, grouping=True, symbol=None)
+
+    # Exibe os valores formatados
+    st.warning(f"Valor Líquido: {valor_formatado}")
+    st.success(f"Soma da coluna 'Valor Líquido': {soma_valor_formatado}")
+    st.warning(f"Diferença: {diferenca_valor_formatado}")
     st.dataframe(df_final)
     st.subheader("Formulário para Geração de Arquivos .XML")
        # Adicione um formulário para capturar variáveis
