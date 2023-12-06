@@ -135,7 +135,7 @@ def processar_pdf(pdf_content):
     # Exibe os valores formatados
     st.warning(f"Valor Líquido SIAPE: {valor_formatado}")
     st.success(f"Soma da coluna Valor Líquido': {soma_valor_formatado}")
-    st.warning(f"Diferença: {diferenca_valor_formatado}")
+    st.danger(f"Diferença: {diferenca_valor_formatado}")
     st.dataframe(df_final)
     st.subheader("Formulário para Geração de Arquivos .XML")
        # Adicione um formulário para capturar variáveis
