@@ -64,10 +64,7 @@ def processar_pdf(pdf_content):
 
     if match:
         valor_liquido = match.group(1)
-        valor_liquido = valor_liquido.replace('.', '').replace(',', '.')
-        st.warning(f"Valor Líquido: {valor_formatado}")
-        st.success(f"Soma da coluna 'Valor Líquido': {soma_valor_formatado}")
-        st.warning(f"Diferença: {diferenca_valor_formatado}")
+        st.success(f"Valor Líquido: {valor_liquido}")
     else:
         st.warning("Valor Líquido não encontrado.")
 
@@ -121,12 +118,14 @@ def processar_pdf(pdf_content):
             return valor  # Em caso de erro, retorna o valor original
 
     # Formatação dos valores
-    valor_formatado = formatar_moeda(valor_liquido)
+    #valor_formatado = formatar_moeda(valor_liquido)
     soma_valor_formatado = formatar_moeda(soma_valor_liquido)
     diferenca_valor_formatado = formatar_moeda(diferenca_valor)
 
     # Exibe os valores formatados
-
+    
+    st.success(f"Soma da coluna 'Valor Líquido': {soma_valor_formatado}")
+    st.warning(f"Diferença: {diferenca_valor_formatado}")
     st.dataframe(df_final)
     st.subheader("Formulário para Geração de Arquivos .XML")
        # Adicione um formulário para capturar variáveis
