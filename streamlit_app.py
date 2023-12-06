@@ -64,7 +64,8 @@ def processar_pdf(pdf_content):
 
     if match:
         valor_liquido = match.group(1)
-        st.success(f"Valor Líquido: {valor_liquido}")
+        valor_liquido = valor_liquido.replace('.', '').replace(',', '.')
+       # st.success(f"Valor Líquido: {valor_liquido}")
     else:
         st.warning("Valor Líquido não encontrado.")
 
