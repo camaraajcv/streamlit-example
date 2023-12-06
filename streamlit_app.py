@@ -118,12 +118,12 @@ def processar_pdf(pdf_content):
             return valor  # Em caso de erro, retorna o valor original
 
     # Formatação dos valores
-    #valor_formatado = formatar_moeda(valor_liquido)
+    valor_formatado = formatar_moeda(valor_liquido)
     soma_valor_formatado = formatar_moeda(soma_valor_liquido)
     diferenca_valor_formatado = formatar_moeda(diferenca_valor)
 
     # Exibe os valores formatados
-    
+    st.warning(f"Valor Líquido: {valor_formatado}")
     st.success(f"Soma da coluna 'Valor Líquido': {soma_valor_formatado}")
     st.warning(f"Diferença: {diferenca_valor_formatado}")
     st.dataframe(df_final)
