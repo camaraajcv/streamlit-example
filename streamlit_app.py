@@ -107,14 +107,14 @@ def processar_pdf(pdf_content):
 
     df_final=df.drop('Texto_Após_CNPJ', axis=1)
     
-    # Defina uma configuração de locale que funcione em seu sistema
-    # Por exemplo, 'C' pode ser uma opção comum
-    locale.setlocale(locale.LC_ALL, 'C')
+    # Formatação manual dos valores como moeda brasileira (R$)
+    def formatar_moeda(valor):
+        return f'R$ {valor:,.2f}'.replace(',', '_').replace('.', ',').replace('_', '.')
 
     # Formatação dos valores
-    valor_formatado = locale.currency(valor_liquido, grouping=True, symbol=None)
-    soma_valor_formatado = locale.currency(soma_valor_liquido, grouping=True, symbol=None)
-    diferenca_valor_formatado = locale.currency(diferenca_valor, grouping=True, symbol=None)
+    valor_formatado = formatar_moeda(valor_liquido)
+    soma_valor_formatado = formatar_moeda(soma_valor_liquido)
+    diferenca_valor_formatado = formatar_moeda(diferenca_valor)
 
     # Exibe os valores formatados
     st.warning(f"Valor Líquido: {valor_formatado}")
