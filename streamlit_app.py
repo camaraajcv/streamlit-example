@@ -197,14 +197,14 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
           <vlr>{valor_liquido}</vlr>
           <txtObser>{texto_obs}</txtObser>
           <txtProcesso>{processo}</txtProcesso>
-          <dtAteste>{data_geracao}</dtAteste>
-          <codCredorDevedor></codCredorDevedor>
+          <dtAteste>{data_vencimento}</dtAteste>
+          <codCredorDevedor>120052</codCredorDevedor>
           <dtPgtoReceb>{data_previsao_pagamento}</dtPgtoReceb>
           <docOrigem>
-            <codIdentEmit></codIdentEmit>
-            <dtEmis></dtEmis>
-            <numDocOrigem></numDocOrigem>
-            <vlr></vlr>
+            <codIdentEmit>120052</codIdentEmit>
+            <dtEmis>{data_geracao}</dtEmis>
+            <numDocOrigem>DESC.EXT.CV</numDocOrigem>
+            <vlr>{soma_valor_liquido}</vlr>
           </docOrigem>
         </dadosBasicos>
         <pco>
