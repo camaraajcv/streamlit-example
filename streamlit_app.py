@@ -243,7 +243,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
      <sb:arquivo xmlns:sb="http://www.tesouro.gov.br/siafi/submissao" xmlns:cpr="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/">
     <sb:header>
         <sb:codigoLayout>DH002</sb:codigoLayout>
-        <sb:dataGeracao></sb:dataGeracao>
+        <sb:dataGeracao>{data_geracao}</sb:dataGeracao>
         <sb:sequencialGeracao>{sequencial_fl}</sb:sequencialGeracao>
         <sb:anoReferencia>{ano_empenho}</sb:anoReferencia>
         <sb:ugResponsavel>120052</sb:ugResponsavel>
@@ -260,26 +260,26 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                 <txtMotivo>{texto_obs}</txtMotivo>
 """
     # Itera sobre as linhas do DataFrame e adiciona as informações de dedução
-    for index, row in df_final.iterrows():
-        xml_content += f"""
+    for seq_item,(index, row)  in enumerate(df_final.iterrows(), start=1):
+        xml_content_modelo2 += f"""
                 <deducao>
-                    <numSeqItem></numSeqItem>
+                    <numSeqItem>{seq_item}</numSeqItem>
                     <codSit>DOB005</codSit>
                     <dtVenc>{data_vencimento}</dtVenc>
                     <dtPgtoReceb>{data_previsao_pagamento}</dtPgtoReceb>
                     <codUgPgto>120052</codUgPgto>
-                    <vlr>{df_final['Valor Líquido']}</vlr>
-                    <txtInscrA>{df_final['CNPJ']}</txtInscrA>
-                    <numClassA>{df_final['Rubrica']}</numClassA>
+                    <vlr>{row['Valor Líquido']}</vlr>
+                    <txtInscrA>{row['CNPJ']}</txtInscrA>
+                    <numClassA>218810199</numClassA>
                     <predoc>
                         <txtObser>{texto_obs}</txtObser>
                         <predocOB>
                             <codTipoOB>OBC</codTipoOB>
-                            <codCredorDevedor>{df_final['CNPJ']}</codCredorDevedor>
+                            <codCredorDevedor>{row['CNPJ']}</codCredorDevedor>
                             <numDomiBancFavo>
-                                <banco>{df_final['BCO']}</banco>
-                                <agencia>{df_final['AG']}</agencia>
-                                <conta>{df_final['Conta']}</conta>
+                                <banco>{row['BCO']}</banco>
+                                <agencia>{row['AG']}</agencia>
+                                <conta>{row['Conta']}</conta>
                             </numDomiBancFavo>
                             <numDomiBancPgto>
                                 <conta>UNICA</conta>
