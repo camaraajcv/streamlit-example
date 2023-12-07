@@ -176,132 +176,124 @@ def processar_pdf(pdf_content):
 def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento,sequencial_fl,sequencial_deducao,texto_obs,processo,indice_mais_um,soma_valor_liquido,mes_referencia_cc,ano_referencia_cc):
    
     xml_content = f"""
-<sb:arquivo xmlns:ns2="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/" xmlns:sb="http://www.tesouro.gov.br/siafi/submissao">
-  <sb:header>
-    <sb:codigoLayout>DH001</sb:codigoLayout>
-    <sb:dataGeracao>{data_geracao2}</sb:dataGeracao>
-    <sb:sequencialGeracao>{sequencial_fl}</sb:sequencialGeracao>
-    <sb:anoReferencia>{ano_empenho}</sb:anoReferencia>
-    <sb:ugResponsavel>120052</sb:ugResponsavel>
-    <sb:cpfResponsavel>{cpf_responsavel}</sb:cpfResponsavel>
-  </sb:header>
-  <sb:detalhes>
-    <sb:detalhe>
-      <ns2:CprDhCadastrar>
-        <codUgEmit>120052</codUgEmit>
-        <anoDH>{ano_empenho}</anoDH>
-        <codTipoDH>FL</codTipoDH>
-        <dadosBasicos>
-          <dtEmis>{data_geracao}</dtEmis>
-          <dtVenc>{data_vencimento}</dtVenc>
-          <codUgPgto>120052</codUgPgto>
-          <vlr>{valor_liquido}</vlr>
-          <txtObser>{texto_obs}</txtObser>
-          <txtProcesso>{processo}</txtProcesso>
-          <dtAteste>{data_vencimento}</dtAteste>
-          <codCredorDevedor>120052</codCredorDevedor>
-          <dtPgtoReceb>{data_previsao_pagamento}</dtPgtoReceb>
-          <docOrigem>
-            <codIdentEmit>120052</codIdentEmit>
-            <dtEmis>{data_geracao}</dtEmis>
-            <numDocOrigem>DESC.EXT.CV</numDocOrigem>
-            <vlr>{soma_valor_liquido}</vlr>
-          </docOrigem>
-        </dadosBasicos>
-        <pco>
-          <numSeqItem>{indice_mais_um}</numSeqItem>
-          <codSit>DFL001</codSit>
-          <codUgEmpe>120052</codUgEmpe>
-          <pcoItem>
-            <numSeqItem>1</numSeqItem>
-            <numEmpe>{numero_ne}</numEmpe>
-            <codSubItemEmpe>{numero_sb}</codSubItemEmpe>
-            <vlr>{soma_valor_liquido}</vlr>
-            <numClassA>311110100</numClassA>
-          </pcoItem>
-        </pco>
-        <centroCusto>
-          <numSeqItem>1</numSeqItem>
-          <codCentroCusto>310200</codCentroCusto>
-          <mesReferencia>{mes_referencia_cc}</mesReferencia>
-          <anoReferencia>{ano_referencia_cc}</anoReferencia>
-          <codUgBenef>120052</codUgBenef>
-          <relPcoItem>
-            <numSeqPai>1</numSeqPai>
-            <numSeqItem>1</numSeqItem>
-            <vlr>{soma_valor_liquido}</vlr>
-          </relPcoItem>
-        </centroCusto>
-      </ns2:CprDhCadastrar>
-    </sb:detalhe>
-  </sb:detalhes>
-  <sb:trailler>
-    <sb:quantidadeDetalhe>1</sb:quantidadeDetalhe>
-  </sb:trailler>
-</sb:arquivo>
-"""
-    xml_content_modelo2 = f"""
-     <sb:arquivo xmlns:sb="http://www.tesouro.gov.br/siafi/submissao" xmlns:cpr="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/">
-    <sb:header>
-        <sb:codigoLayout>DH002</sb:codigoLayout>
-        <sb:dataGeracao>{data_geracao}</sb:dataGeracao>
-        <sb:sequencialGeracao>{sequencial_fl}</sb:sequencialGeracao>
-        <sb:anoReferencia>{ano_empenho}</sb:anoReferencia>
-        <sb:ugResponsavel>120052</sb:ugResponsavel>
-        <sb:cpfResponsavel>{cpf_responsavel}</sb:cpfResponsavel>
-    </sb:header>
-    <sb:detalhes>
-        <sb:detalhe>
-            <cpr:CprDhAlterarDHIncluirItens>
-                <codUgEmit>120052</codUgEmit>
-                <anoDH>{ano_empenho}</anoDH>
-                <codTipoDH>FL</codTipoDH>
-                <numDH>{numero_ne}</numDH>
-                <dtEmis>{data_geracao}</dtEmis>
-                <txtMotivo>{texto_obs}</txtMotivo>"""
-    # Itera sobre as linhas do DataFrame e adiciona as informações de dedução
-    for seq_item,(index, row)  in enumerate(df_final.iterrows(), start=1):
-        xml_content_modelo2 +=f"""<deducao>
-                    <numSeqItem>{seq_item}</numSeqItem>
-                    <codSit>DOB005</codSit>
+            <sb:arquivo xmlns:ns2="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/" xmlns:sb="http://www.tesouro.gov.br/siafi/submissao">
+            <sb:header>
+                <sb:codigoLayout>DH001</sb:codigoLayout>
+                <sb:dataGeracao>{data_geracao2}</sb:dataGeracao>
+                <sb:sequencialGeracao>{sequencial_fl}</sb:sequencialGeracao>
+                <sb:anoReferencia>{ano_empenho}</sb:anoReferencia>
+                <sb:ugResponsavel>120052</sb:ugResponsavel>
+                <sb:cpfResponsavel>{cpf_responsavel}</sb:cpfResponsavel>
+            </sb:header>
+            <sb:detalhes>
+                <sb:detalhe>
+                <ns2:CprDhCadastrar>
+                    <codUgEmit>120052</codUgEmit>
+                    <anoDH>{ano_empenho}</anoDH>
+                    <codTipoDH>FL</codTipoDH>
+                    <dadosBasicos>
+                    <dtEmis>{data_geracao}</dtEmis>
                     <dtVenc>{data_vencimento}</dtVenc>
-                    <dtPgtoReceb>{data_previsao_pagamento}</dtPgtoReceb>
                     <codUgPgto>120052</codUgPgto>
-                    <vlr>{f'{row["Valor Líquido"]:.2f}'}</vlr>
-                    <txtInscrA>{row['CNPJ']}</txtInscrA>
-                    <numClassA>218810199</numClassA>
-                    <predoc>
-                        <txtObser>{texto_obs}</txtObser>
-                        <predocOB>
-                            <codTipoOB>OBC</codTipoOB>
-                            <codCredorDevedor>{row['CNPJ']}</codCredorDevedor>
-                            <numDomiBancFavo>
-                                <banco>{row['BCO']}</banco>
-                                <agencia>{row['AG']}</agencia>
-                                <conta>{row['Conta']}</conta>
-                            </numDomiBancFavo>
-                            <numDomiBancPgto>
-                                <conta>UNICA</conta>
-                            </numDomiBancPgto>
-                        </predocOB>
-                    </predoc>
-                </deducao>
-            </cpr:CprDhAlterarDHIncluirItens>
-        </sb:detalhe>
-    </sb:detalhes>
-    <sb:trailler>
-        <sb:quantidadeDetalhe>1</sb:quantidadeDetalhe>
-    </sb:trailler>
-</sb:arquivo>
-"""
-    xml_content_modelo2 += f"""
-                    </cpr:CprDhAlterarDHIncluirItens>
+                    <vlr>{valor_liquido}</vlr>
+                    <txtObser>{texto_obs}</txtObser>
+                    <txtProcesso>{processo}</txtProcesso>
+                    <dtAteste>{data_vencimento}</dtAteste>
+                    <codCredorDevedor>120052</codCredorDevedor>
+                    <dtPgtoReceb>{data_previsao_pagamento}</dtPgtoReceb>
+                    <docOrigem>
+                        <codIdentEmit>120052</codIdentEmit>
+                        <dtEmis>{data_geracao}</dtEmis>
+                        <numDocOrigem>DESC.EXT.CV</numDocOrigem>
+                        <vlr>{soma_valor_liquido}</vlr>
+                    </docOrigem>
+                    </dadosBasicos>
+                    <pco>
+                    <numSeqItem>{indice_mais_um}</numSeqItem>
+                    <codSit>DFL001</codSit>
+                    <codUgEmpe>120052</codUgEmpe>
+                    <pcoItem>
+                        <numSeqItem>1</numSeqItem>
+                        <numEmpe>{numero_ne}</numEmpe>
+                        <codSubItemEmpe>{numero_sb}</codSubItemEmpe>
+                        <vlr>{soma_valor_liquido}</vlr>
+                        <numClassA>311110100</numClassA>
+                    </pcoItem>
+                    </pco>
+                    <centroCusto>
+                    <numSeqItem>1</numSeqItem>
+                    <codCentroCusto>310200</codCentroCusto>
+                    <mesReferencia>{mes_referencia_cc}</mesReferencia>
+                    <anoReferencia>{ano_referencia_cc}</anoReferencia>
+                    <codUgBenef>120052</codUgBenef>
+                    <relPcoItem>
+                        <numSeqPai>1</numSeqPai>
+                        <numSeqItem>1</numSeqItem>
+                        <vlr>{soma_valor_liquido}</vlr>
+                    </relPcoItem>
+                    </centroCusto>
+                </ns2:CprDhCadastrar>
                 </sb:detalhe>
             </sb:detalhes>
             <sb:trailler>
                 <sb:quantidadeDetalhe>1</sb:quantidadeDetalhe>
             </sb:trailler>
-        </sb:arquivo>
+            </sb:arquivo>"""
+    
+    xml_content_modelo2 = f"""
+                <sb:arquivo xmlns:sb="http://www.tesouro.gov.br/siafi/submissao" xmlns:cpr="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/">
+                <sb:header>
+                    <sb:codigoLayout>DH002</sb:codigoLayout>
+                    <sb:dataGeracao>{data_geracao}</sb:dataGeracao>
+                    <sb:sequencialGeracao>{sequencial_fl}</sb:sequencialGeracao>
+                    <sb:anoReferencia>{ano_empenho}</sb:anoReferencia>
+                    <sb:ugResponsavel>120052</sb:ugResponsavel>
+                    <sb:cpfResponsavel>{cpf_responsavel}</sb:cpfResponsavel>
+                </sb:header>
+                <sb:detalhes>
+                    <sb:detalhe>
+                        <cpr:CprDhAlterarDHIncluirItens>
+                            <codUgEmit>120052</codUgEmit>
+                            <anoDH>{ano_empenho}</anoDH>
+                            <codTipoDH>FL</codTipoDH>
+                            <numDH>{numero_ne}</numDH>
+                            <dtEmis>{data_geracao}</dtEmis>
+                            <txtMotivo>{texto_obs}</txtMotivo>"""
+    # Itera sobre as linhas do DataFrame e adiciona as informações de dedução
+    for seq_item,(index, row)  in enumerate(df_final.iterrows(), start=1):
+        xml_content_modelo2 +=f"""<deducao>
+                                <numSeqItem>{seq_item}</numSeqItem>
+                                <codSit>DOB005</codSit>
+                                <dtVenc>{data_vencimento}</dtVenc>
+                                <dtPgtoReceb>{data_previsao_pagamento}</dtPgtoReceb>
+                                <codUgPgto>120052</codUgPgto>
+                                <vlr>{f'{row["Valor Líquido"]:.2f}'}</vlr>
+                                <txtInscrA>{row['CNPJ']}</txtInscrA>
+                                <numClassA>218810199</numClassA>
+                                <predoc>
+                                    <txtObser>{texto_obs}</txtObser>
+                                    <predocOB>
+                                        <codTipoOB>OBC</codTipoOB>
+                                        <codCredorDevedor>{row['CNPJ']}</codCredorDevedor>
+                                        <numDomiBancFavo>
+                                            <banco>{row['BCO']}</banco>
+                                            <agencia>{row['AG']}</agencia>
+                                            <conta>{row['Conta']}</conta>
+                                        </numDomiBancFavo>
+                                        <numDomiBancPgto>
+                                            <conta>UNICA</conta>
+                                        </numDomiBancPgto>
+                                    </predocOB>
+                                </predoc>
+                            </deducao>"""
+    xml_content_modelo2 += """
+                </cpr:CprDhAlterarDHIncluirItens>
+            </sb:detalhe>
+        </sb:detalhes>
+        <sb:trailler>
+            <sb:quantidadeDetalhe>1</sb:quantidadeDetalhe>
+        </sb:trailler>
+    </sb:arquivo>
     """
     st.success(f"Arquivo XML com DataFrame gerado com sucesso.") 
     # Adiciona um botão de download para o arquivo XML
