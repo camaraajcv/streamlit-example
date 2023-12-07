@@ -13,8 +13,8 @@ image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
 #Código HTML e CSS para ajustar a largura da imagem para 20% da largura da coluna e centralizar
 html_code = f'<div style="display: flex; justify-content: center;"><img src="{image_url}" alt="Imagem" style="width:8vw;"/></div>'
 
-data_geracao = datetime.now().strftime('%Y-%m-%d')
-data_geracao2 = datetime.now().strftime('%d-%m-%Y')
+data_geracao = datetime.now().strftime('%Y/%m/%d')
+data_geracao2 = datetime.now().strftime('%d/%m/%Y')
 
 
 # Exibir a imagem usando HTML
