@@ -73,7 +73,12 @@ def processar_pdf(pdf_content):
     cnpjs = re.findall(cnpj_pattern, text)
     text_parts = re.split(cnpj_pattern, text)
   
-  
+    def formatar_moeda(valor):
+        try:
+            valor = float(valor)
+            return f'R$ {valor:,.2f}'
+        except ValueError:
+            return valor  # Em caso de erro, retorna o valor original
     data = {'CNPJ': cnpjs, 'Texto_Após_CNPJ': text_parts[1:]}
     df = pd.DataFrame(data)
     df['Empresa'] = df['Texto_Após_CNPJ'].str[:33]
@@ -85,8 +90,8 @@ def processar_pdf(pdf_content):
     df['ValorLinha'] = df['Texto_Após_CNPJ'].str[127:138]
     df['ValorSerpro'] = df['Texto_Após_CNPJ'].str[208:216]
     df['BCO'] = df['Texto_Após_CNPJ'].str[216:219]
-    df['AG'] = df['Texto_Após_CNPJ'].str[220:226]
-    df['Conta'] = df['Texto_Após_CNPJ'].str[227:241]
+    df['AG'] = df['Texto_Após_CNPJ'].str[221:225]
+    df['Conta'] = df['Texto_Após_CNPJ'].str[227:240]
     df['Valor Líquido'] = df['Texto_Após_CNPJ'].str[279:295]
 
     # Remova os pontos dos milhares e substitua a vírgula pelo ponto
@@ -104,8 +109,9 @@ def processar_pdf(pdf_content):
     df['Valor Bruto'] = df['Valor Bruto'].astype(float)
     # Use a função str.replace() para remover "." (ponto), "/" (barra) e "-" (hífen) da coluna 'CNPJ'
     df['CNPJ'] = df['CNPJ'].str.replace('.', '').str.replace('/', '').str.replace('-', '')
-
+    
     df_final=df.drop('Texto_Após_CNPJ', axis=1)
+
     # Obter o índice da primeira linha do DataFrame df_final
     primeiro_indice = df_final.index[0]
 
@@ -120,12 +126,7 @@ def processar_pdf(pdf_content):
     # Calcula a diferença entre a soma da coluna 'Valor Líquido' e o valor extraído
     diferenca_valor = soma_valor_liquido - float(valor_liquido)
     # Função para formatar um valor como moeda brasileira (R$)
-    def formatar_moeda(valor):
-        try:
-            valor = float(valor)
-            return f'R$ {valor:,.2f}'
-        except ValueError:
-            return valor  # Em caso de erro, retorna o valor original
+    
 
     # Formatação dos valores
     valor_formatado = formatar_moeda(valor_liquido)
@@ -162,7 +163,7 @@ def processar_pdf(pdf_content):
             processo = st.text_input("Processo:", key='processo')
             ano_referencia_cc = st.text_input("Número Ano Referência CC :",max_chars=4, key='ano_referencia_cc')
         # Botão para enviar o formulário
-        submit_button = st.form_submit_button(label='Gerar XML para FL')
+        submit_button = st.form_submit_button(label='Gerar XML')
 
     # Remover o arquivo temporário após o processamento
     os.remove(temp_pdf_path)
@@ -257,18 +258,16 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                 <codTipoDH>FL</codTipoDH>
                 <numDH>{numero_ne}</numDH>
                 <dtEmis>{data_geracao}</dtEmis>
-                <txtMotivo>{texto_obs}</txtMotivo>
-"""
+                <txtMotivo>{texto_obs}</txtMotivo>"""
     # Itera sobre as linhas do DataFrame e adiciona as informações de dedução
     for seq_item,(index, row)  in enumerate(df_final.iterrows(), start=1):
-        xml_content_modelo2 += f"""
-                <deducao>
+        xml_content_modelo2 +=f"""<deducao>
                     <numSeqItem>{seq_item}</numSeqItem>
                     <codSit>DOB005</codSit>
                     <dtVenc>{data_vencimento}</dtVenc>
                     <dtPgtoReceb>{data_previsao_pagamento}</dtPgtoReceb>
                     <codUgPgto>120052</codUgPgto>
-                    <vlr>{row['Valor Líquido']}</vlr>
+                    <vlr>{f'{row["Valor Líquido"]:.2f}'}</vlr>
                     <txtInscrA>{row['CNPJ']}</txtInscrA>
                     <numClassA>218810199</numClassA>
                     <predoc>
@@ -302,17 +301,17 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
 
     # Adiciona um botão de download para o arquivo XML
     st.download_button(
-        label="Baixar XML",
+        label="Baixar XML para FL",
         data=xml_io,
         key='download_button',
-        file_name=f"xml_output_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
+        file_name=f"xml_FL_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
         mime="text/xml"
     )
     st.download_button(
-        label="Baixar XML (Modelo 2)",
+        label="Baixar XML para DEDUÇÃO",
         data=io.BytesIO(xml_content_modelo2.encode()),
         key='download_button_modelo2',
-        file_name=f"xml_modelo2_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
+        file_name=f"xml_deducao_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
         mime="text/xml"
     )
 
