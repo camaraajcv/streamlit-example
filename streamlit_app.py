@@ -294,15 +294,15 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
     </sb:trailler>
 </sb:arquivo>
 """
+    xml_content_modelo2 += f"""
+                    </cpr:CprDhAlterarDHIncluirItens>
+                </sb:detalhe>
+            </sb:detalhes>
+            <sb:trailler>
+                <sb:quantidadeDetalhe>1</sb:quantidadeDetalhe>
+            </sb:trailler>
+        </sb:arquivo>
     """
-                </cpr:CprDhAlterarDHIncluirItens>
-            </sb:detalhe>
-        </sb:detalhes>
-        <sb:trailler>
-            <sb:quantidadeDetalhe>1</sb:quantidadeDetalhe>
-        </sb:trailler>
-    </sb:arquivo>
-"""
     st.success(f"Arquivo XML com DataFrame gerado com sucesso.") 
     # Adiciona um botão de download para o arquivo XML
     # Cria um objeto BytesIO para armazenar o conteúdo do XML
