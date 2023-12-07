@@ -239,7 +239,62 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
   </sb:trailler>
 </sb:arquivo>
 """
-    
+     xml_content_modelo2 = f"""
+     <sb:arquivo xmlns:sb="http://www.tesouro.gov.br/siafi/submissao" xmlns:cpr="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/">
+    <sb:header>
+        <sb:codigoLayout>DH002</sb:codigoLayout>
+        <sb:dataGeracao>{data_atual}</sb:dataGeracao>
+        <sb:sequencialGeracao>{sequencial_fl}</sb:sequencialGeracao>
+        <sb:anoReferencia>{ano_empenho}</sb:anoReferencia>
+        <sb:ugResponsavel>120052</sb:ugResponsavel>
+        <sb:cpfResponsavel>{cpf_responsavel}</sb:cpfResponsavel>
+    </sb:header>
+    <sb:detalhes>
+        <sb:detalhe>
+            <cpr:CprDhAlterarDHIncluirItens>
+                <codUgEmit>120052</codUgEmit>
+                <anoDH>{ano_empenho}</anoDH>
+                <codTipoDH>FL</codTipoDH>
+                <numDH>{numero_ne}</numDH>
+                <dtEmis>{data_geracao}</dtEmis>
+                <txtMotivo>{texto_obs}</txtMotivo>
+"""
+    # Itera sobre as linhas do DataFrame e adiciona as informações de dedução
+    for index, row in df_final.iterrows():
+        xml_content += f"""
+                <deducao>
+                    <numSeqItem>{int(row['Qtd.Linha'])}</numSeqItem>
+                    <codSit>DOB005</codSit>
+                    <dtVenc>{data_vencimento}</dtVenc>
+                    <dtPgtoReceb>{data_previsao_pagamento}</dtPgtoReceb>
+                    <codUgPgto>{df_final['UG']}</codUgPgto>
+                    <vlr>{df_final['Valor Líquido']}</vlr>
+                    <txtInscrA>{df_final['CNPJ']}</txtInscrA>
+                    <numClassA>{df_final['Rubrica']}</numClassA>
+                    <predoc>
+                        <txtObser>{texto_obs}</txtObser>
+                        <predocOB>
+                            <codTipoOB>OBC</codTipoOB>
+                            <codCredorDevedor>{row['CNPJ']}</codCredorDevedor>
+                            <numDomiBancFavo>
+                                <banco>{df_final['BCO']}</banco>
+                                <agencia>{df_final['AG']}</agencia>
+                                <conta>{df_final['Conta']}</conta>
+                            </numDomiBancFavo>
+                            <numDomiBancPgto>
+                                <conta>UNICA</conta>
+                            </numDomiBancPgto>
+                        </predocOB>
+                    </predoc>
+                </deducao>
+            </cpr:CprDhAlterarDHIncluirItens>
+        </sb:detalhe>
+    </sb:detalhes>
+    <sb:trailler>
+        <sb:quantidadeDetalhe>1</sb:quantidadeDetalhe>
+    </sb:trailler>
+</sb:arquivo>
+"""
     st.success(f"Arquivo XML com DataFrame gerado com sucesso.") 
     # Adiciona um botão de download para o arquivo XML
     # Cria um objeto BytesIO para armazenar o conteúdo do XML
@@ -251,6 +306,13 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
         data=xml_io,
         key='download_button',
         file_name=f"xml_output_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
+        mime="text/xml"
+    )
+    st.download_button(
+        label="Baixar XML (Modelo 2)",
+        data=io.BytesIO(xml_content_modelo2.encode()),
+        key='download_button_modelo2',
+        file_name=f"xml_modelo2_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
         mime="text/xml"
     )
 
