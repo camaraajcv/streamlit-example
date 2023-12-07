@@ -243,7 +243,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
      <sb:arquivo xmlns:sb="http://www.tesouro.gov.br/siafi/submissao" xmlns:cpr="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/">
     <sb:header>
         <sb:codigoLayout>DH002</sb:codigoLayout>
-        <sb:dataGeracao>{data_atual}</sb:dataGeracao>
+        <sb:dataGeracao></sb:dataGeracao>
         <sb:sequencialGeracao>{sequencial_fl}</sb:sequencialGeracao>
         <sb:anoReferencia>{ano_empenho}</sb:anoReferencia>
         <sb:ugResponsavel>120052</sb:ugResponsavel>
@@ -263,7 +263,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
     for index, row in df_final.iterrows():
         xml_content += f"""
                 <deducao>
-                    <numSeqItem>{int(row['Qtd.Linha'])}</numSeqItem>
+                    <numSeqItem></numSeqItem>
                     <codSit>DOB005</codSit>
                     <dtVenc>{data_vencimento}</dtVenc>
                     <dtPgtoReceb>{data_previsao_pagamento}</dtPgtoReceb>
