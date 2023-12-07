@@ -267,7 +267,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                     <codSit>DOB005</codSit>
                     <dtVenc>{data_vencimento}</dtVenc>
                     <dtPgtoReceb>{data_previsao_pagamento}</dtPgtoReceb>
-                    <codUgPgto>{df_final['UG']}</codUgPgto>
+                    <codUgPgto>120052</codUgPgto>
                     <vlr>{df_final['Valor Líquido']}</vlr>
                     <txtInscrA>{df_final['CNPJ']}</txtInscrA>
                     <numClassA>{df_final['Rubrica']}</numClassA>
@@ -275,7 +275,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                         <txtObser>{texto_obs}</txtObser>
                         <predocOB>
                             <codTipoOB>OBC</codTipoOB>
-                            <codCredorDevedor>{row['CNPJ']}</codCredorDevedor>
+                            <codCredorDevedor>{df_final['CNPJ']}</codCredorDevedor>
                             <numDomiBancFavo>
                                 <banco>{df_final['BCO']}</banco>
                                 <agencia>{df_final['AG']}</agencia>
