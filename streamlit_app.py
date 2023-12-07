@@ -87,7 +87,7 @@ def processar_pdf(pdf_content):
     df['BCO'] = df['Texto_Após_CNPJ'].str[216:219]
     df['AG'] = df['Texto_Após_CNPJ'].str[220:226]
     df['Conta'] = df['Texto_Após_CNPJ'].str[227:241]
-    df['Valor Líquido'] = df['Texto_Após_CNPJ'].str[279:295]
+    df['Valor Líquido'] = df['Texto_Após_CNPJ'].str[279:295].apply(lambda x: f'{x:.2f}'.replace(',', '').replace('.', ','))
 
     # Remova os pontos dos milhares e substitua a vírgula pelo ponto
     df['Valor Líquido'] = df['Valor Líquido'].str.replace('.', '').str.replace(',', '.')
