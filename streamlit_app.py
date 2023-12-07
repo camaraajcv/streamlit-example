@@ -7,6 +7,29 @@ import streamlit as st
 import os
 from datetime import datetime
 import locale
+
+import folium
+
+def mapa_interativo():
+    # Coordenadas do centro do mapa (você pode ajustar conforme necessário)
+    coordenadas_centrais = [-23.5505, -46.6333]
+    
+    # Criar o mapa
+    mapa = folium.Map(location=coordenadas_centrais, zoom_start=12)
+
+    # Adicionar um marcador para mostrar a localização
+    folium.Marker(location=coordenadas_centrais, popup='Centro de São Paulo').add_to(mapa)
+
+    return mapa
+
+# Título do aplicativo
+st.title('Mapa Interativo com Streamlit e Folium')
+
+# Chamar a função que cria o mapa
+mapa = mapa_interativo()
+
+# Exibir o mapa usando o widget do Streamlit
+st.markdown(folium.Map()._repr_html_(), unsafe_allow_html=True)
 # URL da imagem
 image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
 
