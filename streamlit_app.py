@@ -261,31 +261,33 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                             <txtMotivo>{texto_obs}</txtMotivo>"""
     # Itera sobre as linhas do DataFrame e adiciona as informações de dedução
     for seq_item,(index, row)  in enumerate(df_final.iterrows(), start=1):
-        xml_content_modelo2 +=f"""<deducao>
-                                <numSeqItem>{seq_item}</numSeqItem>
-                                <codSit>DOB005</codSit>
-                                <dtVenc>{data_vencimento}</dtVenc>
-                                <dtPgtoReceb>{data_previsao_pagamento}</dtPgtoReceb>
-                                <codUgPgto>120052</codUgPgto>
-                                <vlr>{f'{row["Valor Líquido"]:.2f}'}</vlr>
-                                <txtInscrA>{row['CNPJ']}</txtInscrA>
-                                <numClassA>218810199</numClassA>
-                                <predoc>
-                                    <txtObser>{texto_obs}</txtObser>
-                                    <predocOB>
-                                        <codTipoOB>OBC</codTipoOB>
-                                        <codCredorDevedor>{row['CNPJ']}</codCredorDevedor>
-                                        <numDomiBancFavo>
-                                            <banco>{row['BCO']}</banco>
-                                            <agencia>{row['AG']}</agencia>
-                                            <conta>{row['Conta']}</conta>
-                                        </numDomiBancFavo>
-                                        <numDomiBancPgto>
-                                            <conta>UNICA</conta>
-                                        </numDomiBancPgto>
-                                    </predocOB>
-                                </predoc>
-                            </deducao>"""
+        xml_content_modelo2 +=f"""
+                                <deducao>
+                                    <numSeqItem>{seq_item}</numSeqItem>
+                                    <codSit>DOB005</codSit>
+                                    <dtVenc>{data_vencimento}</dtVenc>
+                                    <dtPgtoReceb>{data_previsao_pagamento}</dtPgtoReceb>
+                                    <codUgPgto>120052</codUgPgto>
+                                    <vlr>{f'{row["Valor Líquido"]:.2f}'}</vlr>
+                                    <txtInscrA>{row['CNPJ']}</txtInscrA>
+                                    <numClassA>218810199</numClassA>
+                                    <predoc>
+                                        <txtObser>{texto_obs}</txtObser>
+                                        <predocOB>
+                                            <codTipoOB>OBC</codTipoOB>
+                                            <codCredorDevedor>{row['CNPJ']}</codCredorDevedor>
+                                            <numDomiBancFavo>
+                                                <banco>{row['BCO']}</banco>
+                                                <agencia>{row['AG']}</agencia>
+                                                <conta>{row['Conta']}</conta>
+                                            </numDomiBancFavo>
+                                            <numDomiBancPgto>
+                                                <conta>UNICA</conta>
+                                            </numDomiBancPgto>
+                                        </predocOB>
+                                    </predoc>
+                                </deducao>"""
+                                
     xml_content_modelo2 += """
                 </cpr:CprDhAlterarDHIncluirItens>
             </sb:detalhe>
