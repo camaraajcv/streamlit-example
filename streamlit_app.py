@@ -173,7 +173,8 @@ def processar_pdf(pdf_content):
         exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento,valor_liquido,data_vencimento,sequencial_fl,sequencial_deducao,texto_obs,processo,indice_mais_um,soma_valor_liquido,mes_referencia_cc,ano_referencia_cc)
         
 # Função para exportar o DataFrame para um arquivo XML
-def exportar_xml(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, data_previsao_pagamento, valor_liquido, data_vencimento, sequencial_fl, sequencial_deducao, texto_obs, processo, indice_mais_um, soma_valor_liquido, mes_referencia_cc, ano_referencia_cc):
+def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento,sequencial_fl,sequencial_deducao,texto_obs,processo,indice_mais_um,soma_valor_liquido,mes_referencia_cc,ano_referencia_cc):
+   
     xml_content = f"""
 <sb:arquivo xmlns:ns2="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/" xmlns:sb="http://www.tesouro.gov.br/siafi/submissao">
   <sb:header>
@@ -259,14 +260,14 @@ def exportar_xml(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, d
                 <dtEmis>{data_geracao}</dtEmis>
                 <txtMotivo>{texto_obs}</txtMotivo>"""
     # Itera sobre as linhas do DataFrame e adiciona as informações de dedução
-    for seq_item, (index, row) in enumerate(df_final.iterrows(), start=1):
-        xml_content_modelo2 += f"""<deducao>
+    for seq_item,(index, row)  in enumerate(df_final.iterrows(), start=1):
+        xml_content_modelo2 +=f"""<deducao>
                     <numSeqItem>{seq_item}</numSeqItem>
                     <codSit>DOB005</codSit>
                     <dtVenc>{data_vencimento}</dtVenc>
                     <dtPgtoReceb>{data_previsao_pagamento}</dtPgtoReceb>
                     <codUgPgto>120052</codUgPgto>
-                    <vlr>{f'{row["Valor Líquido"]:.2f}'.replace(",", "")}</vlr>
+                    <vlr>{f'{row["Valor Líquido"]:.2f}'}</vlr>
                     <txtInscrA>{row['CNPJ']}</txtInscrA>
                     <numClassA>218810199</numClassA>
                     <predoc>
@@ -284,9 +285,7 @@ def exportar_xml(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, d
                             </numDomiBancPgto>
                         </predocOB>
                     </predoc>
-                </deducao>"""
-
-    xml_content_modelo2 += """
+                </deducao>
             </cpr:CprDhAlterarDHIncluirItens>
         </sb:detalhe>
     </sb:detalhes>
@@ -295,29 +294,35 @@ def exportar_xml(df_final, numero_ne, numero_sb, ano_empenho, cpf_responsavel, d
     </sb:trailler>
 </sb:arquivo>
 """
+    """
+                </cpr:CprDhAlterarDHIncluirItens>
+            </sb:detalhe>
+        </sb:detalhes>
+        <sb:trailler>
+            <sb:quantidadeDetalhe>1</sb:quantidadeDetalhe>
+        </sb:trailler>
+    </sb:arquivo>
+"""
+    st.success(f"Arquivo XML com DataFrame gerado com sucesso.") 
+    # Adiciona um botão de download para o arquivo XML
+    # Cria um objeto BytesIO para armazenar o conteúdo do XML
+    xml_io = io.BytesIO(xml_content.encode())
 
-    return xml_content, xml_content_modelo2
-
-st.success(f"Arquivo XML com DataFrame gerado com sucesso.") 
-# Adiciona um botão de download para o arquivo XML
-# Cria um objeto BytesIO para armazenar o conteúdo do XML
-xml_io = io.BytesIO(xml_content.encode())
-
-# Adiciona um botão de download para o arquivo XML
-st.download_button(
-    label="Baixar XML para FL",
-    data=xml_io,
-    key='download_button',
-    file_name=f"xml_FL_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
-    mime="text/xml"
-)
-st.download_button(
-    label="Baixar XML para DEDUÇÃO",
-    data=io.BytesIO(xml_content_modelo2.encode()),
-    key='download_button_modelo2',
-    file_name=f"xml_deducao_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
-    mime="text/xml"
-)
+    # Adiciona um botão de download para o arquivo XML
+    st.download_button(
+        label="Baixar XML para FL",
+        data=xml_io,
+        key='download_button',
+        file_name=f"xml_FL_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
+        mime="text/xml"
+    )
+    st.download_button(
+        label="Baixar XML para DEDUÇÃO",
+        data=io.BytesIO(xml_content_modelo2.encode()),
+        key='download_button_modelo2',
+        file_name=f"xml_deducao_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
+        mime="text/xml"
+    )
 
 # Função auxiliar para criar um link de download
 def get_binary_file_downloader_html(bin_file, file_label='File', button_label='Save as', key='download_link'):
