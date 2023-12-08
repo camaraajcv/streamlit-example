@@ -111,7 +111,12 @@ def processar_pdf(pdf_content):
     df['Valor Bruto'] = df['Valor Bruto'].astype(float)
     # Use a função str.replace() para remover "." (ponto), "/" (barra) e "-" (hífen) da coluna 'CNPJ'
     df['CNPJ'] = df['CNPJ'].str.replace('.', '').str.replace('/', '').str.replace('-', '')
-    
+    # inserindo rubricas que não devem sair no XML
+
+    valores_para_filtrar = [34685, 34447, 30846]
+
+    # Filtrar o DataFrame
+    df_rubricas_excluidas = df[df['Rubrica'].isin(valores_para_filtrar)]
     df_final=df.drop('Texto_Após_CNPJ', axis=1)
 
     # Obter o índice da primeira linha do DataFrame df_final
@@ -140,6 +145,10 @@ def processar_pdf(pdf_content):
     st.success(f"Soma da coluna Valor Líquido': {soma_valor_formatado}")
     st.error(f"Diferença: {diferenca_valor_formatado}")
     st.dataframe(df_final)
+    st.write("Rubricas que serão excluídas do SIAFI")
+    st.dataframe(df_rubricas_excluidas)
+    df_final = df_final[~df_final['Rubrica'].isin(df_rubricas_excluidas)]
+    st.success(f"Valor Líquido do XML: {df_final['Valor Líquido'].sum()}")
     st.subheader("Formulário para Geração de Arquivos .XML")
        # Adicione um formulário para capturar variáveis
     with st.form(key='my_form'):
