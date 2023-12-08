@@ -86,7 +86,7 @@ def processar_pdf(pdf_content):
     df['Empresa'] = df['Texto_Após_CNPJ'].str[:33]
     df['Qtd.Serv'] = df['Texto_Após_CNPJ'].str[38:46]
     df['Valor Bruto'] = df['Texto_Após_CNPJ'].str[46:60]
-    df['Rubrica'] = df['Texto_Após_CNPJ'].str[60:67]
+    df['Rubrica'] = df['Texto_Após_CNPJ'].str[60:65]
     df['tipo'] = df['Texto_Após_CNPJ'].str[86:112]
     df['Qtd.Linha'] = df['Texto_Após_CNPJ'].str[116:122]
     df['ValorLinha'] = df['Texto_Após_CNPJ'].str[127:138]
