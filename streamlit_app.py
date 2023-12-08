@@ -78,9 +78,10 @@ def processar_pdf(pdf_content):
     def formatar_moeda(valor):
         try:
             valor = float(valor)
-            return f'R$ {valor:,.2f}.replace(',', '').replace('.', ',').replace('', '.')'
+            return f'R$ {valor:,.2f}'.replace(',', 'temp').replace('.', ',').replace('temp', '.')
         except ValueError:
             return valor  # Em caso de erro, retorna o valor original
+
     data = {'CNPJ': cnpjs, 'Texto_Após_CNPJ': text_parts[1:]}
     df = pd.DataFrame(data)
     df['Empresa'] = df['Texto_Após_CNPJ'].str[:33]
