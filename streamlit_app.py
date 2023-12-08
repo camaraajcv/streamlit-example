@@ -114,9 +114,9 @@ def processar_pdf(pdf_content):
     # inserindo rubricas que não devem sair no XML
 
     valores_para_filtrar = ['34685', '34447', '30846']
-
+    
     # Filtrar o DataFrame
-    df_rubricas_excluidas = df[df['Rubrica'].isin(valores_para_filtrar)]
+    df_rubricas_excluidas = df[df['Rubrica']=='34685']
     df_final=df.drop('Texto_Após_CNPJ', axis=1)
 
     # Obter o índice da primeira linha do DataFrame df_final
