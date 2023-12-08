@@ -113,7 +113,7 @@ def processar_pdf(pdf_content):
     df['CNPJ'] = df['CNPJ'].str.replace('.', '').str.replace('/', '').str.replace('-', '')
     # inserindo rubricas que não devem sair no XML
 
-    valores_para_filtrar = [34685, 34447, 30846]
+    valores_para_filtrar = ['34685', '34447', '30846']
 
     # Filtrar o DataFrame
     df_rubricas_excluidas = df[df['Rubrica'].isin(valores_para_filtrar)]
