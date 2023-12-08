@@ -148,7 +148,7 @@ def processar_pdf(pdf_content):
     st.write("Rubricas que serão excluídas do SIAFI")
     st.dataframe(df_rubricas_excluidas)
     df_final = df_final[~df_final['Rubrica'].isin(df_rubricas_excluidas)]
-    st.success(f"Valor Líquido do XML: {df_final['Valor Líquido'].sum()}")
+    st.success(f"Valor Líquido do XML: {round(df_final['Valor Líquido'].sum(),2)}")
     st.subheader("Formulário para Geração de Arquivos .XML")
        # Adicione um formulário para capturar variáveis
     with st.form(key='my_form'):
@@ -218,7 +218,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                         <codIdentEmit>120052</codIdentEmit>
                         <dtEmis>{data_geracao}</dtEmis>
                         <numDocOrigem>DESC.EXT.CV</numDocOrigem>
-                        <vlr>{soma_valor_liquido}</vlr>
+                        <vlr>{round(soma_valor_liquido,2)}</vlr>
                     </docOrigem>
                     </dadosBasicos>
                     <pco>
@@ -229,7 +229,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                         <numSeqItem>1</numSeqItem>
                         <numEmpe>{numero_ne}</numEmpe>
                         <codSubItemEmpe>{numero_sb}</codSubItemEmpe>
-                        <vlr>{soma_valor_liquido}</vlr>
+                        <vlr>{round(soma_valor_liquido,2)}</vlr>
                         <numClassA>311110100</numClassA>
                     </pcoItem>
                     </pco>
@@ -242,7 +242,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                     <relPcoItem>
                         <numSeqPai>1</numSeqPai>
                         <numSeqItem>1</numSeqItem>
-                        <vlr>{soma_valor_liquido}</vlr>
+                        <vlr>{round(soma_valor_liquido,2)}</vlr>
                     </relPcoItem>
                     </centroCusto>
                 </ns2:CprDhCadastrar>
