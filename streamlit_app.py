@@ -30,7 +30,62 @@ st.markdown("<h3 style='text-align: center; font-size: 1em; text-decoration: und
 # Texto explicativo
 st.write("Desconto Externo Civil - Extração dados PDF SIAPE para SIAFI")
 
+def remove_newlines(text):
+    # Expressão regular para lidar com diferentes formas de nova linha
+    newline_patterns = [r'\n', r'\r\n', r'\r']
 
+    # Itera sobre os padrões e substitui cada ocorrência por uma string vazia
+    for pattern in newline_patterns:
+        text = re.sub(pattern, '', text)
+
+    return text
+
+# Função para processar o PDF e exibir o resultado
+def processar_pdf(pdf_content):
+  
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_pdf:
+        temp_pdf.write(pdf_content)
+        temp_pdf_path = temp_pdf.name
+
+    pdf_reader = fitz.open(temp_pdf_path)
+
+    if pdf_reader.needs_pass:
+        st.error("O arquivo PDF possui senha. Você precisa desbloqueá-lo primeiro.")
+        os.remove(temp_pdf_path)
+        return
+    text = ""
+    num_pages = pdf_reader.page_count
+
+    for i in range(num_pages):
+        page = pdf_reader.load_page(i)
+        text += page.get_text()
+        text = remove_newlines(text)
+    match = re.search(r'VALOR\s+LIQUIDO\.{3,}:\s*([\d.,]+)', text)
+
+    if match:
+        valor_liquido = match.group(1)
+        valor_liquido = valor_liquido.replace('.', '').replace(',', '.')
+        #st.success(f"Valor Líquido: {valor_liquido}")
+    else:
+        st.warning("Valor Líquido não encontrado.")
+
+    cnpj_pattern = r'\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}'
+    cnpjs = re.findall(cnpj_pattern, text)
+    text_parts = re.split(cnpj_pattern, text)
+  
+    def formatar_moeda(valor):
+        try:
+            valor = float(valor)
+            return f'R$ {valor:,.2f}'.replace(',', 'temp').replace('.', ',').replace('temp', '.')
+        except ValueError:
+            return valor  # Em caso de erro, retorna o valor original
+   
+
+    def get_binary_file_downloader_html(bin_file, file_label='File', button_label='Save as', key='download_link'):
+        bin_str = bin_file.getvalue()
+        bin_str = bin_str.decode()
+        href = f'data:application/octet-stream;base64,{bin_str}'
+        return f'<a href="{href}" download="{file_label}.xml"><button>{button_label}</button></a>'
 
     data = {'CNPJ': cnpjs, 'Texto_Após_CNPJ': text_parts[1:]}
     df = pd.DataFrame(data)
