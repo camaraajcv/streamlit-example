@@ -15,7 +15,7 @@ image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
 #Código HTML e CSS para ajustar a largura da imagem para 20% da largura da coluna e centralizar
 html_code = f'<div style="display: flex; justify-content: center;"><img src="{image_url}" alt="Imagem" style="width:8vw;"/></div>'
 
-data_geracao = datetime.now().strftime('%Y/%m/%d')
+data_geracao = datetime.now().strftime('%Y-%m-%d')
 data_geracao2 = datetime.now().strftime('%d/%m/%Y')
 
 
@@ -151,6 +151,7 @@ def processar_pdf(pdf_content):
             
             numero_ne = st.text_input("Número da NE:", max_chars=12, key='numero_ne')
             numero_sb = st.text_input("Número do Subelemento:", max_chars=2, key='numero_sb')
+            numero_fl= st.text_input("Número da FL:", max_chars=6, key='numero_fl')
             ano_empenho = st.text_input("Ano de Referência (4 dígitos):", max_chars=4, key='ano_empenho')
             sequencial_fl = st.text_input("Número Sequencial da FL:", max_chars=4, key='sequencial_fl')
             texto_obs = st.text_input("Texto Observação:", key='texto_obs')
@@ -172,10 +173,10 @@ def processar_pdf(pdf_content):
 
     # Se o formulário foi enviado, chame a função para exportar XML
     if submit_button:
-        exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento,valor_liquido,data_vencimento,sequencial_fl,sequencial_deducao,texto_obs,processo,indice_mais_um,soma_valor_liquido,mes_referencia_cc,ano_referencia_cc)
+        exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento,valor_liquido,data_vencimento,sequencial_fl,sequencial_deducao,texto_obs,processo,indice_mais_um,soma_valor_liquido,mes_referencia_cc,ano_referencia_cc,numero_fl)
         
 # Função para exportar o DataFrame para um arquivo XML
-def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento,sequencial_fl,sequencial_deducao,texto_obs,processo,indice_mais_um,soma_valor_liquido,mes_referencia_cc,ano_referencia_cc):
+def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento,sequencial_fl,sequencial_deducao,texto_obs,processo,indice_mais_um,soma_valor_liquido,mes_referencia_cc,ano_referencia_cc,numero_fl):
    
     xml_content = f"""
             <sb:arquivo xmlns:ns2="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/" xmlns:sb="http://www.tesouro.gov.br/siafi/submissao">
@@ -193,6 +194,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                     <codUgEmit>120052</codUgEmit>
                     <anoDH>{ano_empenho}</anoDH>
                     <codTipoDH>FL</codTipoDH>
+                    <numDH></numDH>
                     <dadosBasicos>
                     <dtEmis>{data_geracao}</dtEmis>
                     <dtVenc>{data_vencimento}</dtVenc>
@@ -247,7 +249,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                 <sb:header>
                     <sb:codigoLayout>DH002</sb:codigoLayout>
                     <sb:dataGeracao>{data_geracao}</sb:dataGeracao>
-                    <sb:sequencialGeracao>{sequencial_fl}</sb:sequencialGeracao>
+                    <sb:sequencialGeracao>{sequencial_deducao}</sb:sequencialGeracao>
                     <sb:anoReferencia>{ano_empenho}</sb:anoReferencia>
                     <sb:ugResponsavel>120052</sb:ugResponsavel>
                     <sb:cpfResponsavel>{cpf_responsavel}</sb:cpfResponsavel>
