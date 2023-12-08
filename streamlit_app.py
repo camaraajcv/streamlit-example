@@ -149,7 +149,7 @@ def processar_pdf(pdf_content):
     st.write("Rubricas que serão excluídas do SIAFI")
     st.dataframe(df_rubricas_excluidas)
     df_final = df_final[~df_final['Rubrica'].isin(valores_para_filtrar)]
-    valor_liquido_ajustado = formatar_moeda(round(df_final['Valor Líquido'].sum(),2))
+    valor_liquido_ajustado = round(df_final['Valor Líquido'].sum(),2)
     st.success(f"Valor Líquido sem as Rubricas excluídas: {formatar_moeda(round(df_final['Valor Líquido'].sum(),2))}")
     st.subheader("Formulário para Geração de Arquivos .XML")
        # Adicione um formulário para capturar variáveis
