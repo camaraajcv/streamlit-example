@@ -10,8 +10,8 @@ from datetime import datetime
 st.sidebar.title("Descontos Externos")
 
 # Adiciona um link para o outro aplicativo Streamlit
-link_militar = "[Militar](sandbox:/workspaces/streamlit-example/streamlit_app_mil.py)"
-link_civil = "[Civil](sandbox:/workspaces/streamlit-example/streamlit_app.py)"
+link_militar = "[Militar](/workspaces/streamlit-example/streamlit_app_mil.py)"
+link_civil = "[Civil](/workspaces/streamlit-example/streamlit_app.py)"
 
 st.sidebar.markdown(link_militar, unsafe_allow_html=True)
 st.sidebar.markdown(link_civil, unsafe_allow_html=True)
