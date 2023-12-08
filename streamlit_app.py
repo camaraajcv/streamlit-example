@@ -259,7 +259,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                 <sb:arquivo xmlns:sb="http://www.tesouro.gov.br/siafi/submissao" xmlns:cpr="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/">
                 <sb:header>
                     <sb:codigoLayout>DH002</sb:codigoLayout>
-                    <sb:dataGeracao>{data_geracao}</sb:dataGeracao>
+                    <sb:dataGeracao>{data_geracao2}</sb:dataGeracao>
                     <sb:sequencialGeracao>{sequencial_deducao}</sb:sequencialGeracao>
                     <sb:anoReferencia>{ano_empenho}</sb:anoReferencia>
                     <sb:ugResponsavel>120052</sb:ugResponsavel>
