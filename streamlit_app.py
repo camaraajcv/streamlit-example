@@ -6,8 +6,7 @@ import tempfile
 import streamlit as st
 import os
 from datetime import datetime
-import locale
-
+import funcoes
 
 # URL da imagem
 image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
@@ -31,56 +30,7 @@ st.markdown("<h3 style='text-align: center; font-size: 1em; text-decoration: und
 # Texto explicativo
 st.write("Desconto Externo Civil - Extração dados PDF SIAPE para SIAFI")
 
-def remove_newlines(text):
-    # Expressão regular para lidar com diferentes formas de nova linha
-    newline_patterns = [r'\n', r'\r\n', r'\r']
 
-    # Itera sobre os padrões e substitui cada ocorrência por uma string vazia
-    for pattern in newline_patterns:
-        text = re.sub(pattern, '', text)
-
-    return text
-
-# Função para processar o PDF e exibir o resultado
-def processar_pdf(pdf_content):
-  
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_pdf:
-        temp_pdf.write(pdf_content)
-        temp_pdf_path = temp_pdf.name
-
-    pdf_reader = fitz.open(temp_pdf_path)
-
-    if pdf_reader.needs_pass:
-        st.error("O arquivo PDF possui senha. Você precisa desbloqueá-lo primeiro.")
-        os.remove(temp_pdf_path)
-        return
-
-    text = ""
-    num_pages = pdf_reader.page_count
-
-    for i in range(num_pages):
-        page = pdf_reader.load_page(i)
-        text += page.get_text()
-        text = remove_newlines(text)
-    match = re.search(r'VALOR\s+LIQUIDO\.{3,}:\s*([\d.,]+)', text)
-
-    if match:
-        valor_liquido = match.group(1)
-        valor_liquido = valor_liquido.replace('.', '').replace(',', '.')
-        #st.success(f"Valor Líquido: {valor_liquido}")
-    else:
-        st.warning("Valor Líquido não encontrado.")
-
-    cnpj_pattern = r'\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}'
-    cnpjs = re.findall(cnpj_pattern, text)
-    text_parts = re.split(cnpj_pattern, text)
-  
-    def formatar_moeda(valor):
-        try:
-            valor = float(valor)
-            return f'R$ {valor:,.2f}'.replace(',', 'temp').replace('.', ',').replace('temp', '.')
-        except ValueError:
-            return valor  # Em caso de erro, retorna o valor original
 
     data = {'CNPJ': cnpjs, 'Texto_Após_CNPJ': text_parts[1:]}
     df = pd.DataFrame(data)
@@ -115,7 +65,8 @@ def processar_pdf(pdf_content):
     # inserindo rubricas que não devem sair no XML
 
     valores_para_filtrar = ['34685', '34447', '30846']
-    
+    ano_atual=datetime.now().year
+    mes_atual = datetime.now().strftime('%m')
     # Filtrar o DataFrame
     df_rubricas_excluidas = df[df['Rubrica'].isin(valores_para_filtrar)][['Rubrica','Empresa','Valor Líquido']]
     df_final=df.drop('Texto_Após_CNPJ', axis=1)
@@ -160,13 +111,13 @@ def processar_pdf(pdf_content):
         # Coluna 1
         with col1:
             
-            numero_ne = st.text_input("Número da NE:", max_chars=12, key='numero_ne')
+            numero_ne = st.text_input("Número da NE:", value=str(ano_atual)+'NE', max_chars=12, key='numero_ne')
             numero_sb = st.text_input("Número do Subelemento:", max_chars=2, key='numero_sb')
             numero_fl= st.text_input("Número da FL:", max_chars=6, key='numero_fl')
-            ano_empenho = st.text_input("Ano de Referência (4 dígitos):", max_chars=4, key='ano_empenho')
+            ano_empenho = st.text_input("Ano de Referência (4 dígitos):",  value=str(ano_atual), max_chars=4, key='ano_empenho')
             sequencial_fl = st.text_input("Número Sequencial da FL:", max_chars=4, key='sequencial_fl')
-            texto_obs = st.text_input("Texto Observação:", key='texto_obs')
-            mes_referencia_cc = st.text_input("Número Mês Referência CC :",max_chars=2, key='mes_referencia_cc')
+            texto_obs = st.text_input("Texto Observação:",value='DESC.EXT.CV', key='texto_obs')
+            mes_referencia_cc = st.text_input("Número Mês Referência CC :",value=str(mes_atual),max_chars=2, key='mes_referencia_cc')
             
         # Coluna 2
         with col2:
@@ -175,7 +126,7 @@ def processar_pdf(pdf_content):
             data_vencimento = st.date_input("Data Vencimento", key='data_vencimento')
             sequencial_deducao = st.text_input("Número Sequencial da Dedução:", max_chars=4, key='sequencial_deducao')
             processo = st.text_input("Processo:", key='processo')
-            ano_referencia_cc = st.text_input("Número Ano Referência CC :",max_chars=4, key='ano_referencia_cc')
+            ano_referencia_cc = st.text_input("Número Ano Referência CC :",value=str(ano_atual),max_chars=4, key='ano_referencia_cc')
         # Botão para enviar o formulário
         submit_button = st.form_submit_button(label='Gerar XML')
 
@@ -334,11 +285,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
     )
 
 # Função auxiliar para criar um link de download
-def get_binary_file_downloader_html(bin_file, file_label='File', button_label='Save as', key='download_link'):
-    bin_str = bin_file.getvalue()
-    bin_str = bin_str.decode()
-    href = f'data:application/octet-stream;base64,{bin_str}'
-    return f'<a href="{href}" download="{file_label}.xml"><button>{button_label}</button></a>'
+
 # Solicitar ao usuário o upload do arquivo PDF
 uploaded_file = st.file_uploader("Faça o UPLOAD do arquivo PDF do SIAPE gerado na transação GRCOCGRECO", type="pdf")
 
