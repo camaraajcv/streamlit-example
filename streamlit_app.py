@@ -149,6 +149,7 @@ def processar_pdf(pdf_content):
     st.write("Rubricas que serão excluídas do SIAFI")
     st.dataframe(df_rubricas_excluidas)
     df_final = df_final[~df_final['Rubrica'].isin(valores_para_filtrar)]
+    valor_liquido_ajustado = formatar_moeda(round(df_final['Valor Líquido'].sum(),2))
     st.success(f"Valor Líquido sem as Rubricas excluídas: {formatar_moeda(round(df_final['Valor Líquido'].sum(),2))}")
     st.subheader("Formulário para Geração de Arquivos .XML")
        # Adicione um formulário para capturar variáveis
@@ -183,10 +184,10 @@ def processar_pdf(pdf_content):
 
     # Se o formulário foi enviado, chame a função para exportar XML
     if submit_button:
-        exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento,valor_liquido,data_vencimento,sequencial_fl,sequencial_deducao,texto_obs,processo,indice_mais_um,soma_valor_liquido,mes_referencia_cc,ano_referencia_cc,numero_fl)
+        exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento,valor_liquido,data_vencimento,sequencial_fl,sequencial_deducao,texto_obs,processo,indice_mais_um,soma_valor_liquido,mes_referencia_cc,ano_referencia_cc,numero_fl,valor_liquido_ajustado)
         
 # Função para exportar o DataFrame para um arquivo XML
-def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento,sequencial_fl,sequencial_deducao,texto_obs,processo,indice_mais_um,soma_valor_liquido,mes_referencia_cc,ano_referencia_cc,numero_fl):
+def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento,sequencial_fl,sequencial_deducao,texto_obs,processo,indice_mais_um,soma_valor_liquido,mes_referencia_cc,ano_referencia_cc,numero_fl,valor_liquido_ajustado):
    
     xml_content = f"""
             <sb:arquivo xmlns:ns2="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/" xmlns:sb="http://www.tesouro.gov.br/siafi/submissao">
@@ -204,12 +205,12 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                     <codUgEmit>120052</codUgEmit>
                     <anoDH>{ano_empenho}</anoDH>
                     <codTipoDH>FL</codTipoDH>
-                    <numDH></numDH>
+                    <numDH>{numero_fl}</numDH>
                     <dadosBasicos>
                     <dtEmis>{data_geracao}</dtEmis>
                     <dtVenc>{data_vencimento}</dtVenc>
                     <codUgPgto>120052</codUgPgto>
-                    <vlr>{valor_liquido}</vlr>
+                    <vlr>{valor_liquido_ajustado}</vlr>
                     <txtObser>{texto_obs}</txtObser>
                     <txtProcesso>{processo}</txtProcesso>
                     <dtAteste>{data_vencimento}</dtAteste>
@@ -219,7 +220,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                         <codIdentEmit>120052</codIdentEmit>
                         <dtEmis>{data_geracao}</dtEmis>
                         <numDocOrigem>DESC.EXT.CV</numDocOrigem>
-                        <vlr>{round(soma_valor_liquido,2)}</vlr>
+                        <vlr>{valor_liquido_ajustado}</vlr>
                     </docOrigem>
                     </dadosBasicos>
                     <pco>
@@ -230,7 +231,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                         <numSeqItem>1</numSeqItem>
                         <numEmpe>{numero_ne}</numEmpe>
                         <codSubItemEmpe>{numero_sb}</codSubItemEmpe>
-                        <vlr>{round(soma_valor_liquido,2)}</vlr>
+                        <vlr>{valor_liquido_ajustado}</vlr>
                         <numClassA>311110100</numClassA>
                     </pcoItem>
                     </pco>
@@ -243,7 +244,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                     <relPcoItem>
                         <numSeqPai>1</numSeqPai>
                         <numSeqItem>1</numSeqItem>
-                        <vlr>{round(soma_valor_liquido,2)}</vlr>
+                        <vlr>{valor_liquido_ajustado}</vlr>
                     </relPcoItem>
                     </centroCusto>
                 </ns2:CprDhCadastrar>
