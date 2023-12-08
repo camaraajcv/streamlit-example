@@ -6,7 +6,7 @@ import tempfile
 import streamlit as st
 import os
 from datetime import datetime
-
+st.sidebar.title("Descontos Externos")
 # URL da imagem
 image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
 
