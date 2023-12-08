@@ -86,7 +86,7 @@ def processar_pdf(pdf_content):
     df['Empresa'] = df['Texto_Após_CNPJ'].str[:33]
     df['Qtd.Serv'] = df['Texto_Após_CNPJ'].str[38:46]
     df['Valor Bruto'] = df['Texto_Após_CNPJ'].str[46:60]
-    df['Rubrica'] = df['Texto_Após_CNPJ'].str[60:64]
+    df['Rubrica'] = df['Texto_Após_CNPJ'].str[60:65]
     df['tipo'] = df['Texto_Após_CNPJ'].str[86:112]
     df['Qtd.Linha'] = df['Texto_Após_CNPJ'].str[116:122]
     df['ValorLinha'] = df['Texto_Após_CNPJ'].str[127:138]
@@ -116,7 +116,7 @@ def processar_pdf(pdf_content):
     valores_para_filtrar = ['34685', '34447', '30846']
     
     # Filtrar o DataFrame
-    df_rubricas_excluidas = df[df['Rubrica']=='34685 ']
+    df_rubricas_excluidas = df[df['Rubrica']=='34685']
     df_final=df.drop('Texto_Após_CNPJ', axis=1)
 
     # Obter o índice da primeira linha do DataFrame df_final
