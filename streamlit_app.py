@@ -6,6 +6,9 @@ import tempfile
 import streamlit as st
 import os
 from datetime import datetime
+import numpy as np
+from pandas.tseries.offsets import BDay
+
 # Adiciona um título à barra lateral
 st.sidebar.title("Descontos Externos")
 
@@ -338,7 +341,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
         </sb:trailler>
     </sb:arquivo>
     """
-    st.success(f"Arquivo XML com DataFrame gerado com sucesso.") 
+    st.success(f"Arquivo XML gerado com sucesso.") 
     # Adiciona um botão de download para o arquivo XML
     # Cria um objeto BytesIO para armazenar o conteúdo do XML
     xml_io = io.BytesIO(xml_content.encode())
