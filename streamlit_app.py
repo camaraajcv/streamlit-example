@@ -40,8 +40,8 @@ st.markdown("<h3 style='text-align: center; font-size: 1em; text-decoration: und
 # Texto explicativo
 st.write("Desconto Externo Civil - Extração dados PDF SIAPE para SIAFI")
 
-def is_business_day(date):
-    return np.isin(pd.to_datetime(date).normalize(), pd.bdate_range(start=date, periods=1))
+def is_weekday(date):
+    return date.weekday() < 5  # 0-4 representam segunda a sexta-feira
 
 data_previsao_pagamento = st.date_input("Data de Previsão de Pagamento", key='data_previsao_pagamento')
 data_vencimento = st.date_input("Data Vencimento", key='data_vencimento')
