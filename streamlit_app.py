@@ -6,8 +6,7 @@ import tempfile
 import streamlit as st
 import os
 from datetime import datetime
-import numpy as np
-from pandas.tseries.offsets import BDay
+
 
 # Adiciona um título à barra lateral
 st.sidebar.title("Descontos Externos")
@@ -200,7 +199,7 @@ def processar_pdf(pdf_content):
 
             if not is_weekday(data_vencimento):
                 st.warning("Por favor, selecione uma data de vencimento que seja um dia útil.")
-                
+
             sequencial_deducao = st.text_input("Número Sequencial da Dedução:", max_chars=4, key='sequencial_deducao')
             processo = st.text_input("Processo:", key='processo')
             ano_referencia_cc = st.text_input("Número Ano Referência CC :",value=str(ano_atual),max_chars=4, key='ano_referencia_cc')
