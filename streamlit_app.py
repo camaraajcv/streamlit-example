@@ -37,6 +37,12 @@ st.markdown("<h3 style='text-align: center; font-size: 1em; text-decoration: und
 # Texto explicativo
 st.write("Desconto Externo Civil - Extração dados PDF SIAPE para SIAFI")
 
+def is_business_day(date):
+    return np.isin(pd.to_datetime(date).normalize(), pd.bdate_range(start=date, periods=1))
+
+data_previsao_pagamento = st.date_input("Data de Previsão de Pagamento", key='data_previsao_pagamento')
+data_vencimento = st.date_input("Data Vencimento", key='data_vencimento')
+
 def remove_newlines(text):
     # Expressão regular para lidar com diferentes formas de nova linha
     newline_patterns = [r'\n', r'\r\n', r'\r']
@@ -186,6 +192,11 @@ def processar_pdf(pdf_content):
             cpf_responsavel = st.text_input("CPF do Responsável:",max_chars=11, key='cpf_responsavel')
             data_previsao_pagamento = st.date_input("Data de Previsão de Pagamento", key='data_previsao_pagamento')
             data_vencimento = st.date_input("Data Vencimento", key='data_vencimento')
+            if not is_business_day(data_previsao_pagamento):
+                st.warning("Por favor, selecione uma data de previsão de pagamento que seja um dia útil.")
+
+            if not is_business_day(data_vencimento):
+                st.warning("Por favor, selecione uma data de vencimento que seja um dia útil.")
             sequencial_deducao = st.text_input("Número Sequencial da Dedução:", max_chars=4, key='sequencial_deducao')
             processo = st.text_input("Processo:", key='processo')
             ano_referencia_cc = st.text_input("Número Ano Referência CC :",value=str(ano_atual),max_chars=4, key='ano_referencia_cc')
