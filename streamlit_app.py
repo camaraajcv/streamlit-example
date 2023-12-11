@@ -244,6 +244,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                         <numSeqItem>1</numSeqItem>
                         <numEmpe>{numero_ne}</numEmpe>
                         <codSubItemEmpe>{numero_sb}</codSubItemEmpe>
+                        <indrLiquidado>1</indrLiquidado>
                         <vlr>{valor_liquido_ajustado}</vlr>
                         <numClassA>311110100</numClassA>
                     </pcoItem>
@@ -254,6 +255,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                     <mesReferencia>{mes_referencia_cc}</mesReferencia>
                     <anoReferencia>{ano_referencia_cc}</anoReferencia>
                     <codUgBenef>120052</codUgBenef>
+                    <codSIORG>2332</codSIORG>
                     <relPcoItem>
                         <numSeqPai>1</numSeqPai>
                         <numSeqItem>1</numSeqItem>
