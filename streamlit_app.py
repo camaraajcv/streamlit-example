@@ -6,8 +6,6 @@ import tempfile
 import streamlit as st
 import os
 from datetime import datetime
-
-
 # Adiciona um título à barra lateral
 st.sidebar.title("Descontos Externos")
 
@@ -39,8 +37,8 @@ st.markdown("<h3 style='text-align: center; font-size: 1em; text-decoration: und
 # Texto explicativo
 st.write("Desconto Externo Civil - Extração dados PDF SIAPE para SIAFI")
 
-def is_weekday(date):
-    return date.weekday() < 5  # 0-4 representam segunda a sexta-feira
+def is_business_day(date):
+    return np.isin(pd.to_datetime(date).normalize(), pd.bdate_range(start=date, periods=1))
 
 data_previsao_pagamento = st.date_input("Data de Previsão de Pagamento", key='data_previsao_pagamento')
 data_vencimento = st.date_input("Data Vencimento", key='data_vencimento')
@@ -192,14 +190,8 @@ def processar_pdf(pdf_content):
         # Coluna 2
         with col2:
             cpf_responsavel = st.text_input("CPF do Responsável:",max_chars=11, key='cpf_responsavel')
-            data_previsao_pagamento = st.date_input("Data de Previsão de Pagamento", key='data_previsao_pagamento', min_value=datetime.date.today(), max_value=(datetime.date.today() + datetime.timedelta(days=365)))
-            data_vencimento = st.date_input("Data Vencimento", key='data_vencimento', min_value=datetime.date.today(), max_value=(datetime.date.today() + datetime.timedelta(days=365)))
-            if not is_weekday(data_previsao_pagamento):
-                st.warning("Por favor, selecione uma data de previsão de pagamento que seja um dia útil.")
-
-            if not is_weekday(data_vencimento):
-                st.warning("Por favor, selecione uma data de vencimento que seja um dia útil.")
-
+            data_previsao_pagamento = st.date_input("Data de Previsão de Pagamento", key='data_previsao_pagamento')
+            data_vencimento = st.date_input("Data Vencimento", key='data_vencimento')
             sequencial_deducao = st.text_input("Número Sequencial da Dedução:", max_chars=4, key='sequencial_deducao')
             processo = st.text_input("Processo:", key='processo')
             ano_referencia_cc = st.text_input("Número Ano Referência CC :",value=str(ano_atual),max_chars=4, key='ano_referencia_cc')
