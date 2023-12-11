@@ -36,11 +36,6 @@ st.markdown("<h3 style='text-align: center; font-size: 1em; text-decoration: und
 
 # Texto explicativo
 st.write("Desconto Externo Civil - Extração dados PDF SIAPE para SIAFI")
-def is_business_day(date):
-    return np.isin(pd.to_datetime(date).normalize(), pd.bdate_range(start=date, periods=1))
-
-data_previsao_pagamento = st.date_input("Data de Previsão de Pagamento", key='data_previsao_pagamento')
-data_vencimento = st.date_input("Data Vencimento", key='data_vencimento')
 
 def remove_newlines(text):
     # Expressão regular para lidar com diferentes formas de nova linha
@@ -231,7 +226,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                     <vlr>{valor_liquido_ajustado}</vlr>
                     <txtObser>{texto_obs}</txtObser>
                     <txtProcesso>{processo}</txtProcesso>
-                    <dtAteste>{data_geracao}</dtAteste>
+                    <dtAteste>{data_vencimento}</dtAteste>
                     <codCredorDevedor>120052</codCredorDevedor>
                     <dtPgtoReceb>{data_previsao_pagamento}</dtPgtoReceb>
                     <docOrigem>
@@ -249,7 +244,6 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                         <numSeqItem>1</numSeqItem>
                         <numEmpe>{numero_ne}</numEmpe>
                         <codSubItemEmpe>{numero_sb}</codSubItemEmpe>
-                        <indrLiquidado>1</indrLiquidado>
                         <vlr>{valor_liquido_ajustado}</vlr>
                         <numClassA>311110100</numClassA>
                     </pcoItem>
@@ -260,7 +254,6 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                     <mesReferencia>{mes_referencia_cc}</mesReferencia>
                     <anoReferencia>{ano_referencia_cc}</anoReferencia>
                     <codUgBenef>120052</codUgBenef>
-                    <codSIORG>2332</codSIORG>
                     <relPcoItem>
                         <numSeqPai>1</numSeqPai>
                         <numSeqItem>1</numSeqItem>
