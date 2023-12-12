@@ -143,7 +143,7 @@ def processar_pdf(pdf_content):
     indice_mais_um = posicao_indice + 1
 
     #numero de linhas
-    linhas_totais=len(df_final)
+    
     # Calcula a soma da coluna 'Valor Líquido'
     soma_valor_liquido = df_final['Valor Líquido'].sum()
     # Calcula a diferença entre a soma da coluna 'Valor Líquido' e o valor extraído
@@ -199,10 +199,10 @@ def processar_pdf(pdf_content):
 
     # Se o formulário foi enviado, chame a função para exportar XML
     if submit_button:
-        exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento,valor_liquido,data_vencimento,sequencial_fl,sequencial_deducao,texto_obs,processo,indice_mais_um,soma_valor_liquido,mes_referencia_cc,ano_referencia_cc,numero_fl,valor_liquido_ajustado,linhas_totais)
+        exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento,valor_liquido,data_vencimento,sequencial_fl,sequencial_deducao,texto_obs,processo,indice_mais_um,soma_valor_liquido,mes_referencia_cc,ano_referencia_cc,numero_fl,valor_liquido_ajustado)
         
 # Função para exportar o DataFrame para um arquivo XML
-def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento,sequencial_fl,sequencial_deducao,texto_obs,processo,indice_mais_um,soma_valor_liquido,mes_referencia_cc,ano_referencia_cc,numero_fl,valor_liquido_ajustado,linhas_totais):
+def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento,sequencial_fl,sequencial_deducao,texto_obs,processo,indice_mais_um,soma_valor_liquido,mes_referencia_cc,ano_referencia_cc,numero_fl,valor_liquido_ajustado):
    
     xml_content = f"""
             <sb:arquivo xmlns:ns2="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/" xmlns:sb="http://www.tesouro.gov.br/siafi/submissao">
@@ -321,14 +321,15 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                                 </deducao>                                
                 </cpr:CprDhAlterarDHIncluirItens>
             </sb:detalhe>"""
-                                
+                           
     xml_content_modelo2 += """
         </sb:detalhes>
         <sb:trailler>
-            <sb:quantidadeDetalhe>{linhas_totais}</sb:quantidadeDetalhe>
+            <sb:quantidadeDetalhe>linhas_totais</sb:quantidadeDetalhe>
         </sb:trailler>
     </sb:arquivo>
-    """
+        """
+    xml_content_modelo2 = xml_content_modelo2.replace('linhas_totais', str(len(df_final)))
     st.success(f"Arquivo XML com DataFrame gerado com sucesso.") 
     # Adiciona um botão de download para o arquivo XML
     # Cria um objeto BytesIO para armazenar o conteúdo do XML
