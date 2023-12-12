@@ -142,6 +142,8 @@ def processar_pdf(pdf_content):
     # Somar 1 à posição do índice
     indice_mais_um = posicao_indice + 1
 
+    #numero de linhas
+    linhas_totais=len(df_final)
     # Calcula a soma da coluna 'Valor Líquido'
     soma_valor_liquido = df_final['Valor Líquido'].sum()
     # Calcula a diferença entre a soma da coluna 'Valor Líquido' e o valor extraído
@@ -197,10 +199,10 @@ def processar_pdf(pdf_content):
 
     # Se o formulário foi enviado, chame a função para exportar XML
     if submit_button:
-        exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento,valor_liquido,data_vencimento,sequencial_fl,sequencial_deducao,texto_obs,processo,indice_mais_um,soma_valor_liquido,mes_referencia_cc,ano_referencia_cc,numero_fl,valor_liquido_ajustado)
+        exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel,data_previsao_pagamento,valor_liquido,data_vencimento,sequencial_fl,sequencial_deducao,texto_obs,processo,indice_mais_um,soma_valor_liquido,mes_referencia_cc,ano_referencia_cc,numero_fl,valor_liquido_ajustado,linhas_totais)
         
 # Função para exportar o DataFrame para um arquivo XML
-def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento,sequencial_fl,sequencial_deducao,texto_obs,processo,indice_mais_um,soma_valor_liquido,mes_referencia_cc,ano_referencia_cc,numero_fl,valor_liquido_ajustado):
+def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento,sequencial_fl,sequencial_deducao,texto_obs,processo,indice_mais_um,soma_valor_liquido,mes_referencia_cc,ano_referencia_cc,numero_fl,valor_liquido_ajustado,linhas_totais):
    
     xml_content = f"""
             <sb:arquivo xmlns:ns2="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/" xmlns:sb="http://www.tesouro.gov.br/siafi/submissao">
@@ -281,17 +283,17 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                     <sb:cpfResponsavel>{cpf_responsavel}</sb:cpfResponsavel>
                 </sb:header>
                 <sb:detalhes>
-                    <sb:detalhe>
+                    """
+    # Itera sobre as linhas do DataFrame e adiciona as informações de dedução
+    for seq_item,(index, row)  in enumerate(df_final.iterrows(), start=1):
+        xml_content_modelo2 +=f"""<sb:detalhe>
                         <cpr:CprDhAlterarDHIncluirItens>
                             <codUgEmit>120052</codUgEmit>
                             <anoDH>{ano_empenho}</anoDH>
                             <codTipoDH>FL</codTipoDH>
                             <numDH>{numero_ne}</numDH>
                             <dtEmis>{data_geracao}</dtEmis>
-                            <txtMotivo>{texto_obs}</txtMotivo>"""
-    # Itera sobre as linhas do DataFrame e adiciona as informações de dedução
-    for seq_item,(index, row)  in enumerate(df_final.iterrows(), start=1):
-        xml_content_modelo2 +=f"""
+                            <txtMotivo>{texto_obs}</txtMotivo>
                                 <deducao>
                                     <numSeqItem>{seq_item}</numSeqItem>
                                     <codSit>DOB005</codSit>
@@ -316,14 +318,14 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                                             </numDomiBancPgto>
                                         </predocOB>
                                     </predoc>
-                                </deducao>"""
+                                </deducao>                                
+                </cpr:CprDhAlterarDHIncluirItens>
+            </sb:detalhe>"""
                                 
     xml_content_modelo2 += """
-                </cpr:CprDhAlterarDHIncluirItens>
-            </sb:detalhe>
         </sb:detalhes>
         <sb:trailler>
-            <sb:quantidadeDetalhe>1</sb:quantidadeDetalhe>
+            <sb:quantidadeDetalhe>{linhas_totais}</sb:quantidadeDetalhe>
         </sb:trailler>
     </sb:arquivo>
     """
