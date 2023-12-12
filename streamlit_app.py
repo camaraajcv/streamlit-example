@@ -291,7 +291,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                             <codUgEmit>120052</codUgEmit>
                             <anoDH>{ano_empenho}</anoDH>
                             <codTipoDH>FL</codTipoDH>
-                            <numDH>{numero_ne}</numDH>
+                            <numDH>{numero_fl}</numDH>
                             <dtEmis>{data_geracao}</dtEmis>
                             <txtMotivo>{texto_obs}</txtMotivo>
                                 <deducao>
