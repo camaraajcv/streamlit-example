@@ -186,7 +186,7 @@ def processar_pdf(pdf_content):
         # Coluna 2
         with col2:
             cpf_responsavel = st.text_input("CPF do Responsável:",max_chars=11, key='cpf_responsavel')
-            data_previsao_pagamento = st.date_input("Data de Previsão de Pagamento", key='data_previsao_pagamento')
+            data_previsao_pagamento = st.date_input("Data de Previsão de Pagamento - (1° dia útil mês seguinte)", key='data_previsao_pagamento')
             data_vencimento = st.date_input("Data Vencimento", key='data_vencimento')
             sequencial_deducao = st.text_input("Número Sequencial da Dedução:", max_chars=4, key='sequencial_deducao')
             processo = st.text_input("Processo:", key='processo')
