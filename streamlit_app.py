@@ -126,7 +126,7 @@ def processar_pdf(pdf_content):
     df['CNPJ'] = df['CNPJ'].str.replace('.', '').str.replace('/', '').str.replace('-', '')
     # inserindo rubricas que não devem sair no XML
 
-    valores_para_filtrar = ['34685', '34447', '30846']
+    valores_para_filtrar = ['34685', '34447', '30846','34742']
     ano_atual=datetime.now().year
     mes_atual = datetime.now().strftime('%m')
     # Filtrar o DataFrame
