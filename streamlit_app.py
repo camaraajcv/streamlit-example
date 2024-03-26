@@ -286,62 +286,60 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                     """
     # Itera sobre as linhas do DataFrame e adiciona as informações de dedução
     for seq_item, (index, row) in enumerate(df_final.iterrows(), start=1):
+        # Definição de codTipoOB, conta, banco_fab e txtCit de acordo com os CNPJs específicos
         if row['CNPJ'] == '00000000000191':
             codTipoOB = 'OBF'
             txtCit = '120052ECFP999'
-            include_banco_txtCit = True
+            conta = 'FOPAG'
+            banco_fab = '002'
         elif row['CNPJ'] == '00360305000104':
             codTipoOB = 'OBF'
             txtCit = '120052ECFPC019950'
-            include_banco_txtCit = True
-        else:
-            codTipoOB = 'OBC'
-            include_banco_txtCit = False  # Não incluir para outros CNPJs
-            txtCit = None  # Definir txtCit como None para indicar que não deve ser incluído
-
-        if row['CNPJ'] in ['00360305000104', '00000000000191']:
             conta = 'FOPAG'
             banco_fab = '002'
         else:
+            codTipoOB = 'OBC'
+            txtCit = None
             conta = 'UNICA'
             banco_fab = ''
 
-        numDomiBancPgto = f'<numDomiBancPgto><banco>{banco_fab}</banco><conta>{conta}</conta></numDomiBancPgto>' if include_banco_txtCit else f'<numDomiBancPgto><conta>{conta}</conta></numDomiBancPgto>'
-
-        xml_content_modelo2 += f'''<sb:detalhe>
-                <cpr:CprDhAlterarDHIncluirItens>
-                    <codUgEmit>120052</codUgEmit>
-                    <anoDH>{ano_empenho}</anoDH>
-                    <codTipoDH>FL</codTipoDH>
-                    <numDH>{numero_fl}</numDH>
-                    <dtEmis>{data_geracao}</dtEmis>
-                    <txtMotivo>{texto_obs}</txtMotivo>
-                    <deducao>
-                        <numSeqItem>{seq_item}</numSeqItem>
-                        <codSit>DOB005</codSit>
-                        <dtVenc>{data_vencimento}</dtVenc>
-                        <dtPgtoReceb>{data_previsao_pagamento}</dtPgtoReceb>
-                        <codUgPgto>120052</codUgPgto>
-                        <vlr>{row["Valor Líquido"]:.2f}</vlr>
-                        <txtInscrA>{row['CNPJ']}</txtInscrA>
-                        <numClassA>218810199</numClassA>
-                        <predoc>
-                            <txtObser>{texto_obs}</txtObser>
-                            <predocOB>
-                                <codTipoOB>{codTipoOB}</codTipoOB>
-                                <codCredorDevedor>{row['CNPJ']}</codCredorDevedor>
-                                {f'<txtCit>{txtCit}</txtCit>' if include_banco_txtCit and txtCit is not None else ''}
-                                <numDomiBancFavo>
-                                    <banco>{row['BCO']}</banco>
-                                    <agencia>{row['AG']}</agencia>
-                                    <conta>{conta}</conta>
-                                </numDomiBancFavo>
-                                {numDomiBancPgto}
-                            </predocOB>
-                        </predoc>
-                    </deducao>
+        xml_content_modelo2 += f"""<sb:detalhe>
+                        <cpr:CprDhAlterarDHIncluirItens>
+                            <codUgEmit>120052</codUgEmit>
+                            <anoDH>{ano_empenho}</anoDH>
+                            <codTipoDH>FL</codTipoDH>
+                            <numDH>{numero_fl}</numDH>
+                            <dtEmis>{data_geracao}</dtEmis>
+                            <txtMotivo>{texto_obs}</txtMotivo>
+                                <deducao>
+                                    <numSeqItem>{seq_item}</numSeqItem>
+                                    <codSit>DOB005</codSit>
+                                    <dtVenc>{data_vencimento}</dtVenc>
+                                    <dtPgtoReceb>{data_previsao_pagamento}</dtPgtoReceb>
+                                    <codUgPgto>120052</codUgPgto>
+                                    <vlr>{f'{row["Valor Líquido"]:.2f}'}</vlr>
+                                    <txtInscrA>{row['CNPJ']}</txtInscrA>
+                                    <numClassA>218810199</numClassA>
+                                    <predoc>
+                                        <txtObser>{texto_obs}</txtObser>
+                                        <predocOB>
+                                            <codTipoOB>{codTipoOB}</codTipoOB>
+                                            <codCredorDevedor>{row['CNPJ']}</codCredorDevedor>
+                                            <numDomiBancFavo>
+                                                <banco>{row['BCO']}</banco>
+                                                <agencia>{row['AG']}</agencia>
+                                                <conta>{row['Conta']}</conta>
+                                            </numDomiBancFavo>
+                                            <numDomiBancPgto>
+                                                <banco>{banco_fab}</banco>
+                                                <conta>{conta}</conta>
+                                            </numDomiBancPgto>
+                                        </predocOB>
+                                    </predoc>
+                                </deducao>                                
                 </cpr:CprDhAlterarDHIncluirItens>
-            </sb:detalhe>'''
+            </sb:detalhe>"""
+
 
                            
     xml_content_modelo2 += """
