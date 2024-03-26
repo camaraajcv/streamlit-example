@@ -303,6 +303,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
             conta = 'UNICA'
             banco_fab = ''
 
+        # Construção do XML
         xml_content_modelo2 += f"""<sb:detalhe>
                         <cpr:CprDhAlterarDHIncluirItens>
                             <codUgEmit>120052</codUgEmit>
@@ -330,6 +331,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                                                 <agencia>{row['AG']}</agencia>
                                                 <conta>{row['Conta']}</conta>
                                             </numDomiBancFavo>
+                                            {f'<banco>{banco_fab}</banco>' if conta != 'UNICA' else ''}
                                             <numDomiBancPgto>
                                                 <banco>{banco_fab}</banco>
                                                 <conta>{conta}</conta>
@@ -339,9 +341,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                                 </deducao>                                
                 </cpr:CprDhAlterarDHIncluirItens>
             </sb:detalhe>"""
-
-
-                           
+                      
     xml_content_modelo2 += """
         </sb:detalhes>
         <sb:trailler>
