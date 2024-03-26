@@ -286,7 +286,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                     """
     # Itera sobre as linhas do DataFrame e adiciona as informações de dedução
     for seq_item, (index, row) in enumerate(df_final.iterrows(), start=1):
-        # Definição de codTipoOB, conta, banco_fab e txtCit de acordo com os CNPJs específicos
+    # Definição de codTipoOB, conta, banco_fab e txtCit de acordo com os CNPJs específicos
         if row['CNPJ'] == '00000000000191':
             codTipoOB = 'OBF'
             txtCit = '120052ECFP999'
@@ -304,6 +304,21 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
             banco_fab = ''
 
         # Construção do XML
+        if codTipoOB == 'OBF':
+            numDomiBancFavo = f"""<numDomiBancFavo>
+                                    <banco>{banco_fab}</banco>
+                                    <agencia>{row['AG']}</agencia>
+                                    <conta>{conta}</conta>
+                                </numDomiBancFavo>"""
+            numDomiBancPgto = f"""<numDomiBancPgto><banco>{banco_fab}</banco><conta>UNICA</conta></numDomiBancPgto>"""
+        else:
+            numDomiBancFavo = f"""<numDomiBancFavo>
+                                    <banco>{row['BCO']}</banco>
+                                    <agencia>{row['AG']}</agencia>
+                                    <conta>{row['Conta']}</conta>
+                                </numDomiBancFavo>"""
+            numDomiBancPgto = f"""<numDomiBancPgto><conta>UNICA</conta></numDomiBancPgto>"""
+
         xml_content_modelo2 += f"""<sb:detalhe>
                         <cpr:CprDhAlterarDHIncluirItens>
                             <codUgEmit>120052</codUgEmit>
@@ -326,21 +341,14 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                                         <predocOB>
                                             <codTipoOB>{codTipoOB}</codTipoOB>
                                             <codCredorDevedor>{row['CNPJ']}</codCredorDevedor>
-                                            <numDomiBancFavo>
-                                                <banco>{row['BCO']}</banco>
-                                                <agencia>{row['AG']}</agencia>
-                                                <conta>{row['Conta']}</conta>
-                                            </numDomiBancFavo>
-                                            {f'<banco>{banco_fab}</banco>' if conta != 'UNICA' else ''}
-                                            <numDomiBancPgto>
-                                                <banco>{banco_fab}</banco>
-                                                <conta>{conta}</conta>
-                                            </numDomiBancPgto>
+                                            {numDomiBancFavo}
+                                            {numDomiBancPgto}
                                         </predocOB>
                                     </predoc>
                                 </deducao>                                
                 </cpr:CprDhAlterarDHIncluirItens>
             </sb:detalhe>"""
+
                       
     xml_content_modelo2 += """
         </sb:detalhes>
