@@ -286,7 +286,19 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                     """
     # Itera sobre as linhas do DataFrame e adiciona as informações de dedução
     for seq_item,(index, row)  in enumerate(df_final.iterrows(), start=1):
-        xml_content_modelo2 +=f"""<sb:detalhe>
+        if row['CNPJ'] == '00000000000191':
+            codTipoOB = 'OBF'
+            txtCit = '120052ECFP999'
+            include_banco_txtCit = True
+        elif row['CNPJ'] == '00360305000104':
+            codTipoOB = 'OBF'
+            txtCit = '120052ECFPC019950'
+            include_banco_txtCit = True
+        else:
+            codTipoOB = 'OBC'
+            include_banco_txtCit = False  # Não incluir para outros CNPJs
+            txtCit = None  # Definir txtCit como None para indicar que não deve ser incluído
+        xml_content_modelo2 += f"""<sb:detalhe>
                         <cpr:CprDhAlterarDHIncluirItens>
                             <codUgEmit>120052</codUgEmit>
                             <anoDH>{ano_empenho}</anoDH>
@@ -306,13 +318,14 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                                     <predoc>
                                         <txtObser>{texto_obs}</txtObser>
                                         <predocOB>
-                                            <codTipoOB>OBC</codTipoOB>
+                                            <codTipoOB>{codTipoOB}</codTipoOB>
                                             <codCredorDevedor>{row['CNPJ']}</codCredorDevedor>
                                             <numDomiBancFavo>
                                                 <banco>{row['BCO']}</banco>
                                                 <agencia>{row['AG']}</agencia>
                                                 <conta>{row['Conta']}</conta>
                                             </numDomiBancFavo>
+                                            {f"<txtCit>{txtCit}</txtCit>" if include_banco_txtCit else ""}
                                             <numDomiBancPgto>
                                                 <conta>UNICA</conta>
                                             </numDomiBancPgto>
