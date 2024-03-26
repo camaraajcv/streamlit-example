@@ -306,40 +306,42 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
             conta = 'UNICA'
             banco_fab = ''
 
-        xml_content_modelo2 += f"""<sb:detalhe>
-                            <cpr:CprDhAlterarDHIncluirItens>
-                                <codUgEmit>120052</codUgEmit>
-                                <anoDH>{ano_empenho}</anoDH>
-                                <codTipoDH>FL</codTipoDH>
-                                <numDH>{numero_fl}</numDH>
-                                <dtEmis>{data_geracao}</dtEmis>
-                                <txtMotivo>{texto_obs}</txtMotivo>
-                                    <deducao>
-                                        <numSeqItem>{seq_item}</numSeqItem>
-                                        <codSit>DOB005</codSit>
-                                        <dtVenc>{data_vencimento}</dtVenc>
-                                        <dtPgtoReceb>{data_previsao_pagamento}</dtPgtoReceb>
-                                        <codUgPgto>120052</codUgPgto>
-                                        <vlr>{f'{row["Valor Líquido"]:.2f}'}</vlr>
-                                        <txtInscrA>{row['CNPJ']}</txtInscrA>
-                                        <numClassA>218810199</numClassA>
-                                        <predoc>
-                                            <txtObser>{texto_obs}</txtObser>
-                                            <predocOB>
-                                                <codTipoOB>{codTipoOB}</codTipoOB>
-                                                <codCredorDevedor>{row['CNPJ']}</codCredorDevedor>
-                                                <numDomiBancFavo>
-                                                    <banco>{row['BCO']}</banco>
-                                                    <agencia>{row['AG']}</agencia>
-                                                    <conta>{conta}</conta>
-                                                </numDomiBancFavo>
-                                                {f"<txtCit>{txtCit}</txtCit>" if include_banco_txtCit else ""}
-                                                {f'<numDomiBancPgto><banco>{banco_fab}</banco><conta>{conta}</conta></numDomiBancPgto>' if include_banco_txtCit else f'<numDomiBancPgto><conta>{conta}</conta></numDomiBancPgto>'}
-                                            </predocOB>
-                                        </predoc>
-                                    </deducao>                                
-                    </cpr:CprDhAlterarDHIncluirItens>
-                </sb:detalhe>"""
+        numDomiBancPgto = f'<numDomiBancPgto><banco>{banco_fab}</banco><conta>{conta}</conta></numDomiBancPgto>' if include_banco_txtCit else f'<numDomiBancPgto><conta>{conta}</conta></numDomiBancPgto>'
+
+        xml_content_modelo2 += f'''<sb:detalhe>
+                <cpr:CprDhAlterarDHIncluirItens>
+                    <codUgEmit>120052</codUgEmit>
+                    <anoDH>{ano_empenho}</anoDH>
+                    <codTipoDH>FL</codTipoDH>
+                    <numDH>{numero_fl}</numDH>
+                    <dtEmis>{data_geracao}</dtEmis>
+                    <txtMotivo>{texto_obs}</txtMotivo>
+                    <deducao>
+                        <numSeqItem>{seq_item}</numSeqItem>
+                        <codSit>DOB005</codSit>
+                        <dtVenc>{data_vencimento}</dtVenc>
+                        <dtPgtoReceb>{data_previsao_pagamento}</dtPgtoReceb>
+                        <codUgPgto>120052</codUgPgto>
+                        <vlr>{row["Valor Líquido"]:.2f}</vlr>
+                        <txtInscrA>{row['CNPJ']}</txtInscrA>
+                        <numClassA>218810199</numClassA>
+                        <predoc>
+                            <txtObser>{texto_obs}</txtObser>
+                            <predocOB>
+                                <codTipoOB>{codTipoOB}</codTipoOB>
+                                <codCredorDevedor>{row['CNPJ']}</codCredorDevedor>
+                                {f'<txtCit>{txtCit}</txtCit>' if include_banco_txtCit and txtCit is not None else ''}
+                                <numDomiBancFavo>
+                                    <banco>{row['BCO']}</banco>
+                                    <agencia>{row['AG']}</agencia>
+                                    <conta>{conta}</conta>
+                                </numDomiBancFavo>
+                                {numDomiBancPgto}
+                            </predocOB>
+                        </predoc>
+                    </deducao>
+                </cpr:CprDhAlterarDHIncluirItens>
+            </sb:detalhe>'''
 
                            
     xml_content_modelo2 += """
