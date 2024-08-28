@@ -79,8 +79,8 @@ def main():
 
         # Calcula o somatório da coluna "Total"
         if not df.empty:
-            # Convertendo a coluna "Total" para numérico e somando
-            df['Total'] = pd.to_numeric(df['Total'], errors='coerce')
+            # Garantir que a coluna "Total" seja convertida para numérico
+            df['Total'] = pd.to_numeric(df['Total'].str.replace(',', '.'), errors='coerce')
             total_sum = df['Total'].sum()
             st.write(f"Somatório da coluna Total: {total_sum:.2f}")
 
