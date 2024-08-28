@@ -75,7 +75,7 @@ def main():
         df = convert_text_to_dataframe(text)
         
         # Exibe o DataFrame
-        st.write("Dados extraídos do PDF (Código, Nome, Total, Banco e Conta Corrente):")
+        #st.write("Dados extraídos do PDF (Código, Nome, Total, Banco e Conta Corrente):")
         st.dataframe(df)
 
         # Exibir o conteúdo do PDF em linhas numeradas
