@@ -54,7 +54,7 @@ def convert_text_to_dataframe(text):
     df = df[df["Total"].notna()]
     
     return df
-#d
+
 def main():
     uploaded_file = st.file_uploader("Escolha um arquivo PDF", type="pdf")
 
@@ -75,10 +75,16 @@ def main():
         df = convert_text_to_dataframe(text)
         
         # Exibe o DataFrame
-        #st.write("Dados extraídos do PDF (Código, Nome, Total, Banco e Conta Corrente):")
         st.dataframe(df)
 
-        # Exibir o conteúdo do PDF em linhas numeradas
+        # Calcula o somatório da coluna "Total"
+        if not df.empty:
+            # Convertendo a coluna "Total" para numérico e somando
+            df['Total'] = pd.to_numeric(df['Total'], errors='coerce')
+            total_sum = df['Total'].sum()
+            st.write(f"Somatório da coluna Total: {total_sum:.2f}")
+
+        # Exibir o conteúdo do PDF em linhas numeradas (se desejado)
         #st.write("Conteúdo do PDF em Linhas Numeradas:")
         #for i, line in enumerate(lines, start=1):
             #st.text(f"Linha {i}: {line}")
