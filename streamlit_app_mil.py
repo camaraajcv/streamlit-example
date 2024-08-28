@@ -1,31 +1,114 @@
-import re
-import pandas as pd
-import fitz
-import io
-import tempfile
 import streamlit as st
-import os
-from datetime import datetime
+import pandas as pd
+from io import BytesIO
 
-# URL da imagem
-image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
+def format_bco(value):
+    return f'{int(value):03d}'
 
-#Código HTML e CSS para ajustar a largura da imagem para 20% da largura da coluna e centralizar
-html_code = f'<div style="display: flex; justify-content: center;"><img src="{image_url}" alt="Imagem" style="width:8vw;"/></div>'
+def format_agencia(value):
+    numeric_value = ''.join(char for char in str(value) if char.isdigit())
+    return f'{int(numeric_value):04d}' if numeric_value else ''
 
-data_geracao = datetime.now().strftime('%Y-%m-%d')
-data_geracao2 = datetime.now().strftime('%d/%m/%Y')
+def process_file(uploaded_file):
+    df = pd.read_excel(uploaded_file, converters={'bco': format_bco, 'agencia': format_agencia}, dtype={'bco': str, 'agencia': str})
+    df['conta'] = df['conta'].astype(str).str.zfill(13)
+    df['valor'] = pd.to_numeric(df['valor'], errors='coerce')
+    df['valor'] = round(df['valor'], 2)
+    df['cnpj'] = df['cnpj'].str.replace('[./-]', '', regex=True)
+    df = df.dropna()
 
+    df.loc[df['cnpj'].isin(['00360305000104', '00000000000191']), 'conta'] = 'FOPAG'
+    df['banco_fab'] = ''
+    df.loc[df['cnpj'].isin(['00360305000104', '00000000000191']), 'banco_fab'] = '002'
 
-# Exibir a imagem usando HTML
-st.markdown(html_code, unsafe_allow_html=True)
+    xml_string = '''<sb:arquivo xmlns:sb="http://www.tesouro.gov.br/siafi/submissao" xmlns:cpr="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/">
+        <sb:header>
+            <sb:codigoLayout>DH002</sb:codigoLayout>
+            <sb:dataGeracao>02/08/2024</sb:dataGeracao>
+            <sb:sequencialGeracao>10</sb:sequencialGeracao>
+            <sb:anoReferencia>2024</sb:anoReferencia>
+            <sb:ugResponsavel>120052</sb:ugResponsavel>
+            <sb:cpfResponsavel>09857528740</sb:cpfResponsavel>
+        </sb:header>
+        <sb:detalhes>
+        '''
 
+    for index, row in df.iterrows():
+        if row['cnpj'] == '00000000000191':
+            codTipoOB = 'OBF'
+            txtCit = '120052ECFP999'
+            include_banco_txtCit = True
+        elif row['cnpj'] == '00360305000104':
+            codTipoOB = 'OBF'
+            txtCit = '120052ECFPC019950'
+            include_banco_txtCit = True
+        else:
+            codTipoOB = 'OBC'
+            include_banco_txtCit = False
+            txtCit = None
 
-# Centralizar o texto abaixo da imagem
-st.markdown("<h1 style='text-align: center; font-size: 1.5em;'>DIRETORIA DE ADMINISTRAÇÃO DA AERONÁUTICA</h1>", unsafe_allow_html=True)
-st.markdown("<h2 style='text-align: center; font-size: 1.2em;'>SUBDIRETORIA DE PAGAMENTO DE PESSOAL</h2>", unsafe_allow_html=True)
-st.markdown("<h3 style='text-align: center; font-size: 1em; text-decoration: underline;'>PP1 - DIVISÃO DE DESCONTOS</h3>", unsafe_allow_html=True)
+        xml_string += '''<sb:detalhe>
+                <cpr:CprDhAlterarDHIncluirItens>
+                    <codUgEmit>120052</codUgEmit>
+                    <anoDH>2024</anoDH>
+                    <codTipoDH>FL</codTipoDH>
+                    <numDH>000607</numDH>
+                    <dtEmis>2024-08-02</dtEmis>
+                    <txtMotivo>DESC.EXT.MILITAR.JUL.</txtMotivo>
+                    <deducao>
+                        <numSeqItem>{}</numSeqItem>
+                        <codSit>DOB005</codSit>
+                        <dtVenc>2024-08-29</dtVenc>
+                        <dtPgtoReceb>2024-08-02</dtPgtoReceb>
+                        <codUgPgto>120052</codUgPgto>
+                        <vlr>{}</vlr>
+                        <txtInscrA>{}</txtInscrA>
+                        <numClassA>218810199</numClassA>
+                        <predoc>
+                            <txtObser>DESC.EXT.MILITAR.JUL.</txtObser>
+                            <predocOB>
+                                <codTipoOB>{}</codTipoOB>
+                                <codCredorDevedor>{}</codCredorDevedor>
+                                {}
+                                <numDomiBancFavo>
+                                    <banco>{}</banco>
+                                    <agencia>{}</agencia>
+                                    <conta>{}</conta>
+                                </numDomiBancFavo>
+                                {}
+                            </predocOB>
+                        </predoc>
+                    </deducao>
+                    </cpr:CprDhAlterarDHIncluirItens>
+            </sb:detalhe>'''.format(index + 1, row['valor'], row['cnpj'], codTipoOB, row['cnpj'],
+                                    f'<txtCit>{txtCit}</txtCit>' if include_banco_txtCit and txtCit is not None else '',
+                                    row['bco'], row['agencia'], row['conta'],
+                                    f'<numDomiBancPgto><banco>{row["banco_fab"]}</banco><conta>UNICA</conta></numDomiBancPgto>' if include_banco_txtCit else f'<numDomiBancPgto><conta>UNICA</conta></numDomiBancPgto>')
 
-# Texto explicativo
-st.write("Desconto Externo MILITAR - Extração dados PDF SIGPES para SIAFI")
+    xml_string += '''
+        </sb:detalhes>
+        <sb:trailler>
+            <sb:quantidadeDetalhe>{}</sb:quantidadeDetalhe>
+        </sb:trailler>
+    </sb:arquivo>
+    '''.format(len(df))
 
+    return xml_string
+
+def main():
+    st.title("Gerador de XML a partir de Arquivo Excel")
+    
+    uploaded_file = st.file_uploader("Escolha um arquivo Excel", type="xlsx")
+
+    if uploaded_file is not None:
+        xml_string = process_file(uploaded_file)
+        st.download_button(
+            label="Baixar XML",
+            data=xml_string,
+            file_name="xml_militar.xml",
+            mime="application/xml"
+        )
+        st.text("O XML foi gerado com sucesso!")
+
+if __name__ == "__main__":
+    main()
