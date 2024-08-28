@@ -31,7 +31,9 @@ def convert_text_to_dataframe(text):
                 # Capturar o nome da linha que sucede o código
                 if i + 2 < len(lines):
                     nome = lines[i + 2].strip()
-                    data.append([codigo, nome, None])
+                    # Capturar os 4 primeiros dígitos da segunda linha após o código
+                    banco = lines[i + 2].strip()[:4] if len(lines[i + 2].strip()) >= 4 else None
+                    data.append([codigo, nome, None, banco])
         
         # Procurar pela palavra "Totais" e capturar o valor na linha seguinte
         if "Totais" in line and i + 1 < len(lines):
@@ -40,9 +42,12 @@ def convert_text_to_dataframe(text):
             if data:
                 data[-1][2] = total
     
-    # Cria o DataFrame com as colunas "Código", "Nome" e "Total"
-    columns = ["Código", "Nome", "Total"]
+    # Cria o DataFrame com as colunas "Código", "Nome", "Total" e "Banco"
+    columns = ["Código", "Nome", "Total", "Banco"]
     df = pd.DataFrame(data, columns=columns)
+    
+    # Filtrar para exibir apenas as linhas em que "Total" não seja Null
+    df = df.dropna(subset=["Total"])
     
     return df
 
@@ -66,7 +71,7 @@ def main():
         df = convert_text_to_dataframe(text)
         
         # Exibe o DataFrame
-        st.write("Dados extraídos do PDF (Código, Nome e Total):")
+        st.write("Dados extraídos do PDF (Código, Nome, Total e Banco):")
         st.dataframe(df)
 
         # Exibir o conteúdo do PDF em linhas numeradas
