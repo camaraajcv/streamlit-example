@@ -2,6 +2,13 @@ import streamlit as st
 import pandas as pd
 from io import BytesIO
 
+# Verificar se o módulo openpyxl está instalado
+try:
+    import openpyxl
+except ImportError as e:
+    st.error("O módulo 'openpyxl' não está instalado. Instale-o com 'pip install openpyxl'.")
+    raise e
+
 def format_bco(value):
     return f'{int(value):03d}'
 
@@ -10,17 +17,28 @@ def format_agencia(value):
     return f'{int(numeric_value):04d}' if numeric_value else ''
 
 def process_file(uploaded_file):
+    # Leia o arquivo Excel para um DataFrame
     df = pd.read_excel(uploaded_file, converters={'bco': format_bco, 'agencia': format_agencia}, dtype={'bco': str, 'agencia': str})
+
+    # Assegure-se de que a coluna 'conta' seja uma string preenchida com zeros à esquerda
     df['conta'] = df['conta'].astype(str).str.zfill(13)
+
+    # Converta 'valor' para numérico e arredonde
     df['valor'] = pd.to_numeric(df['valor'], errors='coerce')
     df['valor'] = round(df['valor'], 2)
-    df['cnpj'] = df['cnpj'].str.replace('[./-]', '', regex=True)
+
+    # Converta 'cnpj' para string e remova caracteres indesejados
+    df['cnpj'] = df['cnpj'].astype(str).str.replace('[./-]', '', regex=True)
+
+    # Remover linhas com dados ausentes
     df = df.dropna()
 
+    # Defina 'conta' como 'FOPAG' para CNPJs específicos
     df.loc[df['cnpj'].isin(['00360305000104', '00000000000191']), 'conta'] = 'FOPAG'
     df['banco_fab'] = ''
     df.loc[df['cnpj'].isin(['00360305000104', '00000000000191']), 'banco_fab'] = '002'
 
+    # Construir a string XML
     xml_string = '''<sb:arquivo xmlns:sb="http://www.tesouro.gov.br/siafi/submissao" xmlns:cpr="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/">
         <sb:header>
             <sb:codigoLayout>DH002</sb:codigoLayout>
@@ -31,7 +49,7 @@ def process_file(uploaded_file):
             <sb:cpfResponsavel>09857528740</sb:cpfResponsavel>
         </sb:header>
         <sb:detalhes>
-        '''
+    '''
 
     for index, row in df.iterrows():
         if row['cnpj'] == '00000000000191':
