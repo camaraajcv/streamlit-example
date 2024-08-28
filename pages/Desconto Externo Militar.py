@@ -14,20 +14,22 @@ def extract_text_from_pdf(pdf_file):
 def convert_text_to_dataframe(text):
     lines = text.split('\n')
     
-    # Lista para armazenar os dados extraídos
     data = []
+    nome = None
 
-    # Expressão regular para capturar a palavra "Nome" seguida de um código de 4 dígitos
-    pattern = re.compile(r'Nome\s+(\S+)\s+(\d{4})')
+    # Expressão regular para capturar um código de 4 dígitos
+    code_pattern = re.compile(r'\b\d{4}\b')
 
-    for line in lines:
-        if line.strip():  # Ignorar linhas vazias
-            # Procurar pela palavra "Nome" seguida do código
-            match = pattern.search(line)
-            if match:
-                nome = match.group(1)
-                codigo = match.group(2)
-                data.append([codigo, nome])
+    for i, line in enumerate(lines):
+        if "Nome" in line:
+            nome = line.split("Nome")[-1].strip()  # Captura o nome após a palavra "Nome"
+            if i + 1 < len(lines):  # Verifica se existe uma próxima linha
+                next_line = lines[i + 1].strip()
+                # Procurar por um código de 4 dígitos na linha seguinte
+                match = code_pattern.search(next_line)
+                if match:
+                    codigo = match.group()
+                    data.append([codigo, nome])
     
     # Cria o DataFrame com as colunas "Código" e "Nome"
     columns = ["Código", "Nome"]
