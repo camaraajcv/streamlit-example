@@ -15,12 +15,6 @@ def convert_text_to_dataframe(text):
     lines = text.split('\n')
     
     data = []
-    codigo = None
-    total = None
-    banco = None
-    conta_corrente = None
-
-    # Expressão regular para capturar um código de 4 dígitos
     code_pattern = re.compile(r'\b\d{4}\b')
 
     for i, line in enumerate(lines):
@@ -37,24 +31,20 @@ def convert_text_to_dataframe(text):
                 banco = banco_line[:4]
                 # Capturar o dado da terceira linha após o código
                 conta_corrente = lines[i + 4].strip() if i + 4 < len(lines) else None
-                data.append([codigo, nome, None, banco, conta_corrente])
-        
-        # Procurar pela palavra "Totais" e capturar o valor na linha seguinte
-        if "Totais" in line and i + 1 < len(lines):
-            total = lines[i + 1].strip()
-            # Atualizar a última linha do DataFrame com o total
-            if data:
-                data[-1][2] = total
+                # Capturar o total se disponível
+                total = lines[i + 6].strip() if "Totais" in lines[i + 5] and i + 6 < len(lines) else None
+                data.append([codigo, nome, total, banco, conta_corrente])
     
     # Cria o DataFrame com as colunas "Código", "Nome", "Total", "Banco" e "Conta Corrente"
     columns = ["Código", "Nome", "Total", "Banco", "Conta Corrente"]
     df = pd.DataFrame(data, columns=columns)
 
-    # Filtra para exibir apenas linhas em que "Total" não seja Null
+    # Converte a coluna Total para numérico e filtra linhas com Total não nulo
+    df["Total"] = pd.to_numeric(df["Total"], errors='coerce')
     df = df[df["Total"].notna()]
     
     return df
-#d
+
 def main():
     uploaded_file = st.file_uploader("Escolha um arquivo PDF", type="pdf")
 
@@ -78,10 +68,13 @@ def main():
         st.write("Dados extraídos do PDF (Código, Nome, Total, Banco e Conta Corrente):")
         st.dataframe(df)
 
-        # Exibir o conteúdo do PDF em linhas numeradas
-        st.write("Conteúdo do PDF em Linhas Numeradas:")
-        for i, line in enumerate(lines, start=1):
-            st.text(f"Linha {i}: {line}")
+        # Calcula as somas
+        descontos_internos = df[df["Nome"].str.contains("internos", case=False, na=False) | df["Nome"].str.contains("subdiretoria de pagamento de pessoal", case=False, na=False)]["Total"].sum()
+        descontos_externos = df[~df["Nome"].str.contains("internos", case=False, na=False) & ~df["Nome"].str.contains("subdiretoria de pagamento de pessoal", case=False, na=False)]["Total"].sum()
+
+        # Exibe as somas
+        st.write(f"**DESCONTOS INTERNOS:** R$ {descontos_internos:.2f}")
+        st.write(f"**DESCONTOS EXTERNOS:** R$ {descontos_externos:.2f}")
 
 if __name__ == "__main__":
     main()
