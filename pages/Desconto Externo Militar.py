@@ -17,17 +17,16 @@ def convert_text_to_dataframe(text):
     # Lista para armazenar os dados extraídos
     data = []
 
-    # Expressão regular para capturar um código de 4 dígitos começando com 9
-    code_pattern = re.compile(r'\b9\d{3}\b')
+    # Expressão regular para capturar a palavra "Nome" seguida de um código de 4 dígitos
+    pattern = re.compile(r'Nome\s+(\S+)\s+(\d{4})')
 
     for line in lines:
         if line.strip():  # Ignorar linhas vazias
-            # Procurar pelo código na linha
-            match = code_pattern.search(line)
+            # Procurar pela palavra "Nome" seguida do código
+            match = pattern.search(line)
             if match:
-                codigo = match.group()
-                # Assume que o nome está logo após o código, separado por espaço
-                nome = line[match.end():].strip()
+                nome = match.group(1)
+                codigo = match.group(2)
                 data.append([codigo, nome])
     
     # Cria o DataFrame com as colunas "Código" e "Nome"
