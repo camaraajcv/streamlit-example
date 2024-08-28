@@ -17,6 +17,7 @@ def convert_text_to_dataframe(text):
     data = []
     codigo = None
     total = None
+    banco = None
 
     # Expressão regular para capturar um código de 4 dígitos
     code_pattern = re.compile(r'\b\d{4}\b')
@@ -28,12 +29,12 @@ def convert_text_to_dataframe(text):
             match = code_pattern.search(next_line)
             if match:
                 codigo = match.group()
-                # Capturar o nome da linha que sucede o código
-                if i + 2 < len(lines):
-                    nome = lines[i + 2].strip()
-                    # Capturar os 4 primeiros dígitos da segunda linha após o código
-                    banco = lines[i + 2].strip()[:4] if len(lines[i + 2].strip()) >= 4 else None
-                    data.append([codigo, nome, None, banco])
+                # Capturar o nome na linha que sucede o código
+                nome = lines[i + 2].strip() if i + 2 < len(lines) else None
+                # Capturar os primeiros 4 dígitos da segunda linha após o código
+                banco_line = lines[i + 3].strip() if i + 3 < len(lines) else ""
+                banco = banco_line[:4]
+                data.append([codigo, nome, None, banco])
         
         # Procurar pela palavra "Totais" e capturar o valor na linha seguinte
         if "Totais" in line and i + 1 < len(lines):
@@ -45,9 +46,9 @@ def convert_text_to_dataframe(text):
     # Cria o DataFrame com as colunas "Código", "Nome", "Total" e "Banco"
     columns = ["Código", "Nome", "Total", "Banco"]
     df = pd.DataFrame(data, columns=columns)
-    
-    # Filtrar para exibir apenas as linhas em que "Total" não seja Null
-    df = df.dropna(subset=["Total"])
+
+    # Filtra para exibir apenas linhas em que "Total" não seja Null
+    df = df[df["Total"].notna()]
     
     return df
 
