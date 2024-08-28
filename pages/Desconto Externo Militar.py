@@ -50,11 +50,14 @@ def convert_text_to_dataframe(text):
     columns = ["Código", "Nome", "Total", "Banco", "Conta Corrente"]
     df = pd.DataFrame(data, columns=columns)
 
+    # Converte a coluna Total para numérico
+    df["Total"] = pd.to_numeric(df["Total"], errors='coerce')
+
     # Filtra para exibir apenas linhas em que "Total" não seja Null
     df = df[df["Total"].notna()]
     
     return df
-#d
+
 def main():
     uploaded_file = st.file_uploader("Escolha um arquivo PDF", type="pdf")
 
@@ -78,10 +81,13 @@ def main():
         st.write("Dados extraídos do PDF (Código, Nome, Total, Banco e Conta Corrente):")
         st.dataframe(df)
 
-        # Exibir o conteúdo do PDF em linhas numeradas
-        st.write("Conteúdo do PDF em Linhas Numeradas:")
-        for i, line in enumerate(lines, start=1):
-            st.text(f"Linha {i}: {line}")
+        # Calcula as somas
+        descontos_internos = df[df["Nome"].str.contains("internos", case=False, na=False) | df["Nome"].str.contains("subdiretoria de pagamento de pessoal", case=False, na=False)]["Total"].sum()
+        descontos_externos = df[~df["Nome"].str.contains("internos", case=False, na=False) & ~df["Nome"].str.contains("subdiretoria de pagamento de pessoal", case=False, na=False)]["Total"].sum()
+
+        # Exibe as somas
+        st.write(f"**DESCONTOS INTERNOS:** R$ {descontos_internos:.2f}")
+        st.write(f"**DESCONTOS EXTERNOS:** R$ {descontos_externos:.2f}")
 
 if __name__ == "__main__":
     main()
