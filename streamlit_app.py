@@ -303,14 +303,15 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
             conta = 'UNICA'
             banco_fab = ''
 
-        # Construção do XML
+          # Construção do XML com condição para <txtCit>
         if codTipoOB == 'OBF':
             numDomiBancFavo = f"""<numDomiBancFavo>
-                                    <banco>{banco_fab}</banco>
+                                    <banco>{row['BCO']}</banco>
                                     <agencia>{row['AG']}</agencia>
                                     <conta>{conta}</conta>
                                 </numDomiBancFavo>"""
             numDomiBancPgto = f"""<numDomiBancPgto><banco>{banco_fab}</banco><conta>UNICA</conta></numDomiBancPgto>"""
+            txtCit_tag = f"<txtCit>{txtCit}</txtCit>"
         else:
             numDomiBancFavo = f"""<numDomiBancFavo>
                                     <banco>{row['BCO']}</banco>
@@ -318,6 +319,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                                     <conta>{row['Conta']}</conta>
                                 </numDomiBancFavo>"""
             numDomiBancPgto = f"""<numDomiBancPgto><conta>UNICA</conta></numDomiBancPgto>"""
+            txtCit_tag = ''  # Não adiciona a tag <txtCit>
 
         xml_content_modelo2 += f"""<sb:detalhe>
                         <cpr:CprDhAlterarDHIncluirItens>
@@ -341,6 +343,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                                         <predocOB>
                                             <codTipoOB>{codTipoOB}</codTipoOB>
                                             <codCredorDevedor>{row['CNPJ']}</codCredorDevedor>
+                                            <txtCit>{txtCit}</txtCit>
                                             {numDomiBancFavo}
                                             {numDomiBancPgto}
                                         </predocOB>
