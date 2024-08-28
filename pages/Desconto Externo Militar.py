@@ -16,6 +16,7 @@ def convert_text_to_dataframe(text):
     
     data = []
     codigo = None
+    total = None
 
     # Expressão regular para capturar um código de 4 dígitos
     code_pattern = re.compile(r'\b\d{4}\b')
@@ -30,35 +31,46 @@ def convert_text_to_dataframe(text):
                 # Capturar o nome da linha que sucede o código
                 if i + 2 < len(lines):
                     nome = lines[i + 2].strip()
-                    data.append([codigo, nome])
+                    data.append([codigo, nome, None])
+        
+        # Procurar pela palavra "Totais" e capturar o valor na linha seguinte
+        if "Totais" in line and i + 1 < len(lines):
+            total = lines[i + 1].strip()
+            # Atualizar a última linha do DataFrame com o total
+            if data:
+                data[-1][2] = total
     
-    # Cria o DataFrame com as colunas "Código" e "Nome"
-    columns = ["Código", "Nome"]
+    # Cria o DataFrame com as colunas "Código", "Nome" e "Total"
+    columns = ["Código", "Nome", "Total"]
     df = pd.DataFrame(data, columns=columns)
     
     return df
 
 def main():
-    st.title("Upload e Leitura de PDF")
-
     uploaded_file = st.file_uploader("Escolha um arquivo PDF", type="pdf")
 
     if uploaded_file is not None:
-        st.write("Arquivo carregado com sucesso!")
-
         # Extrai o texto do PDF
         text = extract_text_from_pdf(uploaded_file)
+        lines = text.split('\n')
         
+        # Define o título e subtítulo a partir das linhas 1 e 3
+        title = lines[0] if len(lines) > 0 else "Título não encontrado"
+        subtitle = lines[2] if len(lines) > 2 else "Subtítulo não encontrado"
+
+        # Exibe o título e subtítulo no app
+        st.title(title)
+        st.subheader(subtitle)
+
         # Converte o texto em um DataFrame específico
         df = convert_text_to_dataframe(text)
         
-        # Exibe o DataFrame primeiro
-        st.write("Dados extraídos do PDF (Código e Nome):")
+        # Exibe o DataFrame
+        st.write("Dados extraídos do PDF (Código, Nome e Total):")
         st.dataframe(df)
 
         # Exibir o conteúdo do PDF em linhas numeradas
         st.write("Conteúdo do PDF em Linhas Numeradas:")
-        lines = text.split('\n')
         for i, line in enumerate(lines, start=1):
             st.text(f"Linha {i}: {line}")
 
