@@ -9,15 +9,21 @@ def extract_text_from_pdf(pdf_file):
     # Itera sobre todas as páginas do PDF
     for page_num in range(len(pdf_document)):
         page = pdf_document.load_page(page_num)
-        text += page.get_text()
+        text += page.get_text("text")
     return text
 
 def convert_text_to_dataframe(text):
-    # Aqui você deve adaptar a lógica para converter o texto em um DataFrame.
-    # Exemplo simples de conversão de texto delimitado por linhas e colunas.
+    # Ajuste esta função para o formato específico do seu PDF
     lines = text.split('\n')
+    
+    # Exemplo de como os dados podem ser separados por espaços ou tabs
+    # Ajuste o delimitador conforme necessário
     data = [line.split() for line in lines if line.strip()]
-    df = pd.DataFrame(data)
+    
+    # Crie um DataFrame com colunas específicas
+    columns = ["Código", "Consignatária", "Banco", "Conta", "Nome"]
+    df = pd.DataFrame(data, columns=columns)
+    
     return df
 
 def main():
