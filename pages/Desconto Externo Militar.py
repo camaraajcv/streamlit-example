@@ -79,9 +79,9 @@ def main():
         st.dataframe(df)
 
         # Exibir o conteúdo do PDF em linhas numeradas
-        st.write("Conteúdo do PDF em Linhas Numeradas:")
-        for i, line in enumerate(lines, start=1):
-            st.text(f"Linha {i}: {line}")
+        #st.write("Conteúdo do PDF em Linhas Numeradas:")
+        #for i, line in enumerate(lines, start=1):
+            #st.text(f"Linha {i}: {line}")
 
 if __name__ == "__main__":
     main()
