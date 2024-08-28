@@ -3,24 +3,28 @@ import pandas as pd
 import fitz  # PyMuPDF
 
 def extract_text_from_pdf(pdf_file):
-    # Abre o PDF
     pdf_document = fitz.open(stream=pdf_file.read(), filetype="pdf")
     text = ""
-    # Itera sobre todas as páginas do PDF
     for page_num in range(len(pdf_document)):
         page = pdf_document.load_page(page_num)
         text += page.get_text("text")
     return text
 
 def convert_text_to_dataframe(text):
-    # Ajuste esta função para o formato específico do seu PDF
     lines = text.split('\n')
     
-    # Exemplo de como os dados podem ser separados por espaços ou tabs
-    # Ajuste o delimitador conforme necessário
-    data = [line.split() for line in lines if line.strip()]
+    # Ajuste o código conforme o formato real do texto extraído
+    # Por exemplo, se os dados são separados por espaços ou tabs
+    data = []
+    for line in lines:
+        if line.strip():  # Ignorar linhas vazias
+            # Supondo que os dados estejam separados por um delimitador, como espaço
+            split_line = line.split()
+            # Verifique se a linha tem o número correto de colunas
+            if len(split_line) >= 5:
+                data.append(split_line[:5])  # Ajuste conforme o número de colunas esperadas
     
-    # Crie um DataFrame com colunas específicas
+    # Crie o DataFrame com as colunas específicas
     columns = ["Código", "Consignatária", "Banco", "Conta", "Nome"]
     df = pd.DataFrame(data, columns=columns)
     
@@ -40,7 +44,7 @@ def main():
 
         # Converte o texto em um DataFrame
         df = convert_text_to_dataframe(text)
-
+        
         # Exibe o DataFrame
         st.write("Dados extraídos do PDF:")
         st.dataframe(df)
