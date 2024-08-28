@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import fitz  # PyMuPDF
+import re
 
 def extract_text_from_pdf(pdf_file):
     pdf_document = fitz.open(stream=pdf_file.read(), filetype="pdf")
@@ -13,19 +14,24 @@ def extract_text_from_pdf(pdf_file):
 def convert_text_to_dataframe(text):
     lines = text.split('\n')
     
-    # Ajuste o código conforme o formato real do texto extraído
-    # Por exemplo, se os dados são separados por espaços ou tabs
+    # Lista para armazenar os dados extraídos
     data = []
+
+    # Expressão regular para capturar um código de 4 dígitos começando com 9
+    code_pattern = re.compile(r'\b9\d{3}\b')
+
     for line in lines:
         if line.strip():  # Ignorar linhas vazias
-            # Supondo que os dados estejam separados por um delimitador, como espaço
-            split_line = line.split()
-            # Verifique se a linha tem o número correto de colunas
-            if len(split_line) >= 5:
-                data.append(split_line[:5])  # Ajuste conforme o número de colunas esperadas
+            # Procurar pelo código na linha
+            match = code_pattern.search(line)
+            if match:
+                codigo = match.group()
+                # Assume que o nome está logo após o código, separado por espaço
+                nome = line[match.end():].strip()
+                data.append([codigo, nome])
     
-    # Crie o DataFrame com as colunas específicas
-    columns = ["Código", "Consignatária", "Banco", "Conta", "Nome"]
+    # Cria o DataFrame com as colunas "Código" e "Nome"
+    columns = ["Código", "Nome"]
     df = pd.DataFrame(data, columns=columns)
     
     return df
@@ -42,11 +48,11 @@ def main():
         text = extract_text_from_pdf(uploaded_file)
         st.text_area("Conteúdo do PDF", text, height=300)
 
-        # Converte o texto em um DataFrame
+        # Converte o texto em um DataFrame específico
         df = convert_text_to_dataframe(text)
         
         # Exibe o DataFrame
-        st.write("Dados extraídos do PDF:")
+        st.write("Dados extraídos do PDF (Código e Nome):")
         st.dataframe(df)
 
 if __name__ == "__main__":
