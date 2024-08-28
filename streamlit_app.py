@@ -8,7 +8,28 @@ import os
 from datetime import datetime
 # Adiciona um título à barra lateral
 #st.sidebar.title("Descontos Externos")
+# Função para ler o conteúdo do arquivo Python
+def read_file(file_path):
+    with open(file_path, "r") as file:
+        return file.read()
 
+# Cria o menu lateral
+st.sidebar.title("Arquivos Python")
+
+# Lista de arquivos Python no diretório
+python_files = ["file1.py", "file2.py"]
+
+# Adiciona links para visualizar o conteúdo dos arquivos Python
+selected_file = st.sidebar.selectbox("Escolha um arquivo Python", python_files)
+
+# Exibe o conteúdo do arquivo selecionado
+if selected_file:
+    file_path = os.path.join(os.getcwd(), selected_file)
+    st.code(read_file(file_path), language="python")
+
+# Conteúdo principal da aplicação
+st.title("Bem-vindo à Aplicação Streamlit")
+st.write("Aqui você pode visualizar o conteúdo dos arquivos Python.")
 # Adiciona um link para o outro aplicativo Streamlit
 #link_militar = "[Militar](/workspaces/streamlit-example/streamlit_app_mil.py)"
 #link_civil = "[Civil](/workspaces/streamlit-example/streamlit_app.py)"
