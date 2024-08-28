@@ -45,7 +45,11 @@ def main():
 
         # Extrai o texto do PDF
         text = extract_text_from_pdf(uploaded_file)
-        st.text_area("Conteúdo do PDF", text, height=300)
+        
+        # Exibir o conteúdo do PDF em linhas numeradas
+        lines = text.split('\n')
+        for i, line in enumerate(lines, start=1):
+            st.text(f"Linha {i}: {line}")
 
         # Converte o texto em um DataFrame específico
         df = convert_text_to_dataframe(text)
