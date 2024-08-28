@@ -17,7 +17,7 @@ def read_file(file_path):
 st.sidebar.title("Arquivos Python")
 
 # Lista de arquivos Python no diretório
-python_files = ["file1.py", "file2.py"]
+python_files = ["streamlit_app_mil.py"]
 
 # Adiciona links para visualizar o conteúdo dos arquivos Python
 selected_file = st.sidebar.selectbox("Escolha um arquivo Python", python_files)
