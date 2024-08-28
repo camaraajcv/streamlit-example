@@ -7,14 +7,14 @@ import streamlit as st
 import os
 from datetime import datetime
 # Adiciona um título à barra lateral
-st.sidebar.title("Descontos Externos")
+#st.sidebar.title("Descontos Externos")
 
 # Adiciona um link para o outro aplicativo Streamlit
-link_militar = "[Militar](/workspaces/streamlit-example/streamlit_app_mil.py)"
-link_civil = "[Civil](/workspaces/streamlit-example/streamlit_app.py)"
+#link_militar = "[Militar](/workspaces/streamlit-example/streamlit_app_mil.py)"
+#link_civil = "[Civil](/workspaces/streamlit-example/streamlit_app.py)"
 
-st.sidebar.markdown(link_militar, unsafe_allow_html=True)
-st.sidebar.markdown(link_civil, unsafe_allow_html=True)
+#st.sidebar.markdown(link_militar, unsafe_allow_html=True)
+#st.sidebar.markdown(link_civil, unsafe_allow_html=True)
 # URL da imagem
 image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
 
