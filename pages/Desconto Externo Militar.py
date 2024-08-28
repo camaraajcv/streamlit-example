@@ -54,7 +54,7 @@ def convert_text_to_dataframe(text):
     df = df[df["Total"].notna()]
     
     return df
-
+#d
 def main():
     uploaded_file = st.file_uploader("Escolha um arquivo PDF", type="pdf")
 
