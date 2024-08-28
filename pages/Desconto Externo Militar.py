@@ -15,20 +15,21 @@ def convert_text_to_dataframe(text):
     lines = text.split('\n')
     
     data = []
-    nome = None
+    codigo = None
 
     # Expressão regular para capturar um código de 4 dígitos
     code_pattern = re.compile(r'\b\d{4}\b')
 
     for i, line in enumerate(lines):
-        if "Nome" in line:
-            nome = line.split("Nome")[-1].strip()  # Captura o nome após a palavra "Nome"
-            if i + 1 < len(lines):  # Verifica se existe uma próxima linha
-                next_line = lines[i + 1].strip()
-                # Procurar por um código de 4 dígitos na linha seguinte
-                match = code_pattern.search(next_line)
-                if match:
-                    codigo = match.group()
+        if "Nome" in line and i + 1 < len(lines):
+            # Procurar por um código de 4 dígitos na linha seguinte
+            next_line = lines[i + 1].strip()
+            match = code_pattern.search(next_line)
+            if match:
+                codigo = match.group()
+                # Capturar o nome da linha que sucede o código
+                if i + 2 < len(lines):
+                    nome = lines[i + 2].strip()
                     data.append([codigo, nome])
     
     # Cria o DataFrame com as colunas "Código" e "Nome"
@@ -48,17 +49,18 @@ def main():
         # Extrai o texto do PDF
         text = extract_text_from_pdf(uploaded_file)
         
-        # Exibir o conteúdo do PDF em linhas numeradas
-        lines = text.split('\n')
-        for i, line in enumerate(lines, start=1):
-            st.text(f"Linha {i}: {line}")
-
         # Converte o texto em um DataFrame específico
         df = convert_text_to_dataframe(text)
         
-        # Exibe o DataFrame
+        # Exibe o DataFrame primeiro
         st.write("Dados extraídos do PDF (Código e Nome):")
         st.dataframe(df)
+
+        # Exibir o conteúdo do PDF em linhas numeradas
+        st.write("Conteúdo do PDF em Linhas Numeradas:")
+        lines = text.split('\n')
+        for i, line in enumerate(lines, start=1):
+            st.text(f"Linha {i}: {line}")
 
 if __name__ == "__main__":
     main()
