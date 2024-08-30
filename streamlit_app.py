@@ -276,9 +276,9 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                 </sb:header>
                 <sb:detalhes>
                     """
-    # Iteras sobre as linhas do DataFrame e adiciona as informações de dedução
+    # Itera sobre as linhas do DataFrame e adiciona as informações de dedução
     for seq_item, (index, row) in enumerate(df_final.iterrows(), start=1):
-    ## Definição de codTipoOB, conta, banco_fab e txtCit de acordo com os CNPJs específicos
+        # Definição de codTipoOB, conta, banco_fab e txtCit de acordo com os CNPJs específicos
         if row['CNPJ'] == '00000000000191':
             codTipoOB = 'OBF'
             txtCit = '120052ECFP999'
@@ -293,8 +293,9 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
             codTipoOB = 'OBC'
             conta = 'UNICA'
             banco_fab = ''
+            txtCit = None
 
-          # Construção do XML com condição para <txtCit>
+        # Construção do XML com condição para <txtCit>
         if codTipoOB == 'OBF':
             numDomiBancFavo = f"""<numDomiBancFavo>
                                     <banco>{row['BCO']}</banco>
@@ -302,7 +303,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                                     <conta>{conta}</conta>
                                 </numDomiBancFavo>"""
             numDomiBancPgto = f"""<numDomiBancPgto><banco>{banco_fab}</banco><conta>UNICA</conta></numDomiBancPgto>"""
-            txtCit_tag = f"<txtCit>{txtCit}</txtCit>"
+            txtCit_tag = f"<txtCit>{txtCit}</txtCit>" if txtCit else ""
         else:
             numDomiBancFavo = f"""<numDomiBancFavo>
                                     <banco>{row['BCO']}</banco>
@@ -310,7 +311,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                                     <conta>{row['Conta']}</conta>
                                 </numDomiBancFavo>"""
             numDomiBancPgto = f"""<numDomiBancPgto><conta>UNICA</conta></numDomiBancPgto>"""
-            txtCit_tag = ''  # Não adiciona a tag <txtCit>
+            txtCit_tag = ''  # Não adiciona a tag <txtCit> para tipo OBC
 
         xml_content_modelo2 += f"""<sb:detalhe>
                         <cpr:CprDhAlterarDHIncluirItens>
