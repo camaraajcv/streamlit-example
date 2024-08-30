@@ -303,7 +303,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                                     <conta>{conta}</conta>
                                 </numDomiBancFavo>"""
             numDomiBancPgto = f"""<numDomiBancPgto><banco>{banco_fab}</banco><conta>UNICA</conta></numDomiBancPgto>"""
-            txtCit_tag = f"<txtCit>{txtCit}</txtCit>" if txtCit else ""
+            txtCit_tag = f"<txtCit>{txtCit}</txtCit>"
         else:
             numDomiBancFavo = f"""<numDomiBancFavo>
                                     <banco>{row['BCO']}</banco>
@@ -312,6 +312,17 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                                 </numDomiBancFavo>"""
             numDomiBancPgto = f"""<numDomiBancPgto><conta>UNICA</conta></numDomiBancPgto>"""
             txtCit_tag = ''  # Não adiciona a tag <txtCit> para tipo OBC
+
+        # Construção do XML final
+        xml_output = f"""
+        <predocOB>
+            <codTipoOB>{codTipoOB}</codTipoOB>
+            <codCredorDevedor>{row['CNPJ']}</codCredorDevedor>
+            {numDomiBancFavo}
+            {numDomiBancPgto}
+            {txtCit_tag}
+        </predocOB>
+        """
 
         xml_content_modelo2 += f"""<sb:detalhe>
                         <cpr:CprDhAlterarDHIncluirItens>
