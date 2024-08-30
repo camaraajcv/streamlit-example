@@ -291,7 +291,6 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
             banco_fab = '002'
         else:
             codTipoOB = 'OBC'
-            txtCit = None
             conta = 'UNICA'
             banco_fab = ''
 
