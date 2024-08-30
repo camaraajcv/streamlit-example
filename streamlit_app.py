@@ -295,34 +295,25 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
             banco_fab = ''
             txtCit = None
 
-        # Construção do XML com condição para <txtCit>
-            numDomiBancFavo = f"""<numDomiBancFavo>
-                                    <banco>{row['BCO']}</banco>
-                                    <agencia>{row['AG']}</agencia>
-                                    <conta>{conta if codTipoOB == 'OBF' else row['Conta']}</conta>
-                                </numDomiBancFavo>"""
+    # Construção do XML com condição para <txtCit>
+        numDomiBancFavo = f"""<numDomiBancFavo>
+                                <banco>{row['BCO']}</banco>
+                                <agencia>{row['AG']}</agencia>
+                                <conta>{conta if codTipoOB == 'OBF' else row['Conta']}</conta>
+                            </numDomiBancFavo>"""
 
-            numDomiBancPgto = f"""<numDomiBancPgto>
-                                    {f'<banco>{banco_fab}</banco>' if banco_fab else ''}
-                                    <conta>UNICA</conta>
-                                </numDomiBancPgto>"""
+        numDomiBancPgto = f"""<numDomiBancPgto>
+                                {f'<banco>{banco_fab}</banco>' if banco_fab else ''}
+                                <conta>UNICA</conta>
+                            </numDomiBancPgto>"""
 
-            # Somente incluir a tag <txtCit> se codTipoOB for 'OBF' e txtCit não for None
-            if codTipoOB == 'OBF' and txtCit is not None:
-                txtCit_tag = f"<txtCit>{txtCit}</txtCit>"
-            else:
-                txtCit_tag = ""  # Não inclui <txtCit> no XML
+        # Somente incluir a tag <txtCit> se codTipoOB for 'OBF' e txtCit não for None
+        if codTipoOB == 'OBF' and txtCit is not None:
+            txtCit_tag = f"<txtCit>{txtCit}</txtCit>"
+        else:
+            txtCit_tag = ""  # Não inclui <txtCit> no XML
 
-            # Construção do XML final
-            xml_output = f"""
-            <predocOB>
-                <codTipoOB>{codTipoOB}</codTipoOB>
-                <codCredorDevedor>{row['CNPJ']}</codCredorDevedor>
-                {txtCit_tag}
-                {numDomiBancFavo}
-                {numDomiBancPgto}
-            </predocOB>
-        """
+        
 
         xml_content_modelo2 += f"""<sb:detalhe>
                         <cpr:CprDhAlterarDHIncluirItens>
