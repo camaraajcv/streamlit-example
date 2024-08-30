@@ -276,9 +276,9 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
                 </sb:header>
                 <sb:detalhes>
                     """
-    # Itera sobre as linhas do DataFrame e adiciona as informações de dedução
+    # Iteras sobre as linhas do DataFrame e adiciona as informações de dedução
     for seq_item, (index, row) in enumerate(df_final.iterrows(), start=1):
-    # Definição de codTipoOB, conta, banco_fab e txtCit de acordo com os CNPJs específicos
+    ## Definição de codTipoOB, conta, banco_fab e txtCit de acordo com os CNPJs específicos
         if row['CNPJ'] == '00000000000191':
             codTipoOB = 'OBF'
             txtCit = '120052ECFP999'
