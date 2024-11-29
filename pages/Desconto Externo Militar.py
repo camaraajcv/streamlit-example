@@ -1,68 +1,47 @@
 import streamlit as st
 import re
-import pandas as pd
 from PyPDF2 import PdfReader
 
-# Função para extrair o texto do PDF
-def extract_text_from_pdf(uploaded_file):
-    reader = PdfReader(uploaded_file)
-    text = ""
-    for page in reader.pages:
-        text += page.extract_text()
-    return text
+# Função para processar o PDF e extrair os dados desejados
+def processar_pdf(file):
+    # Ler o conteúdo do PDF
+    pdf_reader = PdfReader(file)
+    texto_completo = ""
+    for pagina in pdf_reader.pages:
+        texto_completo += pagina.extract_text()
 
-# Função para processar o texto e extrair os dados desejados
-def process_pdf_content(text):
-    # Procurar por "Natureza de Despesa:" e capturar o texto subsequente
-    naturezas = re.findall(r"Natureza de Despesa:\s*(.+)", text)
-    
-    # Procurar sequenciais de 4 dígitos e o texto subsequente
-    om_matches = re.findall(r"(\d{4})\s+(.+)", text)
-    oms = [{"Sequencial": match[0], "OM": match[1]} for match in om_matches]
-    
-    # Criar DataFrame
-    data = {"Natureza de Despesa": naturezas}
-    df_natureza = pd.DataFrame(data)
+    # Buscar "Natureza de Despesa:" e o texto subsequente
+    natureza_despesa = re.findall(r"Natureza de Despesa:\s*(.+)", texto_completo)
 
-    df_om = pd.DataFrame(oms)
+    # Buscar padrões de "XXXX - " seguido do texto (onde XXXX são 4 números)
+    om_matches = re.findall(r"(\d{4} - .+)", texto_completo)
 
-    return df_natureza, df_om
+    # Criar um DataFrame para exibir os resultados no Streamlit
+    import pandas as pd
+    df = pd.DataFrame({
+        "Natureza de Despesa": natureza_despesa if natureza_despesa else ["Não encontrado"],
+        "OM": om_matches if om_matches else ["Não encontrado"]
+    })
 
-# Início do app
+    return df
+
+# Interface no Streamlit
 st.title("Extração de Dados de PDF")
-
-# Upload do arquivo PDF
-uploaded_file = st.file_uploader("Faça o upload de um arquivo PDF", type="pdf")
+uploaded_file = st.file_uploader("Faça o upload do arquivo PDF", type="pdf")
 
 if uploaded_file is not None:
-    # Extrair o texto do PDF
-    pdf_text = extract_text_from_pdf(uploaded_file)
+    st.success("Arquivo carregado com sucesso!")
     
-    # Processar o texto para extrair os dados
-    df_natureza, df_om = process_pdf_content(pdf_text)
-    
-    # Exibir os resultados
-    st.subheader("Natureza de Despesa")
-    st.write(df_natureza)
-    
-    st.subheader("OM")
-    st.write(df_om)
-    
-    # Disponibilizar os DataFrames para download
-    if not df_natureza.empty:
-        csv_natureza = df_natureza.to_csv(index=False).encode('utf-8')
-        st.download_button(
-            label="Baixar Natureza de Despesa (CSV)",
-            data=csv_natureza,
-            file_name="natureza_despesa.csv",
-            mime="text/csv"
-        )
-    
-    if not df_om.empty:
-        csv_om = df_om.to_csv(index=False).encode('utf-8')
-        st.download_button(
-            label="Baixar OM (CSV)",
-            data=csv_om,
-            file_name="om.csv",
-            mime="text/csv"
-        )
+    # Processar o PDF e exibir os resultados
+    df_resultado = processar_pdf(uploaded_file)
+    st.write("### Dados Extraídos:")
+    st.dataframe(df_resultado)
+
+    # Adicionar opção de download para o DataFrame em CSV
+    csv = df_resultado.to_csv(index=False)
+    st.download_button(
+        label="Baixar resultados em CSV",
+        data=csv,
+        file_name="resultado_extracao.csv",
+        mime="text/csv",
+    )
