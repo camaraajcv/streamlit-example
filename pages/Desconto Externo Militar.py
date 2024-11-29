@@ -34,8 +34,8 @@ def processar_pdf(file):
         "CNPJ": cnpj_matches
     })
 
-    # Excluir as linhas onde a "Conta Corrente" é igual a "-"
-    df = df[df['Conta Corrente'] != '-']
+    # Excluir as linhas onde a "Conta Corrente" começa com "-"
+    df = df[~df['Conta Corrente'].str.startswith('-')]
 
     return df
 
