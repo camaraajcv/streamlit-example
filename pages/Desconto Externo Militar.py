@@ -18,23 +18,23 @@ def processar_pdf(file):
     st.subheader("Texto Extraído do PDF (primeiros 1000 caracteres):")
     st.text(texto_completo[:1000])  # Exibe os primeiros 1000 caracteres para diagnóstico
 
-    # Expressão regular para procurar Conta Corrente e o CNPJ após a Conta Corrente
+    # Expressão regular para procurar Conta Corrente e o CNPJ após ela
     conta_corrente_pattern = r"Conta Corrente:\s*(.*?)\s*CNPJ:\s*([\d]{2}\.\d{3}\.\d{3}/\d{4}-\d{2})"
 
     # Encontrar todas as sequências de Conta Corrente e o respectivo CNPJ
-    conta_corrente_matches = re.findall(conta_corrente_pattern, texto_completo)
+    matches = re.findall(conta_corrente_pattern, texto_completo)
 
     # Criar listas para armazenar as informações de Conta Corrente e CNPJ
-    conta_corrente_matches = [match[0] for match in conta_corrente_matches]  # Parte 1 da correspondência: Conta Corrente
-    cnpj_matches = [match[1] for match in conta_corrente_matches]  # Parte 2 da correspondência: CNPJ
+    conta_corrente_matches = [match[0] for match in matches]  # Parte 1 da correspondência: Conta Corrente
+    cnpj_matches = [match[1] for match in matches]  # Parte 2 da correspondência: CNPJ
 
-    # Criar o DataFrame com as colunas de Conta Corrente e CNPJ encontrados
+    # Criar o DataFrame com os CNPJs e Conta Corrente encontrados
     df = pd.DataFrame({
         "Conta Corrente": conta_corrente_matches,
         "CNPJ": cnpj_matches
     })
 
-    # Excluir as linhas onde a "Conta Corrente" começa com "-" (hífen)
+    # Excluir as linhas onde a "Conta Corrente" começa com "-"
     df = df[~df['Conta Corrente'].str.startswith('-')]
 
     return df
