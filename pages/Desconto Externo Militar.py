@@ -11,21 +11,21 @@ def processar_pdf(file):
     for pagina in pdf_reader.pages:
         texto_completo += pagina.extract_text()
 
-    # Buscar "Natureza de Despesa:" e o texto subsequente
-    natureza_despesa = re.findall(r"Natureza de Despesa:\s*(.+)", texto_completo)
-
     # Buscar "CNPJ:" e os próximos 18 caracteres (CNPJ formatado)
-    om_matches = re.findall(r"CNPJ:\s*([\d]{2}\.[\d]{3}\.[\d]{3}/[\d]{4}-[\d]{2})", texto_completo)
+    cnpj_matches = re.findall(r"CNPJ:\s*([\d]{2}\.[\d]{3}\.[\d]{3}/[\d]{4}-[\d]{2})", texto_completo)
+
+    # Buscar "Agência:" e os próximos 6 caracteres (número da agência)
+    agencia_matches = re.findall(r"Agência:\s*(\d{6})", texto_completo)
 
     # Garantir que as listas tenham o mesmo tamanho
-    max_length = max(len(natureza_despesa), len(om_matches))
-    natureza_despesa.extend(["Não encontrado"] * (max_length - len(natureza_despesa)))
-    om_matches.extend(["Não encontrado"] * (max_length - len(om_matches)))
+    max_length = max(len(cnpj_matches), len(agencia_matches))
+    cnpj_matches.extend(["Não encontrado"] * (max_length - len(cnpj_matches)))
+    agencia_matches.extend(["Não encontrado"] * (max_length - len(agencia_matches)))
 
     # Criar o DataFrame
     df = pd.DataFrame({
-        "Natureza de Despesa": natureza_despesa,
-        "CNPJ": om_matches
+        "CNPJ": cnpj_matches,
+        "Agência": agencia_matches
     })
 
     return df
