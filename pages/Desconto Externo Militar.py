@@ -1,6 +1,7 @@
 import streamlit as st
 import re
 from PyPDF2 import PdfReader
+import pandas as pd
 
 # Função para processar o PDF e extrair os dados desejados
 def processar_pdf(file):
@@ -16,11 +17,15 @@ def processar_pdf(file):
     # Buscar padrões de "XXXX - " seguido do texto (onde XXXX são 4 números)
     om_matches = re.findall(r"(\d{4} - .+)", texto_completo)
 
-    # Criar um DataFrame para exibir os resultados no Streamlit
-    import pandas as pd
+    # Garantir que as listas tenham o mesmo tamanho
+    max_length = max(len(natureza_despesa), len(om_matches))
+    natureza_despesa.extend(["Não encontrado"] * (max_length - len(natureza_despesa)))
+    om_matches.extend(["Não encontrado"] * (max_length - len(om_matches)))
+
+    # Criar o DataFrame
     df = pd.DataFrame({
-        "Natureza de Despesa": natureza_despesa if natureza_despesa else ["Não encontrado"],
-        "OM": om_matches if om_matches else ["Não encontrado"]
+        "Natureza de Despesa": natureza_despesa,
+        "OM": om_matches
     })
 
     return df
