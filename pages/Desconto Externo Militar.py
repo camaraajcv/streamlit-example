@@ -45,6 +45,13 @@ def extrair_dados(file):
     bancos_completos = bancos + [''] * (len(cnpjs_unicos) - len(bancos))
     agencias_completas = agencias + [''] * (len(cnpjs_unicos) - len(agencias))
 
+    # Ajustar o número de itens em cada lista para que todas as listas tenham o mesmo tamanho
+    num_linhas = len(cnpjs_unicos)
+    while len(bancos_completos) < num_linhas:
+        bancos_completos.append('')
+    while len(agencias_completas) < num_linhas:
+        agencias_completas.append('')
+
     # Criar o DataFrame com as informações extraídas
     df_resultado = pd.DataFrame({
         "CNPJ": cnpjs_unicos,
