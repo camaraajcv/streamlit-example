@@ -37,6 +37,9 @@ def processar_pdf(file):
     # Excluir as linhas onde a "Conta Corrente" começa com "-"
     df = df[~df['Conta Corrente'].str.startswith('-')]
 
+    # Excluir as linhas duplicadas com base no "CNPJ"
+    df = df.drop_duplicates(subset="CNPJ")
+
     return df
 
 # Interface no Streamlit
@@ -59,6 +62,7 @@ if uploaded_file is not None:
         file_name="cnpj_conta_corrente_extraidos.csv",
         mime="text/csv",
     )
+
 
 
 
