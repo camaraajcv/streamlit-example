@@ -3,7 +3,7 @@ from PyPDF2 import PdfReader
 import pandas as pd
 import re
 
-# Função para processar o PDF, extrair CNPJs, Banco e Agência
+# Função para processar o PDF e extrair os CNPJs, Banco e Agência
 def extrair_dados(file):
     # Ler o conteúdo do PDF
     pdf_reader = PdfReader(file)
@@ -33,19 +33,23 @@ def extrair_dados(file):
     # Encontrar todos os bancos e agências no texto
     banco_agencia_matches = re.findall(banco_agencia_pattern, texto_completo)
 
+    # Garantir que temos pelo menos 1 banco/agência por CNPJ
+    if len(banco_agencia_matches) < len(cnpjs_unicos):
+        st.warning("O número de bancos/agências encontrados é menor do que o número de CNPJs.")
+
     # Criar listas para armazenar os dados encontrados
     bancos = [match[0] for match in banco_agencia_matches]  # 3 primeiros dígitos (código do banco)
     agencias = [match[1] for match in banco_agencia_matches]  # 4 dígitos seguintes (agência)
 
-    # Se o número de CNPJs não for igual ao número de bancos/agências, ignorar
-    if len(bancos) != len(cnpjs_unicos):
-        st.warning("O número de CNPJs não corresponde ao número de bancos/agências encontrados.")
+    # Preencher os dados de Banco e Agência para cada CNPJ
+    bancos_completos = bancos[:len(cnpjs_unicos)]
+    agencias_completas = agencias[:len(cnpjs_unicos)]
 
     # Criar o DataFrame com as informações extraídas
     df_resultado = pd.DataFrame({
         "CNPJ": cnpjs_unicos,
-        "Banco": bancos[:len(cnpjs_unicos)],  # Garantir que o número de bancos corresponde ao de CNPJs
-        "Agência": agencias[:len(cnpjs_unicos)]  # Garantir que o número de agências corresponde ao de CNPJs
+        "Banco": bancos_completos,
+        "Agência": agencias_completas
     })
 
     return df_resultado
@@ -72,6 +76,7 @@ if uploaded_file is not None:
         file_name="dados_extraidos.csv",
         mime="text/csv",
     )
+
 
 
 
