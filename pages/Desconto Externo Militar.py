@@ -29,10 +29,11 @@ def processar_pdf(file):
     # Encontrar todos os números de Conta Corrente entre "Conta Corrente:" e "CNPJ"
     conta_corrente_matches = re.findall(conta_corrente_pattern, texto_completo)
 
-    # Ajustar a quantidade de itens para que as listas tenham o mesmo tamanho
+    # Garantir que as listas de CNPJ e Conta Corrente tenham o mesmo tamanho
+    # Se necessário, preenche com valores vazios
     max_len = max(len(cnpj_matches), len(conta_corrente_matches))
-    cnpj_matches.extend([''] * (max_len - len(cnpj_matches)))  # Completar com string vazia
-    conta_corrente_matches.extend([''] * (max_len - len(conta_corrente_matches)))  # Completar com string vazia
+    cnpj_matches += [''] * (max_len - len(cnpj_matches))  # Preencher com string vazia
+    conta_corrente_matches += [''] * (max_len - len(conta_corrente_matches))  # Preencher com string vazia
 
     # Criar o DataFrame com os CNPJs e Conta Corrente encontrados
     df = pd.DataFrame({
@@ -62,6 +63,7 @@ if uploaded_file is not None:
         file_name="cnpj_conta_corrente_extraidos.csv",
         mime="text/csv",
     )
+
 
 
 
