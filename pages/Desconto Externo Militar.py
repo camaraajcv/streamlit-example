@@ -34,6 +34,11 @@ def processar_pdf(file):
     # Encontrar todas as agências entre "Agência:" e "Conta Corrente:"
     agencia_matches = re.findall(agencia_pattern, texto_completo)
 
+    # Garantir que o número de agências seja igual ao número de CNPJs
+    # Se o número de agências for menor, preencher com None (ou NaN)
+    if len(agencia_matches) < len(cnpj_matches):
+        agencia_matches.extend([None] * (len(cnpj_matches) - len(agencia_matches)))
+
     # Criar o DataFrame com os CNPJs, Conta Corrente e Agência encontrados
     df = pd.DataFrame({
         "Conta Corrente": conta_corrente_matches,
@@ -69,6 +74,7 @@ if uploaded_file is not None:
         file_name="cnpj_conta_corrente_agencia_extraidos.csv",
         mime="text/csv",
     )
+
 
 
 
