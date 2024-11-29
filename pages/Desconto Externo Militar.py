@@ -39,6 +39,12 @@ def processar_pdf(file):
         else:
             cnpj_matches.append('')  # Adiciona valor vazio caso não haja CNPJ correspondente
 
+    # Ajuste para garantir que as listas tenham o mesmo comprimento
+    max_length = max(len(agencia_matches), len(conta_corrente_matches), len(cnpj_matches))
+    agencia_matches.extend([''] * (max_length - len(agencia_matches)))
+    conta_corrente_matches.extend([''] * (max_length - len(conta_corrente_matches)))
+    cnpj_matches.extend([''] * (max_length - len(cnpj_matches)))
+
     # Criar o DataFrame com as colunas de Agência, Conta Corrente e CNPJ encontrados
     df = pd.DataFrame({
         "Agência": agencia_matches,
