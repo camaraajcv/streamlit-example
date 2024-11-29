@@ -35,11 +35,18 @@ def processar_pdf(file):
     cnpj_matches += [''] * (max_len - len(cnpj_matches))  # Preencher com string vazia
     conta_corrente_matches += [''] * (max_len - len(conta_corrente_matches))  # Preencher com string vazia
 
+    # Filtrar os CNPJs para exibir apenas aqueles que têm uma Conta Corrente correspondente
+    cnpj_filtrado = [cnpj if conta_corrente != '' else '' for cnpj, conta_corrente in zip(cnpj_matches, conta_corrente_matches)]
+    conta_corrente_filtrado = [conta_corrente if conta_corrente != '' else '' for conta_corrente in conta_corrente_matches]
+
     # Criar o DataFrame com os CNPJs e Conta Corrente encontrados
     df = pd.DataFrame({
-        "CNPJ": cnpj_matches,
-        "Conta Corrente": conta_corrente_matches
+        "CNPJ": cnpj_filtrado,
+        "Conta Corrente": conta_corrente_filtrado
     })
+
+    # Remover linhas com CNPJ e Conta Corrente vazios
+    df = df[df['CNPJ'] != '']
 
     return df
 
@@ -63,6 +70,7 @@ if uploaded_file is not None:
         file_name="cnpj_conta_corrente_extraidos.csv",
         mime="text/csv",
     )
+
 
 
 
