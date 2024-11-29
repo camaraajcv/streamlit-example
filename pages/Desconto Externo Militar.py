@@ -29,7 +29,15 @@ def processar_pdf(file):
     # Criar listas para armazenar as informações de Agência, Conta Corrente e CNPJ
     agencia_matches = [match.strip() for match in agencia_matches]  # Parte 1 da correspondência: Agência
     conta_corrente_matches = [match[0] for match in conta_corrente_matches]  # Parte 1 da correspondência: Conta Corrente
-    cnpj_matches = [match[1] for match in conta_corrente_matches]  # Parte 2 da correspondência: CNPJ
+    
+    # Verificar se temos as duas partes (Conta Corrente e CNPJ)
+    cnpj_matches = []
+    for match in conta_corrente_matches:
+        cnpj_search = re.search(r"\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}", match)
+        if cnpj_search:
+            cnpj_matches.append(cnpj_search.group())  # Extraindo o CNPJ encontrado
+        else:
+            cnpj_matches.append('')  # Adiciona valor vazio caso não haja CNPJ correspondente
 
     # Criar o DataFrame com as colunas de Agência, Conta Corrente e CNPJ encontrados
     df = pd.DataFrame({
@@ -63,6 +71,7 @@ if uploaded_file is not None:
         file_name="cnpj_agencia_conta_corrente_extraidos.csv",
         mime="text/csv",
     )
+
 
 
 
