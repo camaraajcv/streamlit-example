@@ -355,6 +355,9 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
     </sb:arquivo>
         """
     xml_content_modelo2 = xml_content_modelo2.replace('linhas_totais', str(len(df_final)))
+    # Remover apenas as tags <txtCit> cujo valor seja "None"
+    xml_content = re.sub(r'<txtCit>None</txtCit>', '', xml_content)
+    xml_content_modelo2 = re.sub(r'<txtCit>None</txtCit>', '', xml_content_modelo2)
     st.success(f"Arquivo XML com DataFrame gerado com sucesso.") 
     # Adiciona um botão de download para o arquivo XML
     # Cria um objeto BytesIO para armazenar o conteúdo do XML
