@@ -48,8 +48,8 @@ def processar_pdf(file):
         "Conta Corrente": conta_corrente_matches
     })
 
-    # Remover linhas com CNPJ e Conta Corrente vazios
-    df = df[df['CNPJ'] != '']
+    # Excluir as linhas onde a "Conta Corrente" é igual a "-"
+    df = df[df['Conta Corrente'] != '-']
 
     return df
 
