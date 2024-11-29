@@ -15,7 +15,7 @@ def processar_pdf(file):
     natureza_despesa = re.findall(r"Natureza de Despesa:\s*(.+)", texto_completo)
 
     # Buscar "CNPJ:" e os próximos 18 caracteres (CNPJ formatado)
-    om_matches = re.findall(r"CNPJ:\s*([\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}]+)", texto_completo)
+    om_matches = re.findall(r"CNPJ:\s*([\d]{2}\.[\d]{3}\.[\d]{3}/[\d]{4}-[\d]{2})", texto_completo)
 
     # Garantir que as listas tenham o mesmo tamanho
     max_length = max(len(natureza_despesa), len(om_matches))
