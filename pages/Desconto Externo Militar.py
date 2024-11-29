@@ -23,11 +23,18 @@ def processar_pdf(file):
     # Expressão regular para procurar Conta Corrente entre "Conta Corrente:" e "CNPJ"
     conta_corrente_pattern = r"Conta Corrente:\s*(.*?)\s*CNPJ"
 
-    # Encontrar todos os CNPJs no texto
-    cnpj_matches = re.findall(cnpj_pattern, texto_completo)
-
-    # Encontrar todos os números de Conta Corrente entre "Conta Corrente:" e "CNPJ"
+    # Encontrar todas as sequências de "Conta Corrente:" até "CNPJ" (e inclui apenas valores válidos)
     conta_corrente_matches = re.findall(conta_corrente_pattern, texto_completo)
+
+    # Agora buscamos os CNPJs diretamente após uma Conta Corrente válida
+    cnpj_matches = []
+    for conta_corrente in conta_corrente_matches:
+        # Para cada Conta Corrente, procuramos o CNPJ que vem depois dela
+        cnpj_search = re.search(r"CNPJ:\s*([\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}]+)", texto_completo)
+        if cnpj_search:
+            cnpj_matches.append(cnpj_search.group(1))  # Extrair o CNPJ
+        else:
+            cnpj_matches.append('')  # Se não houver CNPJ, adiciona vazio
 
     # Garantir que as listas de CNPJ e Conta Corrente tenham o mesmo tamanho
     # Se necessário, preenche com valores vazios
@@ -35,14 +42,10 @@ def processar_pdf(file):
     cnpj_matches += [''] * (max_len - len(cnpj_matches))  # Preencher com string vazia
     conta_corrente_matches += [''] * (max_len - len(conta_corrente_matches))  # Preencher com string vazia
 
-    # Filtrar os CNPJs para exibir apenas aqueles que têm uma Conta Corrente correspondente
-    cnpj_filtrado = [cnpj if conta_corrente != '' else '' for cnpj, conta_corrente in zip(cnpj_matches, conta_corrente_matches)]
-    conta_corrente_filtrado = [conta_corrente if conta_corrente != '' else '' for conta_corrente in conta_corrente_matches]
-
     # Criar o DataFrame com os CNPJs e Conta Corrente encontrados
     df = pd.DataFrame({
-        "CNPJ": cnpj_filtrado,
-        "Conta Corrente": conta_corrente_filtrado
+        "CNPJ": cnpj_matches,
+        "Conta Corrente": conta_corrente_matches
     })
 
     # Remover linhas com CNPJ e Conta Corrente vazios
@@ -70,6 +73,7 @@ if uploaded_file is not None:
         file_name="cnpj_conta_corrente_extraidos.csv",
         mime="text/csv",
     )
+
 
 
 
