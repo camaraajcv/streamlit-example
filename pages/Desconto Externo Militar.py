@@ -11,11 +11,15 @@ def processar_pdf(file):
     for pagina in pdf_reader.pages:
         texto_completo += pagina.extract_text()
 
+    # Mostrar uma amostra do texto extraído (para diagnóstico)
+    st.subheader("Texto Extraído do PDF:")
+    st.text(texto_completo[:1000])  # Exibe os primeiros 1000 caracteres
+
     # Buscar "CNPJ:" e os próximos 18 caracteres (CNPJ formatado)
     cnpj_matches = re.findall(r"CNPJ:\s*([\d]{2}\.[\d]{3}\.[\d]{3}/[\d]{4}-[\d]{2})", texto_completo)
 
     # Buscar "Agência:" e os próximos 6 caracteres (número da agência)
-    agencia_matches = re.findall(r"Agência:(\d{6})", texto_completo)
+    agencia_matches = re.findall(r"Agência:\s*(\d{6})", texto_completo)
 
     # Garantir que as listas tenham o mesmo tamanho
     max_length = max(len(cnpj_matches), len(agencia_matches))
