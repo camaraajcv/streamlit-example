@@ -56,8 +56,8 @@ def processar_agencias(file):
     # Colocar o texto em uma linha só para facilitar a busca
     texto_completo = texto_completo.replace("\n", " ")
 
-    # Expressão regular para procurar Agência e o CNPJ após ela
-    agencia_pattern = r"Agência:\s*(\d+)\s*Conta Corrente:\s*(.*?)\s*CNPJ:\s*([\d]{2}\.\d{3}\.\d{3}/\d{4}-\d{2})"
+    # Expressão regular para procurar Agência, Conta Corrente e CNPJ
+    agencia_pattern = r"Agência:\s*([\d-]+)\s*Conta Corrente:\s*(.*?)\s*CNPJ:\s*([\d]{2}\.\d{3}\.\d{3}/\d{4}-\d{2})"
 
     # Encontrar todas as sequências de Agência, Conta Corrente e o respectivo CNPJ
     matches = re.findall(agencia_pattern, texto_completo)
@@ -118,6 +118,7 @@ if uploaded_file is not None:
         file_name="agencias_cnpj_extraidos.csv",
         mime="text/csv",
     )
+
 
 
 
