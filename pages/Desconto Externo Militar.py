@@ -21,7 +21,7 @@ def processar_pdf(file):
     # Buscar o conteúdo entre "Agência:" e "Conta Corrente:"
     agencia_matches = []
     for cnpj in cnpj_matches:
-        # Alterar a regex para capturar todo o conteúdo entre "Agência:" e "Conta Corrente:"
+        # Alterar a regex para capturar tudo entre "Agência:" e "Conta Corrente:"
         agencia_match = re.findall(r"Agência:\s*(.*?)\s*Conta Corrente:", texto_completo)
 
         # Se a agência for encontrada, adicione à lista, caso contrário adicione 'Não encontrado'
@@ -62,6 +62,7 @@ if uploaded_file is not None:
         file_name="resultado_extracao.csv",
         mime="text/csv",
     )
+
 
 
 
