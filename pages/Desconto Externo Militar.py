@@ -18,15 +18,20 @@ def processar_pdf(file):
     # Buscar "CNPJ:" e os próximos 18 caracteres (CNPJ formatado)
     cnpj_matches = re.findall(r"CNPJ:\s*([\d]{2}\.[\d]{3}\.[\d]{3}/[\d]{4}-[\d]{2})", texto_completo)
 
-    # Buscar "Agência:" e pegar tudo após ele
-    agencia_matches = re.findall(r"Agência:\s*(.*)", texto_completo)
+    # Buscar "Agência:" e capturar os números ou hífen após "Agência:"
+    agencia_matches = []
+    for cnpj in cnpj_matches:
+        agencia_match = re.findall(r"Agência:\s*([\d-]+)", texto_completo)
+        if agencia_match:
+            agencia_matches.append(agencia_match[0])  # Adiciona a primeira agência encontrada para cada CNPJ
+        else:
+            agencia_matches.append("Não encontrado")
 
-    # Garantir que as listas tenham o mesmo tamanho
-    max_length = max(len(cnpj_matches), len(agencia_matches))
-    cnpj_matches.extend(["Não encontrado"] * (max_length - len(cnpj_matches)))
+    # Garantir que as listas de CNPJ e Agência tenham o mesmo tamanho
+    max_length = len(cnpj_matches)
     agencia_matches.extend(["Não encontrado"] * (max_length - len(agencia_matches)))
 
-    # Criar o DataFrame
+    # Criar o DataFrame apenas com os CNPJs encontrados
     df = pd.DataFrame({
         "CNPJ": cnpj_matches,
         "Agência": agencia_matches
