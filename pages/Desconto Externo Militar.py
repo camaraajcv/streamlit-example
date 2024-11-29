@@ -21,9 +21,12 @@ def processar_pdf(file):
     # Buscar "Agência:" e capturar os números ou hífen após "Agência:"
     agencia_matches = []
     for cnpj in cnpj_matches:
-        agencia_match = re.findall(r"Agência:\s*([\d-]+)", texto_completo)
+        # Alterar a regex para aceitar todas as variações possíveis
+        agencia_match = re.findall(r"Agência:\s*([-\d]+)", texto_completo)
+        
+        # Se a agência for encontrada, adicione à lista, caso contrário adicione 'Não encontrado'
         if agencia_match:
-            agencia_matches.append(agencia_match[0])  # Adiciona a primeira agência encontrada para cada CNPJ
+            agencia_matches.append(agencia_match[0].strip())  # Remove qualquer espaço extra
         else:
             agencia_matches.append("Não encontrado")
 
