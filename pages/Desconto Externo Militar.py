@@ -41,25 +41,19 @@ def extrair_dados(file):
     bancos = [match[0] for match in banco_agencia_matches]  # 3 primeiros dígitos (código do banco)
     agencias = [match[1] for match in banco_agencia_matches]  # 4 dígitos seguintes (agência)
 
-    # Verificar se o número de bancos e agências é menor do que o número de CNPJs
-    if len(bancos) < len(cnpjs_unicos):
-        st.warning(f"O número de bancos/agências encontrados ({len(bancos)}) é menor que o número de CNPJs ({len(cnpjs_unicos)}).")
-
-    # Preencher com valores vazios para igualar os tamanhos das listas
-    bancos_completos = bancos + [''] * (len(cnpjs_unicos) - len(bancos))
-    agencias_completas = agencias + [''] * (len(cnpjs_unicos) - len(agencias))
-
-    # Garantir que todas as listas têm o mesmo tamanho
-    while len(bancos_completos) < len(cnpjs_unicos):
-        bancos_completos.append('')
-    while len(agencias_completas) < len(cnpjs_unicos):
-        agencias_completas.append('')
+    # Garantir que a quantidade de CNPJs seja compatível com bancos e agências
+    if len(cnpjs_unicos) > len(bancos):
+        bancos += [''] * (len(cnpjs_unicos) - len(bancos))
+        agencias += [''] * (len(cnpjs_unicos) - len(agencias))
+    elif len(cnpjs_unicos) < len(bancos):
+        bancos = bancos[:len(cnpjs_unicos)]
+        agencias = agencias[:len(cnpjs_unicos)]
 
     # Criar o DataFrame com as informações extraídas
     df_resultado = pd.DataFrame({
         "CNPJ": cnpjs_unicos,
-        "Banco": bancos_completos,
-        "Agência": agencias_completas
+        "Banco": bancos,
+        "Agência": agencias
     })
 
     return df_resultado
@@ -86,6 +80,7 @@ if uploaded_file is not None:
         file_name="dados_extraidos.csv",
         mime="text/csv",
     )
+
 
 
 
