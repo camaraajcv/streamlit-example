@@ -1,6 +1,7 @@
 import streamlit as st
 from PyPDF2 import PdfReader
 import pandas as pd
+import re
 
 # Função para processar o PDF e extrair CNPJs
 def processar_pdf(file):
@@ -17,15 +18,11 @@ def processar_pdf(file):
     st.subheader("Texto Extraído do PDF (primeiros 1000 caracteres):")
     st.text(texto_completo[:1000])  # Exibe os primeiros 1000 caracteres para diagnóstico
 
-    # Procurar por "CNPJ:" e extrair os CNPJs encontrados
-    cnpj_matches = []
-    cnpj_start = texto_completo.find("CNPJ:")
-    while cnpj_start != -1:
-        cnpj_end = texto_completo.find(" ", cnpj_start + 5)  # Procurar o espaço após o CNPJ
-        if cnpj_end == -1:
-            cnpj_end = len(texto_completo)  # Caso não tenha espaço, pegar até o final do texto
-        cnpj_matches.append(texto_completo[cnpj_start + 5:cnpj_end].strip())  # Captura o CNPJ
-        cnpj_start = texto_completo.find("CNPJ:", cnpj_end)  # Buscar próximo CNPJ
+    # Expressão regular para procurar CNPJ (formato xx.xxx.xxx/xxxx-xx)
+    cnpj_pattern = r"\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}"
+    
+    # Encontrar todos os CNPJs no texto
+    cnpj_matches = re.findall(cnpj_pattern, texto_completo)
 
     # Criar o DataFrame com os CNPJs encontrados
     df = pd.DataFrame({
@@ -54,6 +51,7 @@ if uploaded_file is not None:
         file_name="cnpj_extraido.csv",
         mime="text/csv",
     )
+
 
 
 
