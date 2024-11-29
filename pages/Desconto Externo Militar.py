@@ -21,8 +21,8 @@ def processar_pdf(file):
     # Buscar "Agência:" e capturar os números ou hífen após "Agência:"
     agencia_matches = []
     for cnpj in cnpj_matches:
-        # Alterar a regex para aceitar todas as variações possíveis
-        agencia_match = re.findall(r"Agência:\s*([-\d]+)", texto_completo)
+        # Alterar a regex para capturar as variações de números e hífens após "Agência:"
+        agencia_match = re.findall(r"Agência:\s*([0-9\-]+)", texto_completo)
         
         # Se a agência for encontrada, adicione à lista, caso contrário adicione 'Não encontrado'
         if agencia_match:
@@ -49,16 +49,3 @@ uploaded_file = st.file_uploader("Faça o upload do arquivo PDF", type="pdf")
 if uploaded_file is not None:
     st.success("Arquivo carregado com sucesso!")
     
-    # Processar o PDF e exibir os resultados
-    df_resultado = processar_pdf(uploaded_file)
-    st.write("### Dados Extraídos:")
-    st.dataframe(df_resultado)
-
-    # Adicionar opção de download para o DataFrame em CSV
-    csv = df_resultado.to_csv(index=False)
-    st.download_button(
-        label="Baixar resultados em CSV",
-        data=csv,
-        file_name="resultado_extracao.csv",
-        mime="text/csv",
-    )
