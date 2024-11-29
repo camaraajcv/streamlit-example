@@ -3,7 +3,7 @@ from PyPDF2 import PdfReader
 import pandas as pd
 import re
 
-# Função para processar o PDF e extrair CNPJs e Conta Corrente
+# Função para processar o PDF e extrair CNPJs, Conta Corrente e Agência
 def processar_pdf(file):
     # Ler o conteúdo do PDF
     pdf_reader = PdfReader(file)
@@ -22,16 +22,23 @@ def processar_pdf(file):
     conta_corrente_pattern = r"Conta Corrente:\s*(.*?)\s*CNPJ:\s*([\d]{2}\.\d{3}\.\d{3}/\d{4}-\d{2})"
 
     # Encontrar todas as sequências de Conta Corrente e o respectivo CNPJ
-    matches = re.findall(conta_corrente_pattern, texto_completo)
+    conta_corrente_matches = re.findall(conta_corrente_pattern, texto_completo)
 
     # Criar listas para armazenar as informações de Conta Corrente e CNPJ
-    conta_corrente_matches = [match[0] for match in matches]  # Parte 1 da correspondência: Conta Corrente
-    cnpj_matches = [match[1] for match in matches]  # Parte 2 da correspondência: CNPJ
+    conta_corrente_matches = [match[0] for match in conta_corrente_matches]  # Parte 1 da correspondência: Conta Corrente
+    cnpj_matches = [match[1] for match in conta_corrente_matches]  # Parte 2 da correspondência: CNPJ
 
-    # Criar o DataFrame com os CNPJs e Conta Corrente encontrados
+    # Expressão regular para buscar a Agência (que está entre "Agência:" e "Conta Corrente:")
+    agencia_pattern = r"Agência:\s*(.*?)\s*Conta Corrente:"
+
+    # Encontrar todas as agências entre "Agência:" e "Conta Corrente:"
+    agencia_matches = re.findall(agencia_pattern, texto_completo)
+
+    # Criar o DataFrame com os CNPJs, Conta Corrente e Agência encontrados
     df = pd.DataFrame({
         "Conta Corrente": conta_corrente_matches,
-        "CNPJ": cnpj_matches
+        "CNPJ": cnpj_matches,
+        "Agência": agencia_matches
     })
 
     # Excluir as linhas onde a "Conta Corrente" começa com "-"
@@ -43,7 +50,7 @@ def processar_pdf(file):
     return df
 
 # Interface no Streamlit
-st.title("Extração de CNPJ e Conta Corrente do PDF")
+st.title("Extração de CNPJ, Conta Corrente e Agência do PDF")
 uploaded_file = st.file_uploader("Faça o upload do arquivo PDF", type="pdf")
 
 if uploaded_file is not None:
@@ -51,7 +58,7 @@ if uploaded_file is not None:
     
     # Processar o PDF e exibir os resultados
     df_resultado = processar_pdf(uploaded_file)
-    st.write("### CNPJs e Conta Corrente Extraídos:")
+    st.write("### CNPJs, Conta Corrente e Agência Extraídos:")
     st.dataframe(df_resultado)
 
     # Adicionar opção de download para o DataFrame em CSV
@@ -59,7 +66,7 @@ if uploaded_file is not None:
     st.download_button(
         label="Baixar resultados em CSV",
         data=csv,
-        file_name="cnpj_conta_corrente_extraidos.csv",
+        file_name="cnpj_conta_corrente_agencia_extraidos.csv",
         mime="text/csv",
     )
 
