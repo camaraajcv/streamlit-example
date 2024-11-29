@@ -3,7 +3,7 @@ from PyPDF2 import PdfReader
 import pandas as pd
 import re
 
-# Função para processar o PDF e extrair CNPJs
+# Função para processar o PDF e extrair CNPJs e Conta Corrente
 def processar_pdf(file):
     # Ler o conteúdo do PDF
     pdf_reader = PdfReader(file)
@@ -20,19 +20,25 @@ def processar_pdf(file):
 
     # Expressão regular para procurar CNPJ (formato xx.xxx.xxx/xxxx-xx)
     cnpj_pattern = r"\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}"
-    
+    # Expressão regular para procurar Conta Corrente entre "Conta Corrente:" e "CNPJ"
+    conta_corrente_pattern = r"Conta Corrente:\s*(.*?)\s*CNPJ"
+
     # Encontrar todos os CNPJs no texto
     cnpj_matches = re.findall(cnpj_pattern, texto_completo)
 
-    # Criar o DataFrame com os CNPJs encontrados
+    # Encontrar todos os números de Conta Corrente entre "Conta Corrente:" e "CNPJ"
+    conta_corrente_matches = re.findall(conta_corrente_pattern, texto_completo)
+
+    # Criar o DataFrame com os CNPJs e Conta Corrente encontrados
     df = pd.DataFrame({
-        "CNPJ": cnpj_matches
+        "CNPJ": cnpj_matches,
+        "Conta Corrente": conta_corrente_matches
     })
 
     return df
 
 # Interface no Streamlit
-st.title("Extração de CNPJ do PDF")
+st.title("Extração de CNPJ e Conta Corrente do PDF")
 uploaded_file = st.file_uploader("Faça o upload do arquivo PDF", type="pdf")
 
 if uploaded_file is not None:
@@ -40,7 +46,7 @@ if uploaded_file is not None:
     
     # Processar o PDF e exibir os resultados
     df_resultado = processar_pdf(uploaded_file)
-    st.write("### CNPJs Extraídos:")
+    st.write("### CNPJs e Conta Corrente Extraídos:")
     st.dataframe(df_resultado)
 
     # Adicionar opção de download para o DataFrame em CSV
@@ -48,7 +54,7 @@ if uploaded_file is not None:
     st.download_button(
         label="Baixar resultados em CSV",
         data=csv,
-        file_name="cnpj_extraido.csv",
+        file_name="cnpj_conta_corrente_extraidos.csv",
         mime="text/csv",
     )
 
