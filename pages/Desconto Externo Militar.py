@@ -14,8 +14,8 @@ def processar_pdf(file):
     # Buscar "Natureza de Despesa:" e o texto subsequente
     natureza_despesa = re.findall(r"Natureza de Despesa:\s*(.+)", texto_completo)
 
-    # Buscar padrões de "XXXX - " seguido do texto (onde XXXX são 4 números)
-    om_matches = re.findall(r"(\d{4} - .+)", texto_completo)
+    # Buscar "CNPJ:" e os próximos 18 caracteres (CNPJ formatado)
+    om_matches = re.findall(r"CNPJ:\s*([\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}]+)", texto_completo)
 
     # Garantir que as listas tenham o mesmo tamanho
     max_length = max(len(natureza_despesa), len(om_matches))
@@ -25,7 +25,7 @@ def processar_pdf(file):
     # Criar o DataFrame
     df = pd.DataFrame({
         "Natureza de Despesa": natureza_despesa,
-        "OM": om_matches
+        "CNPJ": om_matches
     })
 
     return df
