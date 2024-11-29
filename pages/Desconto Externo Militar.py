@@ -20,15 +20,15 @@ def extrair_dados(file):
 
     # Expressão regular para procurar CNPJs no formato 00.000.000/0000-00
     cnpj_pattern = r"\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}"
-    
+
     # Encontrar todos os CNPJs no texto
     cnpjs_encontrados = re.findall(cnpj_pattern, texto_completo)
-    
+
     # Remover CNPJs duplicados
     cnpjs_unicos = list(set(cnpjs_encontrados))
 
-    # Expressão regular para capturar banco (3 dígitos após o CNPJ) e agência (4 dígitos após o banco)
-    banco_agencia_pattern = r"(\d{3})\s*-\s*Agência:\s*(\d{4})"
+    # Expressão regular para capturar o banco (3 dígitos após o CNPJ) e agência (4 dígitos após o banco)
+    banco_agencia_pattern = r"(\d{3})\s*(\d{4})"
 
     # Encontrar todos os bancos e agências no texto
     banco_agencia_matches = re.findall(banco_agencia_pattern, texto_completo)
@@ -42,8 +42,8 @@ def extrair_dados(file):
     agencias = [match[1] for match in banco_agencia_matches]  # 4 dígitos seguintes (agência)
 
     # Preencher os dados de Banco e Agência para cada CNPJ
-    bancos_completos = bancos[:len(cnpjs_unicos)]
-    agencias_completas = agencias[:len(cnpjs_unicos)]
+    bancos_completos = bancos + [''] * (len(cnpjs_unicos) - len(bancos))
+    agencias_completas = agencias + [''] * (len(cnpjs_unicos) - len(agencias))
 
     # Criar o DataFrame com as informações extraídas
     df_resultado = pd.DataFrame({
