@@ -33,23 +33,26 @@ def extrair_dados(file):
     # Encontrar todos os bancos e agências no texto
     banco_agencia_matches = re.findall(banco_agencia_pattern, texto_completo)
 
-    # Garantir que temos pelo menos 1 banco/agência por CNPJ
-    if len(banco_agencia_matches) < len(cnpjs_unicos):
-        st.warning("O número de bancos/agências encontrados é menor do que o número de CNPJs.")
+    # Verificar o tamanho das listas
+    st.write(f"Total de CNPJs encontrados: {len(cnpjs_unicos)}")
+    st.write(f"Total de bancos/agências encontrados: {len(banco_agencia_matches)}")
 
     # Criar listas para armazenar os dados encontrados
     bancos = [match[0] for match in banco_agencia_matches]  # 3 primeiros dígitos (código do banco)
     agencias = [match[1] for match in banco_agencia_matches]  # 4 dígitos seguintes (agência)
 
-    # Preencher os dados de Banco e Agência para cada CNPJ
+    # Verificar se o número de bancos e agências é menor do que o número de CNPJs
+    if len(bancos) < len(cnpjs_unicos):
+        st.warning(f"O número de bancos/agências encontrados ({len(bancos)}) é menor que o número de CNPJs ({len(cnpjs_unicos)}).")
+
+    # Preencher com valores vazios para igualar os tamanhos das listas
     bancos_completos = bancos + [''] * (len(cnpjs_unicos) - len(bancos))
     agencias_completas = agencias + [''] * (len(cnpjs_unicos) - len(agencias))
 
-    # Ajustar o número de itens em cada lista para que todas as listas tenham o mesmo tamanho
-    num_linhas = len(cnpjs_unicos)
-    while len(bancos_completos) < num_linhas:
+    # Garantir que todas as listas têm o mesmo tamanho
+    while len(bancos_completos) < len(cnpjs_unicos):
         bancos_completos.append('')
-    while len(agencias_completas) < num_linhas:
+    while len(agencias_completas) < len(cnpjs_unicos):
         agencias_completas.append('')
 
     # Criar o DataFrame com as informações extraídas
