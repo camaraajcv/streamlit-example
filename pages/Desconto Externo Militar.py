@@ -3,8 +3,8 @@ from PyPDF2 import PdfReader
 import pandas as pd
 import re
 
-# Função para processar o PDF e extrair Agências associadas aos CNPJs
-def processar_agencias(file):
+# Função para processar o PDF e extrair CNPJs no formato padrão
+def extrair_cnpjs(file):
     # Ler o conteúdo do PDF
     pdf_reader = PdfReader(file)
     texto_completo = ""
@@ -14,53 +14,42 @@ def processar_agencias(file):
     # Colocar o texto em uma linha só para facilitar a busca
     texto_completo = texto_completo.replace("\n", " ")
 
-    # Expressão regular para procurar Agência, Conta Corrente e CNPJ
-    agencia_pattern = r"Agência:\s*([\d-]+)\s*Conta Corrente:\s*(.*?)\s*CNPJ:\s*([\d]{2}\.\d{3}\.\d{3}/\d{4}-\d{2})"
+    # Expressão regular para procurar CNPJs no formato 00.000.000/0000-00
+    cnpj_pattern = r"\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}"
 
-    # Encontrar todas as sequências de Agência, Conta Corrente e o respectivo CNPJ
-    matches = re.findall(agencia_pattern, texto_completo)
+    # Encontrar todos os CNPJs no texto
+    cnpjs_encontrados = re.findall(cnpj_pattern, texto_completo)
 
-    # Criar listas para armazenar as informações de Agência, Conta Corrente e CNPJ
-    agencia_matches = [match[0] for match in matches]  # Parte 1 da correspondência: Agência
-    conta_corrente_matches = [match[1] for match in matches]  # Parte 2 da correspondência: Conta Corrente
-    cnpj_matches = [match[2] for match in matches]  # Parte 3 da correspondência: CNPJ
+    # Remover CNPJs duplicados
+    cnpjs_unicos = list(set(cnpjs_encontrados))
 
-    # Criar o DataFrame com as informações de Agência e CNPJ
-    df_agencias = pd.DataFrame({
-        "Agência": agencia_matches,
-        "Conta Corrente": conta_corrente_matches,
-        "CNPJ": cnpj_matches
+    # Criar um DataFrame com os CNPJs encontrados
+    df_cnpjs = pd.DataFrame({
+        "CNPJ": cnpjs_unicos
     })
 
-    # Garantir que a coluna "Conta Corrente" seja do tipo string
-    df_agencias["Conta Corrente"] = df_agencias["Conta Corrente"].astype(str)
-
-    # Excluir as linhas onde a "Conta Corrente" começa com "-"
-    df_agencias = df_agencias[~df_agencias['Conta Corrente'].str.startswith('-')]
-
-    # Excluir as linhas duplicadas com base no "CNPJ"
-    df_agencias = df_agencias.drop_duplicates(subset="CNPJ")
-
-    return df_agencias
+    return df_cnpjs
 
 # Interface no Streamlit
-st.title("Extração de Agências e CNPJs do PDF")
+st.title("Extração de CNPJs do PDF")
 uploaded_file = st.file_uploader("Faça o upload do arquivo PDF", type="pdf")
 
 if uploaded_file is not None:
     st.success("Arquivo carregado com sucesso!")
-    
-    # Processar Agências e exibir os resultados
-    df_agencias_resultado = processar_agencias(uploaded_file)
-    st.write("### Agências e CNPJs Extraídos:")
-    st.dataframe(df_agencias_resultado)
 
-    # Adicionar opção de download para os DataFrames em CSV
-    csv_agencias = df_agencias_resultado.to_csv(index=False)
+    # Processar o PDF e extrair os CNPJs
+    df_resultado = extrair_cnpjs(uploaded_file)
+    
+    # Exibir os resultados
+    st.write("### CNPJs Extraídos:")
+    st.dataframe(df_resultado)
+
+    # Adicionar opção de download para o DataFrame em CSV
+    csv_resultado = df_resultado.to_csv(index=False)
     st.download_button(
-        label="Baixar Agências e CNPJs em CSV",
-        data=csv_agencias,
-        file_name="agencias_cnpj_extraidos.csv",
+        label="Baixar CNPJs Extraídos em CSV",
+        data=csv_resultado,
+        file_name="cnpjs_extraidos.csv",
         mime="text/csv",
     )
 
