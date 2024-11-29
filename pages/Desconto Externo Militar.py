@@ -3,7 +3,7 @@ from PyPDF2 import PdfReader
 import pandas as pd
 import re
 
-# Função para processar o PDF e extrair CNPJs, Conta Corrente e Agência
+# Função para processar o PDF e extrair CNPJs e Conta Corrente
 def processar_pdf(file):
     # Ler o conteúdo do PDF
     pdf_reader = PdfReader(file)
@@ -18,36 +18,18 @@ def processar_pdf(file):
     st.subheader("Texto Extraído do PDF (primeiros 1000 caracteres):")
     st.text(texto_completo[:1000])  # Exibe os primeiros 1000 caracteres para diagnóstico
 
-    # Expressão regular para procurar Agência, Conta Corrente e o CNPJ após a Conta Corrente
-    agencia_pattern = r"Agência:\s*(.*?)\s*Conta Corrente:"
+    # Expressão regular para procurar Conta Corrente e o CNPJ após a Conta Corrente
     conta_corrente_pattern = r"Conta Corrente:\s*(.*?)\s*CNPJ:\s*([\d]{2}\.\d{3}\.\d{3}/\d{4}-\d{2})"
 
-    # Encontrar todas as sequências de Agência, Conta Corrente e o respectivo CNPJ
-    agencia_matches = re.findall(agencia_pattern, texto_completo)
+    # Encontrar todas as sequências de Conta Corrente e o respectivo CNPJ
     conta_corrente_matches = re.findall(conta_corrente_pattern, texto_completo)
 
-    # Criar listas para armazenar as informações de Agência, Conta Corrente e CNPJ
-    agencia_matches = [match.strip() for match in agencia_matches]  # Parte 1 da correspondência: Agência
+    # Criar listas para armazenar as informações de Conta Corrente e CNPJ
     conta_corrente_matches = [match[0] for match in conta_corrente_matches]  # Parte 1 da correspondência: Conta Corrente
-    
-    # Verificar se temos as duas partes (Conta Corrente e CNPJ)
-    cnpj_matches = []
-    for match in conta_corrente_matches:
-        cnpj_search = re.search(r"\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}", match)
-        if cnpj_search:
-            cnpj_matches.append(cnpj_search.group())  # Extraindo o CNPJ encontrado
-        else:
-            cnpj_matches.append('')  # Adiciona valor vazio caso não haja CNPJ correspondente
+    cnpj_matches = [match[1] for match in conta_corrente_matches]  # Parte 2 da correspondência: CNPJ
 
-    # Ajuste para garantir que as listas tenham o mesmo comprimento
-    max_length = max(len(agencia_matches), len(conta_corrente_matches), len(cnpj_matches))
-    agencia_matches.extend([''] * (max_length - len(agencia_matches)))
-    conta_corrente_matches.extend([''] * (max_length - len(conta_corrente_matches)))
-    cnpj_matches.extend([''] * (max_length - len(cnpj_matches)))
-
-    # Criar o DataFrame com as colunas de Agência, Conta Corrente e CNPJ encontrados
+    # Criar o DataFrame com as colunas de Conta Corrente e CNPJ encontrados
     df = pd.DataFrame({
-        "Agência": agencia_matches,
         "Conta Corrente": conta_corrente_matches,
         "CNPJ": cnpj_matches
     })
@@ -58,7 +40,7 @@ def processar_pdf(file):
     return df
 
 # Interface no Streamlit
-st.title("Extração de CNPJ, Agência e Conta Corrente do PDF")
+st.title("Extração de CNPJ e Conta Corrente do PDF")
 uploaded_file = st.file_uploader("Faça o upload do arquivo PDF", type="pdf")
 
 if uploaded_file is not None:
@@ -66,7 +48,7 @@ if uploaded_file is not None:
     
     # Processar o PDF e exibir os resultados
     df_resultado = processar_pdf(uploaded_file)
-    st.write("### CNPJs, Agência e Conta Corrente Extraídos:")
+    st.write("### CNPJs e Conta Corrente Extraídos:")
     st.dataframe(df_resultado)
 
     # Adicionar opção de download para o DataFrame em CSV
@@ -74,9 +56,10 @@ if uploaded_file is not None:
     st.download_button(
         label="Baixar resultados em CSV",
         data=csv,
-        file_name="cnpj_agencia_conta_corrente_extraidos.csv",
+        file_name="cnpj_conta_corrente_extraidos.csv",
         mime="text/csv",
     )
+
 
 
 
