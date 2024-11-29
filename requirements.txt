@@ -3,3 +3,4 @@ pandas
 streamlit
 PyMuPDF
 openpyxl
+PyPDF2
