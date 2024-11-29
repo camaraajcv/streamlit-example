@@ -18,10 +18,10 @@ def processar_pdf(file):
     # Buscar "CNPJ:" e os próximos 18 caracteres (CNPJ formatado)
     cnpj_matches = re.findall(r"CNPJ:\s*([\d]{2}\.[\d]{3}\.[\d]{3}/[\d]{4}-[\d]{2})", texto_completo)
 
-    # Buscar "Agência:" e capturar os números ou hífen após "Agência:"
+    # Buscar "Agência:" e capturar números ou hífen após "Agência:"
     agencia_matches = []
     for cnpj in cnpj_matches:
-        # Alterar a regex para capturar as variações de números e hífens após "Agência:"
+        # Alterar a regex para capturar qualquer número ou hífen após "Agência:"
         agencia_match = re.findall(r"Agência:\s*([0-9\-]+)", texto_completo)
         
         # Se a agência for encontrada, adicione à lista, caso contrário adicione 'Não encontrado'
@@ -62,3 +62,4 @@ if uploaded_file is not None:
         file_name="resultado_extracao.csv",
         mime="text/csv",
     )
+
