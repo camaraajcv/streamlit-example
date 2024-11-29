@@ -18,8 +18,8 @@ def processar_pdf(file):
     # Buscar "CNPJ:" e os próximos 18 caracteres (CNPJ formatado)
     cnpj_matches = re.findall(r"CNPJ:\s*([\d]{2}\.[\d]{3}\.[\d]{3}/[\d]{4}-[\d]{2})", texto_completo)
 
-    # Buscar "Agência:" e os próximos 6 caracteres (número da agência)
-    agencia_matches = re.findall(r"Agência:\s*(\d{6})", texto_completo)
+    # Ajustar a busca para o formato "Agência: XXXX-X" ou outras variações
+    agencia_matches = re.findall(r"Agência:\s*(\d{1,4}-?\d{0,1})", texto_completo)
 
     # Garantir que as listas tenham o mesmo tamanho
     max_length = max(len(cnpj_matches), len(agencia_matches))
