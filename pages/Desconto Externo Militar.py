@@ -1,93 +1,68 @@
 import streamlit as st
-import pandas as pd
-import fitz  # PyMuPDF
 import re
+import pandas as pd
+from PyPDF2 import PdfReader
 
-def extract_text_from_pdf(pdf_file):
-    pdf_document = fitz.open(stream=pdf_file.read(), filetype="pdf")
+# Função para extrair o texto do PDF
+def extract_text_from_pdf(uploaded_file):
+    reader = PdfReader(uploaded_file)
     text = ""
-    for page_num in range(len(pdf_document)):
-        page = pdf_document.load_page(page_num)
-        text += page.get_text("text")
+    for page in reader.pages:
+        text += page.extract_text()
     return text
 
-def convert_text_to_dataframe(text):
-    lines = text.split('\n')
+# Função para processar o texto e extrair os dados desejados
+def process_pdf_content(text):
+    # Procurar por "Natureza de Despesa:" e capturar o texto subsequente
+    naturezas = re.findall(r"Natureza de Despesa:\s*(.+)", text)
     
-    data = []
-    codigo = None
-    total = None
-    banco = None
-    conta_corrente = None
-
-    # Expressão regular para capturar um código de 4 dígitos
-    code_pattern = re.compile(r'\b\d{4}\b')
-
-    for i, line in enumerate(lines):
-        if "Nome" in line and i + 1 < len(lines):
-            # Procurar por um código de 4 dígitos na linha seguinte
-            next_line = lines[i + 1].strip()
-            match = code_pattern.search(next_line)
-            if match:
-                codigo = match.group()
-                # Capturar o nome na linha que sucede o código
-                nome = lines[i + 2].strip() if i + 2 < len(lines) else None
-                # Capturar os primeiros 4 dígitos da segunda linha após o código
-                banco_line = lines[i + 3].strip() if i + 3 < len(lines) else ""
-                banco = banco_line[:4]
-                # Capturar o dado da terceira linha após o código
-                conta_corrente = lines[i + 4].strip() if i + 4 < len(lines) else None
-                data.append([codigo, nome, None, banco, conta_corrente])
-        
-        # Procurar pela palavra "Totais" e capturar o valor na linha seguinte
-        if "Totais" in line and i + 1 < len(lines):
-            total = lines[i + 1].strip()
-            # Atualizar a última linha do DataFrame com o total
-            if data:
-                data[-1][2] = total
+    # Procurar sequenciais de 4 dígitos e o texto subsequente
+    om_matches = re.findall(r"(\d{4})\s+(.+)", text)
+    oms = [{"Sequencial": match[0], "OM": match[1]} for match in om_matches]
     
-    # Cria o DataFrame com as colunas "Código", "Nome", "Total", "Banco" e "Conta Corrente"
-    columns = ["Código", "Nome", "Total", "Banco", "Conta Corrente"]
-    df = pd.DataFrame(data, columns=columns)
+    # Criar DataFrame
+    data = {"Natureza de Despesa": naturezas}
+    df_natureza = pd.DataFrame(data)
 
-    # Filtra para exibir apenas linhas em que "Total" não seja Null
-    df = df[df["Total"].notna()]
+    df_om = pd.DataFrame(oms)
+
+    return df_natureza, df_om
+
+# Início do app
+st.title("Extração de Dados de PDF")
+
+# Upload do arquivo PDF
+uploaded_file = st.file_uploader("Faça o upload de um arquivo PDF", type="pdf")
+
+if uploaded_file is not None:
+    # Extrair o texto do PDF
+    pdf_text = extract_text_from_pdf(uploaded_file)
     
-    return df
-
-def main():
-    uploaded_file = st.file_uploader("Escolha um arquivo PDF", type="pdf")
-
-    if uploaded_file is not None:
-        # Extrai o texto do PDF
-        text = extract_text_from_pdf(uploaded_file)
-        lines = text.split('\n')
-        
-        # Define o título e subtítulo a partir das linhas 1 e 3
-        title = lines[0] if len(lines) > 0 else "Título não encontrado"
-        subtitle = lines[2] if len(lines) > 2 else "Subtítulo não encontrado"
-
-        # Exibe o título e subtítulo no app
-        st.title(title)
-        st.subheader(subtitle)
-
-        # Converte o texto em um DataFrame específico
-        df = convert_text_to_dataframe(text)
-        
-        # Exibe o DataFrame
-        st.dataframe(df)
-
-        # Calcula o somatório da coluna "Total"
-        if not df.empty:
-            # Garantir que a coluna "Total" seja convertida para numérico
-            df['Total'] = pd.to_numeric(df['Total'].str.replace(',', '.'), errors='coerce')
-            total_sum = df['Total'].sum()
-            st.write(f"Somatório da coluna Total: {total_sum:.2f}")
-
-        # Exibir o conteúdo do PDF em linhas numeradas (se desejado)
-        #st.write("Conteúdo do PDF em Linhas Numeradas:")
-        #for i, line in enumerate(lines, start=1):
-            #st.text(f"Linha {i}: {line}")
-
-if __name__ == "__main__":
-    main()
+    # Processar o texto para extrair os dados
+    df_natureza, df_om = process_pdf_content(pdf_text)
+    
+    # Exibir os resultados
+    st.subheader("Natureza de Despesa")
+    st.write(df_natureza)
+    
+    st.subheader("OM")
+    st.write(df_om)
+    
+    # Disponibilizar os DataFrames para download
+    if not df_natureza.empty:
+        csv_natureza = df_natureza.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="Baixar Natureza de Despesa (CSV)",
+            data=csv_natureza,
+            file_name="natureza_despesa.csv",
+            mime="text/csv"
+        )
+    
+    if not df_om.empty:
+        csv_om = df_om.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="Baixar OM (CSV)",
+            data=csv_om,
+            file_name="om.csv",
+            mime="text/csv"
+        )
