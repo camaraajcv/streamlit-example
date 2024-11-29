@@ -22,11 +22,11 @@ def processar_pdf(file):
     conta_corrente_pattern = r"Conta Corrente:\s*(.*?)\s*CNPJ:\s*([\d]{2}\.\d{3}\.\d{3}/\d{4}-\d{2})"
 
     # Encontrar todas as sequências de Conta Corrente e o respectivo CNPJ
-    conta_corrente_matches = re.findall(conta_corrente_pattern, texto_completo)
+    matches = re.findall(conta_corrente_pattern, texto_completo)
 
     # Criar listas para armazenar as informações de Conta Corrente e CNPJ
-    conta_corrente_matches = [match[0] for match in conta_corrente_matches]  # Parte 1 da correspondência: Conta Corrente
-    cnpj_matches = [match[1] for match in conta_corrente_matches]  # Parte 2 da correspondência: CNPJ
+    conta_corrente_matches = [match[0] for match in matches]  # Parte 1 da correspondência: Conta Corrente
+    cnpj_matches = [match[1] for match in matches]  # Parte 2 da correspondência: CNPJ
 
     # Expressão regular para buscar a Agência (que está entre "Agência:" e "Conta Corrente:")
     agencia_pattern = r"Agência:\s*(.*?)\s*Conta Corrente:"
