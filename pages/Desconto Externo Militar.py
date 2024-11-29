@@ -30,7 +30,7 @@ def processar_pdf(file):
     cnpj_matches = []
     for conta_corrente in conta_corrente_matches:
         # Para cada Conta Corrente, procuramos o CNPJ que vem depois dela
-        cnpj_search = re.search(r"CNPJ:\s*([\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}]+)", texto_completo)
+        cnpj_search = re.search(r"CNPJ:\s*([\d]{2}\.\d{3}\.\d{3}/\d{4}-\d{2})", texto_completo)
         if cnpj_search:
             cnpj_matches.append(cnpj_search.group(1))  # Extrair o CNPJ
         else:
@@ -73,6 +73,7 @@ if uploaded_file is not None:
         file_name="cnpj_conta_corrente_extraidos.csv",
         mime="text/csv",
     )
+
 
 
 
