@@ -281,7 +281,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
         # Definição de codTipoOB, conta, banco_fab e txtCit de acordo com os CNPJs específicos
         if row['CNPJ'] == '00000000000191':
             codTipoOB = 'OBF'
-            txtCit = '120052ECFP999'
+            txtCit = '120052ECFP310270014'
             conta = 'FOPAG'
             banco_fab = '002'
         elif row['CNPJ'] == '00360305000104':
