@@ -175,14 +175,40 @@ if uploaded_file is not None:
             'Banco Agência Conta': ['1234-5678-1234', '5678-1234-5678']  # exemplo de dados do banco
         })
         
-        # Realizar a junção
-        df_completo = pd.merge(df_final, df_banco_clean[['Código', 'Banco Agência Conta']], on='Código', how='left')
+        # Fazendo a junção entre df_soma e df_banco_clean com base na coluna 'Código'
+df_completo = pd.merge(df_soma, df_banco_clean[['Código', 'Banco Agência Conta']], on='Código', how='left')
 
-        # Removendo duplicatas
-        df_completo = df_completo.drop_duplicates(subset=['Código'])
+# Removendo duplicatas com base na coluna 'Código' para garantir que cada código apareça apenas uma vez
+df_completo = df_completo.drop_duplicates(subset=['Código'])
 
-        # Renomeando as colunas
-        df_completo.rename(columns={'Banco Agência Conta': 'bco', 'Agência': 'agencia', 'Conta': 'conta', 'CNPJ': 'cnpj', 'Valor': 'valor'}, inplace=True)
+# Renomeando a coluna 'Banco Agência Conta' para 'bco'
 
-        # Limpeza de dados
-        df_completo['conta'] = df_completo['conta'].str
+df_completo.rename(columns={'Banco Agência Conta': 'bco','Agência': 'agencia','Conta': 'conta','CNPJ': 'cnpj','Valor': 'valor'}, inplace=True)
+
+# Remover o caractere '-' da coluna 'conta'
+df_completo['conta'] = df_completo['conta'].str.replace('-', '', regex=False)
+
+# Ajustando a coluna 'agencia' para garantir que os números antes do '-' tenham 4 dígitos
+df_completo['agencia'] = df_completo['agencia'].apply(lambda x: x.split('-')[0].zfill(4) + '-' + x.split('-')[1] if isinstance(x, str) and '-' in x else x)
+
+# Extraindo os 4 primeiros dígitos da coluna 'agencia'
+df_completo['agencia'] = df_completo['agencia'].str[:4]
+
+
+# Configura o pandas para exibir todo o DataFrame sem truncar
+pd.set_option("display.max_rows", None)  # Mostra todas as linhas
+pd.set_option("display.max_columns", None)  # Mostra todas as colunas
+pd.set_option("display.width", None)  # Ajusta a largura para caber no terminal
+pd.set_option("display.max_colwidth", None)  # Mostra o conteúdo completo das células
+# Exibindo o DataFrame resultante
+print("\nDataFrame Completo com a coluna 'Banco Agência Conta':")
+print(df_completo)
+# Opcional: retorna as configurações ao padrão após exibir
+pd.reset_option("display.max_rows")
+pd.reset_option("display.max_columns")
+pd.reset_option("display.width")
+pd.reset_option("display.max_colwidth")
+# Somando todos os valores da coluna 'valor'
+total_valor = df_completo['valor'].sum()
+
+print("Valor Total Desconto Externo:", total_valor)
