@@ -2,7 +2,7 @@ import streamlit as st
 from PyPDF2 import PdfReader
 import pandas as pd
 import re
-
+from datetime import datetime
 # URL da imagem
 image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
 
