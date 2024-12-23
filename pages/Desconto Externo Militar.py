@@ -152,7 +152,12 @@ if uploaded_file is not None:
     # DataFrame final
     df_final = pd.concat([df_agencia_conta_cnpj, df_valores], axis=1)
 
-    # Exibe o DataFrame completo
-    st.subheader("DataFrame Extraído")
+    # Exibe o DataFrame final
+    st.subheader("Resultados Extraídos")
     st.dataframe(df_final)
+
+    # Soma os valores
+    if not df_final.empty:
+        total_valor_soma = df_final["Valor"].sum()
+        st.write(f"Valor total da coluna 'Valor': {total_valor_soma:.2f}")
 
