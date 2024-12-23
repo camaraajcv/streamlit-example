@@ -1,6 +1,5 @@
 import streamlit as st
-from PyPDF2 import PdfReader
-import pandas as pd
+import PyPDF2
 import re
 from datetime import datetime
 # URL da imagem
