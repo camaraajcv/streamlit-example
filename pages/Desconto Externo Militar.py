@@ -165,5 +165,5 @@ if uploaded_file is not None:
     # Soma os valores
     if not df_final.empty:
         total_valor_soma = df_final["Valor"].sum()
-        st.success(f"Valor total da coluna 'Valor': {formatar_moeda(total_valor_soma:.2f})")
+        st.success(f"Valor total da coluna 'Valor': {total_valor_soma:,.2f}")
 
