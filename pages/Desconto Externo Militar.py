@@ -58,6 +58,12 @@ def filter_exclude_lines(filtered_text, exclude_patterns):
             filtered_lines.append(line)
     return filtered_lines
 
+def formatar_moeda(valor):
+        try:
+            valor = float(valor)
+            return f'R$ {valor:,.2f}'.replace(',', 'temp').replace('.', ',').replace('temp', '.')
+        except ValueError:
+            return valor  # Em caso de erro, retorna o valor original
 def extract_codes_and_agencia_conta_cnpj(filtered_text):
     codes_agencias_contas_cnpjs = []
     for i, line in enumerate(filtered_text):
@@ -159,5 +165,5 @@ if uploaded_file is not None:
     # Soma os valores
     if not df_final.empty:
         total_valor_soma = df_final["Valor"].sum()
-        st.write(f"Valor total da coluna 'Valor': {total_valor_soma:.2f}")
+        st.success(f"Valor total da coluna 'Valor': {formatar_moeda(total_valor_soma:.2f})")
 
