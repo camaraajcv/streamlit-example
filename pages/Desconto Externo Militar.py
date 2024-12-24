@@ -235,7 +235,7 @@ if pdf_file:
     
     if df_banco_clean is not None and not df_banco_clean.empty:
         st.write("Códigos de Bancos sincronizados!")
-        st.dataframe(df_banco_clean)
+        
     else:
         st.warning("Nenhum dado foi extraído do PDF.")
 else:
