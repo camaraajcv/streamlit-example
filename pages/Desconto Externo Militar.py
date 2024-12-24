@@ -341,18 +341,18 @@ if opcao:
     if st.button("Aplicar Redução"):
         # Verificando se o valor de redução é maior que zero
         if valor_reducao > 0:
-            # Atualizando o valor no df2
+            # Atualizando o valor no df2 apenas para exibição
             df2.loc[df2['cnpj'] == cnpj_selecionado, 'valor'] -= valor_reducao
 
-            # Adicionando a redução ao DataFrame de reduções usando pd.concat
+            # Adicionando a redução ao DataFrame de reduções
             nova_reducao = pd.DataFrame({'cnpj': [cnpj_selecionado], 'valor_reduzido': [valor_reducao]})
-            reducoes = pd.concat([reducoes, nova_reducao], ignore_index=True)
+            st.session_state.reducoes = pd.concat([st.session_state.reducoes, nova_reducao], ignore_index=True)
 
             # Exibindo os DataFrames atualizados
             st.subheader("df2 Atualizado")
             st.dataframe(df2)
 
             st.subheader("Reduções Aplicadas")
-            st.dataframe(reducoes)
+            st.dataframe(st.session_state.reducoes)
         else:
             st.error("O valor da redução deve ser maior que 0.")
