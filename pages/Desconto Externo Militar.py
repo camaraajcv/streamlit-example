@@ -174,9 +174,15 @@ def extract_pdf_data(pdf_file):
 
     # Abre o arquivo PDF a partir do BytesIO
     with pdfplumber.open(pdf_file) as pdf:
+        total_pages = len(pdf.pages)
+        progress_bar = st.progress(0)  # Inicializa a barra de progresso
+
         for page_num, page in enumerate(pdf.pages):
             text = page.extract_text()
             if text:
+                # Exibir o texto extraído para depuração
+                st.write(f"Texto extraído da página {page_num + 1}:\n{text[:1000]}...")  # Exibe apenas os primeiros 1000 caracteres
+                
                 lines = text.split("\n")  # Divide o texto em linhas
                 for i, line in enumerate(lines):
                     # Verifica se a linha contém "Código Nome"
@@ -196,6 +202,10 @@ def extract_pdf_data(pdf_file):
                             banco_agencia_conta_dados.append(numeros[0])
                         else:
                             banco_agencia_conta_dados.append(None)
+
+            # Atualiza a barra de progresso
+            progress = (page_num + 1) / total_pages
+            progress_bar.progress(progress)
 
     # Igualar os tamanhos das listas
     max_length = max(len(codigo_nome_numeros), len(banco_agencia_conta_dados))
@@ -223,6 +233,9 @@ if pdf_file:
     # Mostrar nome do arquivo selecionado
     st.write(f"Arquivo selecionado: {pdf_file.name}")
     
+    # Exibir mensagem indicando que a extração está em andamento
+    st.write("Processando o PDF... Aguarde um momento enquanto extraímos os dados.")
+
     # Chamar a função para extrair os dados
     df_banco_clean = extract_pdf_data(pdf_file)
     
@@ -234,6 +247,3 @@ if pdf_file:
         st.dataframe(df_banco_clean)
     else:
         st.warning("Nenhum dado foi extraído do PDF.")
-
-    # Se necessário, exibe as linhas brutas para depuração
-    # st.write(f"Linhas extraídas do PDF:\n{lines}")
