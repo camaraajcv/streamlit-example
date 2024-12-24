@@ -3,37 +3,55 @@ import PyPDF2
 import re
 import pandas as pd
 
-# CSS para alterar as mensagens de upload
-css = '''
+languages = {
+    "pt": {
+        "button": "Escolha um arquivo",
+        "instructions": "Arraste e solte o arquivo aqui",
+        "limits": "Limite de 200MB por arquivo"
+    },
+    "en": {
+        "button": "Choose a file",
+        "instructions": "Drag and drop file here",
+        "limits": "Limit 200MB per file"
+    }
+}
+
+# Definir o idioma desejado
+lang = "pt"  # ou "en" ou qualquer outro idioma presente no dicionário
+
+# Aplicar as substituições corretamente
+hide_label = f"""
 <style>
-/* Modifica a mensagem do "drag and drop" */
-[data-testid="stFileUploadDropzone"] div div::before {
-    content: "Arraste e solte o arquivo aqui";  /* Substitua pelo texto desejado */
-    color: black;  /* Cor do texto */
-    font-size: 16px;  /* Tamanho da fonte */
-}
-
-/* Oculta o texto padrão */
-[data-testid="stFileUploadDropzone"] div div span {
-    display: none;
-}
-
-/* Modifica o texto de limite de tamanho de arquivo */
-[data-testid="stFileUploadDropzone"] div div::after {
-    content: "Limite de 200MB por arquivo";  /* Substitua pelo texto desejado */
-    color: black;  /* Cor do texto */
-    font-size: 12px;  /* Tamanho da fonte */
-}
-
-/* Oculta o pequeno texto de informações adicionais */
-[data-testid="stFileUploadDropzone"] div div small {
-    display: none;
-}
+    div[data-testid="stFileUploader"]>section[data-testid="stFileUploadDropzone"]>button[data-testid="baseButton-secondary"] {{
+       color:white;
+    }}
+    div[data-testid="stFileUploader"]>section[data-testid="stFileUploadDropzone"]>button[data-testid="baseButton-secondary"]::after {{
+        content: "{languages.get(lang).get('button')}";
+        color:black;
+        display: block;
+        position: absolute;
+    }}
+    div[data-testid="stFileDropzoneInstructions"]>div>span {{
+       visibility:hidden;
+    }}
+    div[data-testid="stFileDropzoneInstructions"]>div>span::after {{
+       content:"{languages.get(lang).get('instructions')}";
+       visibility:visible;
+       display:block;
+    }}
+    div[data-testid="stFileDropzoneInstructions"]>div>small {{
+       visibility:hidden;
+    }}
+    div[data-testid="stFileDropzoneInstructions"]>div>small::before {{
+       content:"{languages.get(lang).get('limits')}";
+       visibility:visible;
+       display:block;
+    }}
 </style>
-'''
+"""
 
-# Aplica o CSS personalizado
-st.markdown(css, unsafe_allow_html=True)
+# Aplica o CSS com substituições
+st.markdown(hide_label, unsafe_allow_html=True)
 
 # Funções auxiliares diretamente no código
 
