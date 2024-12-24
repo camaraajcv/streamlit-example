@@ -224,16 +224,21 @@ st.title("Extrator de Dados de PDF")
 # Adicionando CSS para substituir o texto padrão "Drag and drop file here"
 st.markdown("""
     <style>
-    .css-1w3t17i {
-        display: none;
-    }
-    .css-1v3tgn7 {
-        display: block;
-        text-align: center;
-        font-size: 18px;
-        color: #000;
-        font-weight: bold;
-    }
+        /* Oculta a área de 'drag and drop' padrão */
+        .stFileUploader > div:first-child {
+            display: none;
+        }
+        /* Exibe texto personalizado */
+        .custom-upload {
+            display: block;
+            text-align: center;
+            font-size: 18px;
+            color: #000;
+            font-weight: bold;
+            padding: 20px;
+            border: 2px dashed #ccc;
+            margin-top: 20px;
+        }
     </style>
     """, unsafe_allow_html=True)
 # Carregar arquivo PDF através da interface do Streamlit
