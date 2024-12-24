@@ -326,35 +326,39 @@ st.success("Valor Total Desconto Externo Sem Clubes: " + formatar_valor_brasilei
 # Inicializando o DataFrame de reduções no session_state, se ainda não existir
 
 
+# Verifica se 'reducoes' já existe no session_state e o cria, se necessário
 if 'reducoes' not in st.session_state:
     st.session_state.reducoes = pd.DataFrame(columns=['cnpj', 'valor_reduzido', 'tipo'])
+
 # Criando o formulário para escolher entre RAT, Judicial ou Outros
-opcao = st.selectbox("Escolha a opção", ["", "RAT", "Judicial", "Outros"])
+opcao = st.multiselect("Escolha uma ou mais opções", ["RAT", "Judicial", "Outros"])
 
 # Se o usuário escolher uma das opções, exibe o formulário de redução
 if opcao:
-    st.write(f"Você escolheu a opção: {opcao}")
+    st.write(f"Você escolheu as opções: {', '.join(opcao)}")
 
-    # Exibindo o campo para selecionar o CNPJ
-    cnpj_selecionado = st.selectbox("Selecione o CNPJ", df2['cnpj'].tolist())
+    # Exibindo o campo para selecionar múltiplos CNPJs
+    cnpjs_selecionados = st.multiselect("Selecione os CNPJs", df2['cnpj'].tolist())
 
     # Campo para informar o valor de redução
     valor_reducao = st.number_input("Informe o valor a ser reduzido", min_value=0.0, step=0.01)
 
     # Quando o usuário submeter o formulário
     if st.button("Aplicar Redução"):
-        # Verificando se o valor de redução é maior que zero
         if valor_reducao > 0:
-            # Atualizando o valor no df2 apenas para exibição
-            df2.loc[df2['cnpj'] == cnpj_selecionado, 'valor'] -= valor_reducao
+            # Para cada CNPJ selecionado, aplique a redução
+            for cnpj in cnpjs_selecionados:
+                # Atualizando o valor no df2 apenas para exibição
+                df2.loc[df2['cnpj'] == cnpj, 'valor'] -= valor_reducao
 
-            # Adicionando a redução ao DataFrame de reduções com a coluna 'tipo'
-            nova_reducao = pd.DataFrame({
-                'cnpj': [cnpj_selecionado],
-                'valor_reduzido': [valor_reducao],
-                'tipo': [opcao]  # Preenchendo a coluna 'tipo' com a opção escolhida
-            })
-            st.session_state.reducoes = pd.concat([st.session_state.reducoes, nova_reducao], ignore_index=True)
+                # Adicionando a redução ao DataFrame de reduções para cada tipo de redução
+                for tipo in opcao:
+                    nova_reducao = pd.DataFrame({
+                        'cnpj': [cnpj],
+                        'valor_reduzido': [valor_reducao],
+                        'tipo': [tipo]  # Preenchendo a coluna 'tipo' com a opção escolhida
+                    })
+                    st.session_state.reducoes = pd.concat([st.session_state.reducoes, nova_reducao], ignore_index=True)
 
             # Exibindo os DataFrames atualizados
             st.subheader("df2 Atualizado")
@@ -364,7 +368,6 @@ if opcao:
             st.dataframe(st.session_state.reducoes)
         else:
             st.error("O valor da redução deve ser maior que 0.")
-
             ###################################XML#########################
 
             # Preenchendo campos do XML
