@@ -180,9 +180,6 @@ def extract_pdf_data(pdf_file):
         for page_num, page in enumerate(pdf.pages):
             text = page.extract_text()
             if text:
-                # Exibir o texto extraído para depuração
-                st.write(f"Texto extraído da página {page_num + 1}:\n{text[:1000]}...")  # Exibe apenas os primeiros 1000 caracteres
-                
                 lines = text.split("\n")  # Divide o texto em linhas
                 for i, line in enumerate(lines):
                     # Verifica se a linha contém "Código Nome"
