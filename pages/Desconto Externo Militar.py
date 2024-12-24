@@ -237,7 +237,7 @@ if pdf_file:
     
     if not df_banco_clean.empty:
         # Exibir o DataFrame de forma interativa
-        st.dataframe(df_banco_clean)
+        st.write("Códigos de Bancos sincronizados!")
     else:
         st.warning("Nenhum dado foi extraído do PDF.")
 
