@@ -160,40 +160,77 @@ if uploaded_file is not None:
         total_valor_soma = df_final["Valor"].sum()
         st.success(f"Valor total DESCONTO EXTERNO - SIGPP: {formatar_valor_brasileiro(total_valor_soma)}")
 
-    # Solicitar novo upload para a junção de dados
-    st.write("Agora, faça o upload do segundo arquivo PDF para realizar a junção dos dados com os valores extraídos.")
-    uploaded_file_banco = st.file_uploader("Upload do arquivo do banco (para junção)", type="pdf")
+import streamlit as st
+import pdfplumber
+import pandas as pd
+import re
+from io import BytesIO
 
-    if uploaded_file_banco is not None:
-        # Processamento do segundo PDF
-        filtered_lines_banco = extract_text_up_to_line(uploaded_file_banco, start_pattern, end_pattern_to_exclude)
-        filtered_lines_banco = filter_exclude_lines(filtered_lines_banco, exclude_patterns)
+# Função para extrair os dados do PDF
+def extract_pdf_data(pdf_file):
+    # Listas para armazenar os dados extraídos
+    codigo_nome_numeros = []
+    banco_agencia_conta_dados = []
 
-        # Criação de DataFrame para o banco
-        df_banco_clean = pd.DataFrame({
-            'Código': ['1234', '5678'],  # exemplo de códigos
-            'Banco Agência Conta': ['1234-5678-1234', '5678-1234-5678']  # exemplo de dados do banco
-        })
-        
-        # Junção entre os DataFrames
-        df_completo = pd.merge(df_final, df_banco_clean[['Código', 'Banco Agência Conta']], on='Código', how='left')
+    # Abre o arquivo PDF a partir do BytesIO
+    with pdfplumber.open(pdf_file) as pdf:
+        for page_num, page in enumerate(pdf.pages):
+            text = page.extract_text()
+            if text:
+                lines = text.split("\n")  # Divide o texto em linhas
+                for i, line in enumerate(lines):
+                    # Verifica se a linha contém "Código Nome"
+                    if "Código Nome" in line:
+                        # Extrai os 4 números da linha seguinte
+                        next_line = lines[i + 1] if i + 1 < len(lines) else ""
+                        numeros = [word for word in next_line.split() if word.isdigit() and len(word) == 4]
+                        codigo_nome_numeros.extend(numeros)
 
-        # Removendo duplicatas com base na coluna 'Código'
-        df_completo = df_completo.drop_duplicates(subset=['Código'])
+                    # Verifica se a linha contém "Banco Agência Conta"
+                    if "Banco Agência Conta" in line:
+                        # Extrai os 4 primeiros números ou '-' no início da linha seguinte
+                        next_line = lines[i + 1] if i + 1 < len(lines) else ""
+                        # Usa uma expressão regular para capturar os quatro primeiros números consecutivos
+                        numeros = re.findall(r'\d{4}', next_line)
+                        if len(numeros) >= 1:  # Retém apenas o primeiro número se encontrado
+                            banco_agencia_conta_dados.append(numeros[0])
+                        else:
+                            banco_agencia_conta_dados.append(None)
 
-        # Renomeando as colunas
-        df_completo.rename(columns={'Banco Agência Conta': 'bco', 'Agência': 'agencia', 'Conta': 'conta', 'CNPJ': 'cnpj', 'Valor': 'valor'}, inplace=True)
+    # Igualar os tamanhos das listas
+    max_length = max(len(codigo_nome_numeros), len(banco_agencia_conta_dados))
+    codigo_nome_numeros.extend([None] * (max_length - len(codigo_nome_numeros)))
+    banco_agencia_conta_dados.extend([None] * (max_length - len(banco_agencia_conta_dados)))
 
-        # Limpeza de dados na coluna 'conta'
-        df_completo['conta'] = df_completo['conta'].astype(str).str.replace('-', '', regex=False)
+    # Criar o DataFrame
+    df_banco = pd.DataFrame({
+        "Código": codigo_nome_numeros,
+        "Banco Agência Conta": banco_agencia_conta_dados
+    })
 
-        # Ajustando a coluna 'agencia'
-        df_completo['agencia'] = df_completo['agencia'].apply(lambda x: x.split('-')[0].zfill(4) + '-' + x.split('-')[1] if isinstance(x, str) and '-' in x else x)
+    # Remove as linhas que contêm None em qualquer uma das colunas
+    df_banco_clean = df_banco.dropna()
 
-        # Exibindo o DataFrame final
-        st.subheader("DataFrame Completo com Dados Junção Banco")
-        st.dataframe(df_completo)
+    return df_banco_clean
 
-        # Somando todos os valores
-        total_valor = df_completo['valor'].sum()
-        st.success(f"Valor Total Desconto Externo (com Junção): {formatar_valor_brasileiro(total_valor)}")
+# Interface do Streamlit
+st.title("Extrator de Dados de PDF")
+
+# Carregar arquivo PDF através da interface do Streamlit
+pdf_file = st.file_uploader("Escolha um arquivo PDF", type="pdf")
+
+if pdf_file:
+    # Mostrar nome do arquivo selecionado
+    st.write(f"Arquivo selecionado: {pdf_file.name}")
+    
+    # Chamar a função para extrair os dados
+    df_banco_clean = extract_pdf_data(pdf_file)
+    
+    # Exibir os dados extraídos em formato de DataFrame
+    st.write("Dados extraídos do PDF:", df_banco_clean)
+
+    # Exibir o DataFrame de forma interativa
+    st.dataframe(df_banco_clean)
+
+    # Se necessário, exibe as linhas brutas para depuração
+    # st.write(f"Linhas extraídas do PDF:\n{lines}")
