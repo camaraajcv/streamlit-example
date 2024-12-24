@@ -263,4 +263,4 @@ st.dataframe(df_completo)
 total_valor = df_completo['valor'].sum()
 
 # Exibindo o total
-st.warning("Valor Total Desconto Externo: " + str(total_valor))
+st.warning("Valor Total Desconto Externo: " + formatar_valor_brasileiro(total_valor))
