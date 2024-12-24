@@ -371,14 +371,14 @@ if opcao:
 st.subheader("Preencher Dados para Gerar XML")
 
 # Campos adicionais que o usuário deve preencher para gerar o XML
-data_geracao = st.date_input("Data de Geração", pd.to_datetime("2024-12-16"))
-cpf_responsavel = st.text_input("CPF Responsável", "09857528740")
+data_geracao = st.date_input("Data de Geração")
+cpf_responsavel = st.text_input("CPF Responsável")
 
 # Preenchendo campos obrigatórios
-numDH = st.text_input("Número do DH (numDH)", "000913")
+numDH = st.text_input("Número do DH (numDH)")
 txtMotivo = st.text_input("Motivo (txtMotivo)", "DESC.EXT.MIL.DEZ")
 txtMotivo = txtMotivo[:16]  # Limitar a 16 caracteres
-dtVenc = st.date_input("Data de Vencimento (dtVenc)", pd.to_datetime("2024-12-31"))
+dtVenc = st.date_input("Data de Vencimento (dtVenc)")
 
 # Quando o usuário clicar para gerar o XML
 if st.button("Gerar XML"):
