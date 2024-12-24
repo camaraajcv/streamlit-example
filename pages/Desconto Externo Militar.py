@@ -110,7 +110,7 @@ st.markdown("<h3 style='text-align: center; font-size: 1em; text-decoration: und
 st.write("Desconto Externo Militar - Extração dados PDF SIGPP para SIAFI")
 
 # Interface para upload de arquivo PDF
-uploaded_file = st.file_uploader("Faça o upload do primeiro arquivo PDF", type="pdf")
+uploaded_file = st.file_uploader("Faça o upload do primeiro arquivo PDF. Este arquivo deve ser retirado no SIGPP em relatórios de empenho. (LEMBRAR DE MARCAR SOMENTE CONSIGNATÁRIAS)", type="pdf")
 
 if uploaded_file is not None:
     start_pattern = "Natureza de Despesa: 11190000 - OUTRAS CONSIGNATARIAS"
@@ -220,11 +220,11 @@ def extract_pdf_data(pdf_file):
     return df_banco_clean
 
 # Interface do Streamlit
-st.title("Extrator de Dados de PDF")
+st.title("Extraindo código do Banco de arquivo SIGPP")
 # Adicionando CSS para substituir o texto padrão "Drag and drop file here"
 
 # Carregar arquivo PDF através da interface do Streamlit
-pdf_file = st.file_uploader("Escolha um arquivo PDF", type="pdf")
+pdf_file = st.file_uploader("Selecione o arquivo PDF do SIGPP de repasse às consignatárias", type="pdf")
 
 if pdf_file:
     # Mostrar nome do arquivo selecionado
