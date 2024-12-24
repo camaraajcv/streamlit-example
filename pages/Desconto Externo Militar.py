@@ -3,6 +3,37 @@ import PyPDF2
 import re
 import pandas as pd
 
+# CSS para alterar as mensagens de upload
+css = '''
+<style>
+/* Modifica a mensagem do "drag and drop" */
+[data-testid="stFileUploadDropzone"] div div::before {
+    content: "Arraste e solte o arquivo aqui";  /* Substitua pelo texto desejado */
+    color: black;  /* Cor do texto */
+    font-size: 16px;  /* Tamanho da fonte */
+}
+
+/* Oculta o texto padrão */
+[data-testid="stFileUploadDropzone"] div div span {
+    display: none;
+}
+
+/* Modifica o texto de limite de tamanho de arquivo */
+[data-testid="stFileUploadDropzone"] div div::after {
+    content: "Limite de 200MB por arquivo";  /* Substitua pelo texto desejado */
+    color: black;  /* Cor do texto */
+    font-size: 12px;  /* Tamanho da fonte */
+}
+
+/* Oculta o pequeno texto de informações adicionais */
+[data-testid="stFileUploadDropzone"] div div small {
+    display: none;
+}
+</style>
+'''
+
+# Aplica o CSS personalizado
+st.markdown(css, unsafe_allow_html=True)
 
 # Funções auxiliares diretamente no código
 
@@ -222,14 +253,7 @@ def extract_pdf_data(pdf_file):
 # Interface do Streamlit
 st.title("Extrator de Dados de PDF")
 # Adicionando CSS para substituir o texto padrão "Drag and drop file here"
-st.markdown("""
-    <style>
-[data-testid="stFileUploadDropzone"] div div::before {color:red; content:"This text replaces Drag and drop file here"}
-[data-testid="stFileUploadDropzone"] div div span{display:none;}
-[data-testid="stFileUploadDropzone"] div div::after {color:red; font-size: .8em; content:"This text replaces Limit 200MB per file"}
-[data-testid="stFileUploadDropzone"] div div small{display:none;}
-</style>
-    """, unsafe_allow_html=True)
+
 # Carregar arquivo PDF através da interface do Streamlit
 pdf_file = st.file_uploader("Escolha um arquivo PDF", type="pdf")
 
