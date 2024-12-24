@@ -222,7 +222,8 @@ def extract_pdf_data(pdf_file):
 # Interface do Streamlit
 st.title("Extraindo código do Banco de arquivo SIGPP")
 # Adicionando CSS para substituir o texto padrão "Drag and drop file here"
-
+# Inicializa o df_banco_clean como None ou um valor vazio
+df_banco_clean = None
 # Carregar arquivo PDF através da interface do Streamlit
 pdf_file = st.file_uploader("Selecione o arquivo PDF do SIGPP de repasse às consignatárias", type="pdf")
 
