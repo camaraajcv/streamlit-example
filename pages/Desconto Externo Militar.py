@@ -176,7 +176,7 @@ if uploaded_file is not None:
         })
         
         # Fazendo a junção entre df_soma e df_banco_clean com base na coluna 'Código'
-df_completo = pd.merge(df_soma, df_banco_clean[['Código', 'Banco Agência Conta']], on='Código', how='left')
+df_completo = pd.merge(df_final, df_banco_clean[['Código', 'Banco Agência Conta']], on='Código', how='left')
 
 # Removendo duplicatas com base na coluna 'Código' para garantir que cada código apareça apenas uma vez
 df_completo = df_completo.drop_duplicates(subset=['Código'])
