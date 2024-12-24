@@ -324,12 +324,12 @@ st.success("Valor Total Desconto Externo Sem Clubes: " + formatar_valor_brasilei
 #################################################################################################################
 # Inicializando o DataFrame de reduções no session_state, se ainda não existir
 if 'reducoes' not in st.session_state:
-    st.session_state.reducoes = pd.DataFrame(columns=['cnpj', 'valor_reduzido'])
+    st.session_state.reducoes = pd.DataFrame(columns=['cnpj', 'valor_reduzido', 'tipo'])
 
-# Criando o formulário para escolher entre RAT ou Judicial
-opcao = st.selectbox("Escolha a opção", ["", "RAT", "Judicial"])
+# Criando o formulário para escolher entre RAT, Judicial ou Outros
+opcao = st.selectbox("Escolha a opção", ["", "RAT", "Judicial", "Outros"])
 
-# Se o usuário escolher "RAT" ou "Judicial", exibe o formulário de redução
+# Se o usuário escolher uma das opções, exibe o formulário de redução
 if opcao:
     st.write(f"Você escolheu a opção: {opcao}")
 
@@ -346,8 +346,12 @@ if opcao:
             # Atualizando o valor no df2 apenas para exibição
             df2.loc[df2['cnpj'] == cnpj_selecionado, 'valor'] -= valor_reducao
 
-            # Adicionando a redução ao DataFrame de reduções
-            nova_reducao = pd.DataFrame({'cnpj': [cnpj_selecionado], 'valor_reduzido': [valor_reducao]})
+            # Adicionando a redução ao DataFrame de reduções com a coluna 'tipo'
+            nova_reducao = pd.DataFrame({
+                'cnpj': [cnpj_selecionado],
+                'valor_reduzido': [valor_reducao],
+                'tipo': [opcao]  # Preenchendo a coluna 'tipo' com a opção escolhida
+            })
             st.session_state.reducoes = pd.concat([st.session_state.reducoes, nova_reducao], ignore_index=True)
 
             # Exibindo os DataFrames atualizados
