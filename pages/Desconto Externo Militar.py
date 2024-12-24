@@ -441,11 +441,13 @@ if st.button("Gerar XML"):
                                 <predocOB>
                                     <codTipoOB>{}</codTipoOB>
                                     <codCredorDevedor>{}</codCredorDevedor>
+                                    {}
                                     <numDomiBancFavo>
                                         <banco>{}</banco>
                                         <agencia>{}</agencia>
                                         <conta>{}</conta>
                                     </numDomiBancFavo>
+                                    {}
                                 </predocOB>
                             </predoc>
                         </deducao>
