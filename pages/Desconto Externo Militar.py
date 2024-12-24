@@ -308,8 +308,8 @@ df2 = df_completo[~df_completo['cnpj'].isin(cnpjs_a_excluir)]
 st.dataframe(df2)
 
 # Cálculo e exibição dos valores de acordo com o CNPJ
-valor_clube_aeronautica = df2[df2['cnpj'] == '34054254000104']['valor'].sum()
-valor_clube_aeronautica_brasilia = df2[df2['cnpj'] == '00753422000138']['valor'].sum()
+valor_clube_aeronautica = df_completo[df_completo['cnpj'] == '34054254000104']['valor'].sum()
+valor_clube_aeronautica_brasilia = df_completo[df_completo['cnpj'] == '00753422000138']['valor'].sum()
 
 # Exibindo os valores com as mensagens correspondentes
 if valor_clube_aeronautica > 0:
