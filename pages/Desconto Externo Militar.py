@@ -214,6 +214,9 @@ def extract_pdf_data(pdf_file):
     # Remove as linhas que contêm None em qualquer uma das colunas
     df_banco_clean = df_banco.dropna()
 
+    # Remove duplicatas com base no Código
+    df_banco_clean = df_banco_clean.drop_duplicates(subset='Código')
+
     return df_banco_clean
 
 # Interface do Streamlit
@@ -239,11 +242,10 @@ if pdf_file:
         st.warning("Nenhum dado foi extraído do PDF.")
 
 # Fazendo a junção entre df_final e df_banco_clean com base na coluna 'Código', usando 'left' join para garantir que todas as linhas de df_final sejam mantidas
-# Usamos 'how="left"' para manter todas as linhas de df_final e apenas adicionar a coluna 'Banco Agência Conta' onde houver correspondência.
 df_completo = pd.merge(df_final, df_banco_clean[['Código', 'Banco Agência Conta']], on='Código', how='left')
 
 # Renomeando as colunas para manter consistência
-df_completo.rename(columns={'Banco Agência Conta': 'bco'}, inplace=True)
+df_completo.rename(columns={'Banco Agência Conta': 'bco','Agência': 'agencia','Conta': 'conta','CNPJ': 'cnpj','Valor': 'valor'}, inplace=True)
 
 # Remover o caractere '-' da coluna 'conta'
 df_completo['conta'] = df_completo['conta'].str.replace('-', '', regex=False)
