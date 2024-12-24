@@ -323,9 +323,6 @@ st.success("Valor Total Desconto Externo Sem Clubes: " + formatar_valor_brasilei
 
 #################################################################################################################
 
- #DataFrame para armazenar as reduções
-reducoes = pd.DataFrame(columns=['cnpj', 'valor_reduzido'])
-
 # Criando o formulário para escolher entre RAT ou Judicial
 opcao = st.selectbox("Escolha a opção", ["", "RAT", "Judicial"])
 
