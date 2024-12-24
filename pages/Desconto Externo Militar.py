@@ -357,7 +357,7 @@ if opcao:
             # Exibindo os DataFrames atualizados
             st.subheader("df2 Atualizado")
             st.dataframe(df2)
-
+            st.success("Valor Total Desconto Externo Atualizado: " + formatar_valor_brasileiro(df2['valor'].sum()))
             st.subheader("Reduções Aplicadas")
             st.dataframe(st.session_state.reducoes)
         else:
