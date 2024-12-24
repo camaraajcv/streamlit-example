@@ -379,6 +379,7 @@ if st.button("Reduzir Valores"):
         st.session_state.reducoes_temp = pd.DataFrame(columns=['cnpj', 'valor_reduzido', 'tipo'])  # Limpando reduções temporárias
         st.success("Reduções aplicadas com sucesso!")
         st.success("Valor Líquido Desconto Externo : " + formatar_valor_brasileiro(df2['valor'].sum()))
+        df_atualizado=df2
     else:
         st.error("Nenhuma redução para aplicar.")
 
@@ -428,7 +429,7 @@ if st.button("Gerar XML"):
         '''.format("DH002", data_geracao.strftime("%d/%m/%Y"), sequencial_geracao, ano_referencia, "120052", cpf_responsavel)
 
         # Loop sobre as linhas do DataFrame
-        for index, row in df2.iterrows():
+        for index, row in df_atualizado.iterrows():
             # Define o valor de codTipoOB com base no valor de codCredorDevedor
             if row['cnpj'] == '00000000000191':
                 codTipoOB = 'OBF'
