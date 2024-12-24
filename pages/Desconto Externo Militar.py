@@ -166,12 +166,8 @@ import pdfplumber
 import pandas as pd
 import re
 from io import BytesIO
-try:
-    # Seu código
-    df_completo.rename(columns={'Banco Agência Conta': 'bco', 'Agência': 'agencia', 'Conta': 'conta', 'CNPJ': 'cnpj', 'Valor': 'valor'}, inplace=True)
-except Exception as e:
-    # Captura qualquer erro e apenas registra
-    st.write("Ocorreu um erro ao processar os dados. Favor tentar novamente.")
+# Definir o nível de log para 'error' ou 'critical'
+st.set_option('logger.level', 'error')  # Isso reduz os logs mostrados
 # Função para extrair os dados do PDF
 def extract_pdf_data(pdf_file):
     # Listas para armazenar os dados extraídos
