@@ -320,3 +320,40 @@ if valor_clube_aeronautica_brasilia > 0:
 
 soma_valores = df2['valor'].sum()
 st.success("Valor Total Desconto Externo Sem Clubes: " + formatar_valor_brasileiro(soma_valores))
+
+#################################################################################################################
+
+ #DataFrame para armazenar as reduções
+reducoes = pd.DataFrame(columns=['cnpj', 'valor_reduzido'])
+
+# Criando o formulário para escolher entre RAT ou Judicial
+opcao = st.selectbox("Escolha a opção", ["", "RAT", "Judicial"])
+
+# Se o usuário escolher "RAT" ou "Judicial", exibe o formulário de redução
+if opcao:
+    st.write(f"Você escolheu a opção: {opcao}")
+
+    # Exibindo o campo para selecionar o CNPJ
+    cnpj_selecionado = st.selectbox("Selecione o CNPJ", df2['cnpj'].tolist())
+
+    # Campo para informar o valor de redução
+    valor_reducao = st.number_input("Informe o valor a ser reduzido", min_value=0.0, step=0.01)
+
+    # Quando o usuário submeter o formulário
+    if st.button("Aplicar Redução"):
+        # Verificando se o valor de redução é maior que zero
+        if valor_reducao > 0:
+            # Atualizando o valor no df2
+            df2.loc[df2['cnpj'] == cnpj_selecionado, 'valor'] -= valor_reducao
+
+            # Adicionando a redução ao DataFrame de reduções
+            reducoes = reducoes.append({'cnpj': cnpj_selecionado, 'valor_reduzido': valor_reducao}, ignore_index=True)
+
+            # Exibindo os DataFrames atualizados
+            st.subheader("df2 Atualizado")
+            st.dataframe(df2)
+
+            st.subheader("Reduções Aplicadas")
+            st.dataframe(reducoes)
+        else:
+            st.error("O valor da redução deve ser maior que 0.")
