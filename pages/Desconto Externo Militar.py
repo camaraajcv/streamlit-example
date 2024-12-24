@@ -362,3 +362,122 @@ if opcao:
             st.dataframe(st.session_state.reducoes)
         else:
             st.error("O valor da redução deve ser maior que 0.")
+
+            ###################################XML#########################
+
+            # Preenchendo campos do XML
+st.subheader("Preencher Dados para Gerar XML")
+
+# Campos adicionais que o usuário deve preencher para gerar o XML
+data_geracao = st.date_input("Data de Geração", pd.to_datetime("2024-12-16"))
+cpf_responsavel = st.text_input("CPF Responsável", "09857528740")
+
+# Preenchendo campos obrigatórios
+numDH = st.text_input("Número do DH (numDH)", "000913")
+txtMotivo = st.text_input("Motivo (txtMotivo)", "DESC.EXT.MIL.DEZ")
+txtMotivo = txtMotivo[:16]  # Limitar a 16 caracteres
+dtVenc = st.date_input("Data de Vencimento (dtVenc)", pd.to_datetime("2024-12-31"))
+
+# Quando o usuário clicar para gerar o XML
+if st.button("Gerar XML"):
+    # Garantindo que os campos obrigatórios sejam preenchidos
+    if cpf_responsavel and numDH and txtMotivo and dtVenc:
+        # Definindo variáveis fixas
+        sequencial_geracao = "100"
+        ano_referencia = datetime.now().year
+        anoDH = datetime.now().year
+        dtPgtoReceb = data_geracao  # A data de pagamento será a mesma de geração
+
+        # Construção da string XML
+        xml_string = '''<sb:arquivo xmlns:sb="http://www.tesouro.gov.br/siafi/submissao" xmlns:cpr="http://services.docHabil.cpr.siafi.tesouro.fazenda.gov.br/">
+            <sb:header>
+                <sb:codigoLayout>{}</sb:codigoLayout>
+                <sb:dataGeracao>{}</sb:dataGeracao>
+                <sb:sequencialGeracao>{}</sb:sequencialGeracao>
+                <sb:anoReferencia>{}</sb:anoReferencia>
+                <sb:ugResponsavel>{}</sb:ugResponsavel>
+                <sb:cpfResponsavel>{}</sb:cpfResponsavel>
+            </sb:header>
+            <sb:detalhes>
+        '''.format("DH002", data_geracao.strftime("%d/%m/%Y"), sequencial_geracao, ano_referencia, "120052", cpf_responsavel)
+
+        # Loop sobre as linhas do DataFrame
+        for index, row in df2.iterrows():
+            # Define o valor de codTipoOB com base no valor de codCredorDevedor
+            if row['cnpj'] == '00000000000191':
+                codTipoOB = 'OBF'
+                txtCit = '120052ECFP999'
+                include_banco_txtCit = True
+            elif row['cnpj'] == '00360305000104':
+                codTipoOB = 'OBF'
+                txtCit = '120052ECFPC019950'
+                include_banco_txtCit = True
+            else:
+                codTipoOB = 'OBC'
+                include_banco_txtCit = False  # Não incluir para outros CNPJs
+                txtCit = None  # Definir txtCit como None para indicar que não deve ser incluído
+
+            xml_string += '''<sb:detalhe>
+                    <cpr:CprDhAlterarDHIncluirItens>
+                        <codUgEmit>120052</codUgEmit>
+                        <anoDH>{}</anoDH>
+                        <codTipoDH>FL</codTipoDH>
+                        <numDH>{}</numDH>
+                        <dtEmis>{}</dtEmis>
+                        <txtMotivo>{}</txtMotivo>
+                        <deducao>
+                            <numSeqItem>{}</numSeqItem>
+                            <codSit>DOB005</codSit>
+                            <dtVenc>{}</dtVenc>
+                            <dtPgtoReceb>{}</dtPgtoReceb>
+                            <codUgPgto>120052</codUgPgto>
+                            <vlr>{}</vlr>
+                            <txtInscrA>{}</txtInscrA>
+                            <numClassA>218810199</numClassA>
+                            <predoc>
+                                <txtObser>DESC.EXT.MIL.DEZ</txtObser>
+                                <predocOB>
+                                    <codTipoOB>{}</codTipoOB>
+                                    <codCredorDevedor>{}</codCredorDevedor>
+                                    {}
+                                    <numDomiBancFavo>
+                                        <banco>{}</banco>
+                                        <agencia>{}</agencia>
+                                        <conta>{}</conta>
+                                    </numDomiBancFavo>
+                                    {}
+                                </predocOB>
+                            </predoc>
+                        </deducao>
+                        </cpr:CprDhAlterarDHIncluirItens>
+                </sb:detalhe>'''.format(anoDH, numDH, data_geracao.strftime("%Y-%m-%d"), txtMotivo,
+                                       index + 1, dtVenc.strftime("%Y-%m-%d"), dtPgtoReceb.strftime("%Y-%m-%d"),
+                                       row['valor'], row['cnpj'], codTipoOB, row['cnpj'],
+                                       f'<txtCit>{txtCit}</txtCit>' if include_banco_txtCit and txtCit is not None else '',
+                                       row['bco'], row['agencia'], row['conta'],
+                                       f'<numDomiBancPgto><banco>{row["banco_fab"]}</banco><conta>UNICA</conta></numDomiBancPgto>' if include_banco_txtCit else f'<numDomiBancPgto><conta>UNICA</conta></numDomiBancPgto>')
+
+        # Finalize a string XML
+        xml_string += '''
+            </sb:detalhes>
+            <sb:trailler>
+                <sb:quantidadeDetalhe>{}</sb:quantidadeDetalhe>
+            </sb:trailler>
+        </sb:arquivo>
+        '''.format(len(df2))
+
+        # Criação do arquivo XML em memória
+        xml_file = StringIO()
+        xml_file.write(xml_string)
+        xml_file.seek(0)
+
+        # Permitir que o usuário baixe o arquivo XML gerado
+        st.download_button(
+            label="Baixar XML",
+            data=xml_file,
+            file_name="arquivo_militar.xml",
+            mime="application/xml"
+        )
+
+    else:
+        st.error("Por favor, preencha todos os campos obrigatórios antes de gerar o XML.")
