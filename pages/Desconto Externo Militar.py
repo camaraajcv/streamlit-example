@@ -437,7 +437,7 @@ if st.button("Gerar XML"):
                             <txtInscrA>{}</txtInscrA>
                             <numClassA>218810199</numClassA>
                             <predoc>
-                                <txtObser>DESC.EXT.MIL.DEZ</txtObser>
+                                <txtObser>{}</txtObser>  <!-- Agora o txtObser será igual ao txtMotivo -->
                                 <predocOB>
                                     <codTipoOB>{}</codTipoOB>
                                     <codCredorDevedor>{}</codCredorDevedor>
@@ -457,7 +457,8 @@ if st.button("Gerar XML"):
                                        row['valor'], row['cnpj'], codTipoOB, row['cnpj'],
                                        f'<txtCit>{txtCit}</txtCit>' if include_banco_txtCit and txtCit is not None else '',
                                        row['bco'], row['agencia'], row['conta'],
-                                       f'<numDomiBancPgto><banco>{row["banco_fab"]}</banco><conta>UNICA</conta></numDomiBancPgto>' if include_banco_txtCit else f'<numDomiBancPgto><conta>UNICA</conta></numDomiBancPgto>')
+                                       f'<numDomiBancPgto><banco>{row["banco_fab"]}</banco><conta>UNICA</conta></numDomiBancPgto>' if include_banco_txtCit else f'<numDomiBancPgto><conta>UNICA</conta></numDomiBancPgto>',
+                                       txtMotivo)
 
         # Finalize a string XML
         xml_string += '''
