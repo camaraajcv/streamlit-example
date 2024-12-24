@@ -2,7 +2,7 @@ import streamlit as st
 import PyPDF2
 import re
 import pandas as pd
-from datetime import datetime
+
 
 # Funções auxiliares diretamente no código
 
@@ -97,10 +97,6 @@ image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
 
 # Código HTML e CSS para ajustar a largura da imagem e centralizar
 html_code = f'<div style="display: flex; justify-content: center;"><img src="{image_url}" alt="Imagem" style="width:8vw;"/></div>'
-
-# Data de geração
-data_geracao = datetime.now().strftime('%Y-%m-%d')
-data_geracao2 = datetime.now().strftime('%d/%m/%Y')
 
 # Exibir a imagem
 st.markdown(html_code, unsafe_allow_html=True)
