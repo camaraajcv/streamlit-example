@@ -221,7 +221,21 @@ def extract_pdf_data(pdf_file):
 
 # Interface do Streamlit
 st.title("Extrator de Dados de PDF")
-
+# Adicionando CSS para substituir o texto padrão "Drag and drop file here"
+st.markdown("""
+    <style>
+    .css-1w3t17i {
+        display: none;
+    }
+    .css-1v3tgn7 {
+        display: block;
+        text-align: center;
+        font-size: 18px;
+        color: #000;
+        font-weight: bold;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 # Carregar arquivo PDF através da interface do Streamlit
 pdf_file = st.file_uploader("Escolha um arquivo PDF", type="pdf")
 
