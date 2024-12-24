@@ -256,7 +256,10 @@ df_completo['agencia'] = df_completo['agencia'].apply(lambda x: x.split('-')[0].
 # Extraindo os 4 primeiros dígitos da coluna 'agencia'
 df_completo['agencia'] = df_completo['agencia'].str[:4]
 
-# Exibindo o DataFrame resultante
+# Excluir as linhas onde a coluna 'valor' seja igual a zero
+df_completo = df_completo[df_completo['valor'] != 0]
+
+# Exibindo o DataFrame após a remoção das linhas
 st.dataframe(df_completo)
 
 # Somando todos os valores da coluna 'valor'
