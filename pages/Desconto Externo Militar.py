@@ -165,50 +165,35 @@ if uploaded_file is not None:
     uploaded_file_banco = st.file_uploader("Upload do arquivo do banco (para junção)", type="pdf")
 
     if uploaded_file_banco is not None:
-        # Aqui você pode adicionar a lógica de leitura do segundo PDF, para realizar a junção com os dados extraídos do primeiro
-        # Para simplificação, vou mostrar apenas como você faria a junção com os DataFrames
+        # Processamento do segundo PDF
+        filtered_lines_banco = extract_text_up_to_line(uploaded_file_banco, start_pattern, end_pattern_to_exclude)
+        filtered_lines_banco = filter_exclude_lines(filtered_lines_banco, exclude_patterns)
 
-        # Exemplo do seu código de junção após ter extraído dados do segundo PDF (df_banco_clean deve ser carregado)
-        # Vamos simular um DataFrame "df_banco_clean" para a junção, você pode ajustar conforme necessário.
+        # Criação de DataFrame para o banco
         df_banco_clean = pd.DataFrame({
             'Código': ['1234', '5678'],  # exemplo de códigos
             'Banco Agência Conta': ['1234-5678-1234', '5678-1234-5678']  # exemplo de dados do banco
         })
         
-        # Fazendo a junção entre df_soma e df_banco_clean com base na coluna 'Código'
-df_completo = pd.merge(df_final, df_banco_clean[['Código', 'Banco Agência Conta']], on='Código', how='left')
+        # Junção entre os DataFrames
+        df_completo = pd.merge(df_final, df_banco_clean[['Código', 'Banco Agência Conta']], on='Código', how='left')
 
-# Removendo duplicatas com base na coluna 'Código' para garantir que cada código apareça apenas uma vez
-df_completo = df_completo.drop_duplicates(subset=['Código'])
+        # Removendo duplicatas com base na coluna 'Código'
+        df_completo = df_completo.drop_duplicates(subset=['Código'])
 
-# Renomeando a coluna 'Banco Agência Conta' para 'bco'
+        # Renomeando as colunas
+        df_completo.rename(columns={'Banco Agência Conta': 'bco', 'Agência': 'agencia', 'Conta': 'conta', 'CNPJ': 'cnpj', 'Valor': 'valor'}, inplace=True)
 
-df_completo.rename(columns={'Banco Agência Conta': 'bco','Agência': 'agencia','Conta': 'conta','CNPJ': 'cnpj','Valor': 'valor'}, inplace=True)
+        # Limpeza de dados na coluna 'conta'
+        df_completo['conta'] = df_completo['conta'].astype(str).str.replace('-', '', regex=False)
 
-# Remover o caractere '-' da coluna 'conta'
-df_completo['conta'] = df_completo['conta'].str.replace('-', '', regex=False)
+        # Ajustando a coluna 'agencia'
+        df_completo['agencia'] = df_completo['agencia'].apply(lambda x: x.split('-')[0].zfill(4) + '-' + x.split('-')[1] if isinstance(x, str) and '-' in x else x)
 
-# Ajustando a coluna 'agencia' para garantir que os números antes do '-' tenham 4 dígitos
-df_completo['agencia'] = df_completo['agencia'].apply(lambda x: x.split('-')[0].zfill(4) + '-' + x.split('-')[1] if isinstance(x, str) and '-' in x else x)
+        # Exibindo o DataFrame final
+        st.subheader("DataFrame Completo com Dados Junção Banco")
+        st.dataframe(df_completo)
 
-# Extraindo os 4 primeiros dígitos da coluna 'agencia'
-df_completo['agencia'] = df_completo['agencia'].str[:4]
-
-
-# Configura o pandas para exibir todo o DataFrame sem truncar
-pd.set_option("display.max_rows", None)  # Mostra todas as linhas
-pd.set_option("display.max_columns", None)  # Mostra todas as colunas
-pd.set_option("display.width", None)  # Ajusta a largura para caber no terminal
-pd.set_option("display.max_colwidth", None)  # Mostra o conteúdo completo das células
-# Exibindo o DataFrame resultante
-print("\nDataFrame Completo com a coluna 'Banco Agência Conta':")
-print(df_completo)
-# Opcional: retorna as configurações ao padrão após exibir
-pd.reset_option("display.max_rows")
-pd.reset_option("display.max_columns")
-pd.reset_option("display.width")
-pd.reset_option("display.max_colwidth")
-# Somando todos os valores da coluna 'valor'
-total_valor = df_completo['valor'].sum()
-
-print("Valor Total Desconto Externo:", total_valor)
+        # Somando todos os valores
+        total_valor = df_completo['valor'].sum()
+        st.success(f"Valor Total Desconto Externo (com Junção): {formatar_valor_brasileiro(total_valor)}")
