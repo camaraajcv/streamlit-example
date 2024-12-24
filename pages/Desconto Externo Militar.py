@@ -322,8 +322,10 @@ soma_valores = df2['valor'].sum()
 st.success("Valor Total Desconto Externo Sem Clubes: " + formatar_valor_brasileiro(soma_valores))
 
 #################################################################################################################
-# DataFrame para armazenar as reduções
-reducoes = pd.DataFrame(columns=['cnpj', 'valor_reduzido'])
+# Inicializando o DataFrame de reduções no session_state, se ainda não existir
+if 'reducoes' not in st.session_state:
+    st.session_state.reducoes = pd.DataFrame(columns=['cnpj', 'valor_reduzido'])
+
 # Criando o formulário para escolher entre RAT ou Judicial
 opcao = st.selectbox("Escolha a opção", ["", "RAT", "Judicial"])
 
