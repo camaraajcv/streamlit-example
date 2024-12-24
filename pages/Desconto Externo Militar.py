@@ -328,9 +328,6 @@ st.success("Valor Total Desconto Externo Sem Clubes: " + formatar_valor_brasilei
 
 if 'reducoes' not in st.session_state:
     st.session_state.reducoes = pd.DataFrame(columns=['cnpj', 'valor_reduzido', 'tipo'])
-else:
-    # Limpa o dataframe 'reducoes' antes de cada novo upload ou operação
-    st.session_state.reducoes = pd.DataFrame(columns=['cnpj', 'valor_reduzido', 'tipo'])
 # Criando o formulário para escolher entre RAT, Judicial ou Outros
 opcao = st.selectbox("Escolha a opção", ["", "RAT", "Judicial", "Outros"])
 
