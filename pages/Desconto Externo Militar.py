@@ -241,10 +241,14 @@ if pdf_file:
 else:
     st.info("Por favor, faça o upload de um arquivo PDF para processar os dados.")
 
-if 'df_banco_clean' in globals():
-    df_completo = pd.merge(df_final, df_banco_clean[['Código', 'Banco Agência Conta']], on='Código', how='left')
+if 'df_final' in globals():
+    # Verifica se df_banco_clean existe
+    if 'df_banco_clean' in globals():
+        df_completo = pd.merge(df_final, df_banco_clean[['Código', 'Banco Agência Conta']], on='Código', how='left')
+    else:
+        df_completo = df_final.copy()  # Caso df_banco_clean não exista, mantém df_final sem alterações
 else:
-    df_completo = df_final.copy()  # Caso df_banco_clean não exista, mantém df_final sem alterações
+    print("Erro: df_final não está definido.")
 
 # Renomeando as colunas para manter consistência
 df_completo.rename(columns={'Banco Agência Conta': 'bco','Agência': 'agencia','Conta': 'conta','CNPJ': 'cnpj','Valor': 'valor'}, inplace=True)
