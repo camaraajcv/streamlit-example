@@ -262,20 +262,12 @@ df_completo['agencia'] = df_completo['agencia'].apply(lambda x: x.split('-')[0].
 df_completo['agencia'] = df_completo['agencia'].str[:4]
 
 
-# Configura o pandas para exibir todo o DataFrame sem truncar
-pd.set_option("display.max_rows", None)  # Mostra todas as linhas
-pd.set_option("display.max_columns", None)  # Mostra todas as colunas
-pd.set_option("display.width", None)  # Ajusta a largura para caber no terminal
-pd.set_option("display.max_colwidth", None)  # Mostra o conteúdo completo das células
+
 # Exibindo o DataFrame resultante
 print("\nDataFrame Completo com a coluna 'Banco Agência Conta':")
-print(df_completo)
-# Opcional: retorna as configurações ao padrão após exibir
-pd.reset_option("display.max_rows")
-pd.reset_option("display.max_columns")
-pd.reset_option("display.width")
-pd.reset_option("display.max_colwidth")
+st.dataframe(df_completo)
+
 # Somando todos os valores da coluna 'valor'
 total_valor = df_completo['valor'].sum()
 
-print("Valor Total Desconto Externo:", total_valor)
+st.warning("Valor Total Desconto Externo:", total_valor)
