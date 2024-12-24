@@ -297,4 +297,12 @@ df_completo.loc[df_completo['cnpj'].isin(['00360305000104', '00000000000191']), 
 
 df_completo['banco_fab'] = ''
 df_completo.loc[df_completo['cnpj'].isin(['00360305000104', '00000000000191']), 'banco_fab'] = '002'
-st.dataframe(df_completo)
+
+# Lista de CNPJs que você deseja excluir
+cnpjs_a_excluir = ['34054254000104', '00753422000138']
+st.warning("Excluídos os CNPJ 34054254000104 (Clube de Aeronáutica) e 00753422000138 (Clube de Aeronáutica de Brasília)")
+# Filtrar o dataframe para manter apenas os CNPJs que não estão na lista
+df2 = df_completo[~df_completo['cnpj'].isin(cnpjs_a_excluir)]
+# Exiba as primeiras linhas do DataFrame
+
+st.dataframe(df2)
