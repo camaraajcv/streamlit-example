@@ -3,7 +3,8 @@ import PyPDF2
 import re
 import pandas as pd
 import logging
-
+from datetime import datetime
+from io import StringIO
 # Configuração do logging para capturar os erros
 logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
