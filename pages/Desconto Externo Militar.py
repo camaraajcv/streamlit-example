@@ -1,10 +1,11 @@
 import streamlit as st
 import PyPDF2
-import pdfplumber
-import pandas as pd
 import re
+import pandas as pd
 
-# Função auxiliar para extrair texto do PDF até um padrão específico
+
+# Funções auxiliares diretamente no código
+
 def extract_text_up_to_line(pdf_file, start_pattern, end_pattern):
     try:
         reader = PyPDF2.PdfReader(pdf_file)
@@ -25,7 +26,6 @@ def extract_text_up_to_line(pdf_file, start_pattern, end_pattern):
         st.error(f"Erro ao processar o PDF: {e}")
         return []
 
-# Função para filtrar linhas com base em padrões a serem excluídos
 def filter_exclude_lines(filtered_text, exclude_patterns):
     filtered_lines = []
     for line in filtered_text:
@@ -33,11 +33,9 @@ def filter_exclude_lines(filtered_text, exclude_patterns):
             filtered_lines.append(line)
     return filtered_lines
 
-# Função para formatar valores em formato brasileiro
 def formatar_valor_brasileiro(valor):
     return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
-# Função para extrair códigos, agência, conta e CNPJ
 def extract_codes_and_agencia_conta_cnpj(filtered_text):
     codes_agencias_contas_cnpjs = []
     for i, line in enumerate(filtered_text):
@@ -48,7 +46,6 @@ def extract_codes_and_agencia_conta_cnpj(filtered_text):
             codes_agencias_contas_cnpjs.append((code, agencia, conta, cnpj))
     return codes_agencias_contas_cnpjs
 
-# Função para extrair agência, conta e CNPJ a partir da linha
 def extract_agencia_conta_cnpj(filtered_text, start_index):
     agencia = None
     conta = None
@@ -70,7 +67,6 @@ def extract_agencia_conta_cnpj(filtered_text, start_index):
 
     return agencia, conta, cnpj
 
-# Função para extrair valores antes do total
 def extract_value_before_total(filtered_text):
     valores = []
     collecting = False
@@ -96,7 +92,77 @@ def extract_value_before_total(filtered_text):
 
     return valores
 
-# Função para extrair os dados do PDF usando pdfplumber
+# URL da imagem
+image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
+
+# Código HTML e CSS para ajustar a largura da imagem e centralizar
+html_code = f'<div style="display: flex; justify-content: center;"><img src="{image_url}" alt="Imagem" style="width:8vw;"/></div>'
+
+# Exibir a imagem
+st.markdown(html_code, unsafe_allow_html=True)
+
+# Títulos e explicações
+st.markdown("<h1 style='text-align: center; font-size: 1.5em;'>DIRETORIA DE ADMINISTRAÇÃO DA AERONÁUTICA</h1>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: center; font-size: 1.2em;'>SUBDIRETORIA DE PAGAMENTO DE PESSOAL</h2>", unsafe_allow_html=True)
+st.markdown("<h3 style='text-align: center; font-size: 1em; text-decoration: underline;'>PP1 - DIVISÃO DE DESCONTOS</h3>", unsafe_allow_html=True)
+
+# Texto explicativo
+st.write("Desconto Externo Militar - Extração dados PDF SIGPP para SIAFI")
+
+# Interface para upload de arquivo PDF
+uploaded_file = st.file_uploader("Faça o upload do primeiro arquivo PDF. Este arquivo deve ser retirado no SIGPP em relatórios de empenho. (LEMBRAR DE MARCAR SOMENTE CONSIGNATÁRIAS)", type="pdf")
+
+if uploaded_file is not None:
+    start_pattern = "Natureza de Despesa: 11190000 - OUTRAS CONSIGNATARIAS"
+    end_pattern_to_exclude = "Natureza de Despesa: 11199900 - DESCONTO INTERNO- APROPRIACAO UPAG"
+    exclude_patterns = [
+        "Relatório Emitido em",
+        "Diretoria de Administração",
+        "Subdiretoria",
+        "Competência:",
+        "Abrangência:",
+        "Folha:",
+        "Órgão:",
+        "Módulo de PAGAMENTOS",
+        "Natureza de Despesa:"
+    ]
+
+    # Processamento do primeiro PDF
+    filtered_lines = extract_text_up_to_line(uploaded_file, start_pattern, end_pattern_to_exclude)
+    filtered_lines = filter_exclude_lines(filtered_lines, exclude_patterns)
+    
+    # Extração de informações
+    codes_agencias_contas_cnpjs = extract_codes_and_agencia_conta_cnpj(filtered_lines)
+    valores = extract_value_before_total(filtered_lines)
+
+    # Criação de DataFrames
+    df_agencia_conta_cnpj = pd.DataFrame(codes_agencias_contas_cnpjs, columns=["Código", "Agência", "Conta", "CNPJ"])
+    df_valores = pd.DataFrame(valores, columns=["Valor"])
+
+    # Ajuste de índices
+    max_len = max(len(df_agencia_conta_cnpj), len(df_valores))
+    df_agencia_conta_cnpj = df_agencia_conta_cnpj.reindex(range(max_len))
+    df_valores = df_valores.reindex(range(max_len))
+
+    # Concatenar os DataFrames
+    df_final = pd.concat([df_agencia_conta_cnpj, df_valores], axis=1)
+
+    # Exibir o DataFrame
+    st.subheader("Resultados Extraídos")
+    st.dataframe(df_final)
+
+    # Soma os valores
+    if not df_final.empty:
+        total_valor_soma = df_final["Valor"].sum()
+        st.success(f"Valor total DESCONTO EXTERNO - SIGPP: {formatar_valor_brasileiro(total_valor_soma)}")
+
+import streamlit as st
+import pdfplumber
+import pandas as pd
+import re
+from io import BytesIO
+
+# Função para extrair os dados do PDF
 def extract_pdf_data(pdf_file):
     # Listas para armazenar os dados extraídos
     codigo_nome_numeros = []
@@ -155,67 +221,8 @@ def extract_pdf_data(pdf_file):
 
 # Interface do Streamlit
 st.title("Extraindo código do Banco de arquivo SIGPP")
-
-# Exibição da imagem
-image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
-html_code = f'<div style="display: flex; justify-content: center;"><img src="{image_url}" alt="Imagem" style="width:8vw;"/></div>'
-st.markdown(html_code, unsafe_allow_html=True)
-
-st.markdown("<h1 style='text-align: center; font-size: 1.5em;'>DIRETORIA DE ADMINISTRAÇÃO DA AERONÁUTICA</h1>", unsafe_allow_html=True)
-st.markdown("<h2 style='text-align: center; font-size: 1.2em;'>SUBDIRETORIA DE PAGAMENTO DE PESSOAL</h2>", unsafe_allow_html=True)
-st.markdown("<h3 style='text-align: center; font-size: 1em; text-decoration: underline;'>PP1 - DIVISÃO DE DESCONTOS</h3>", unsafe_allow_html=True)
-
-st.write("Desconto Externo Militar - Extração dados PDF SIGPP para SIAFI")
-
-uploaded_file = st.file_uploader("Faça o upload do primeiro arquivo PDF. Este arquivo deve ser retirado no SIGPP em relatórios de empenho.", type="pdf")
-
-if uploaded_file is not None:
-    start_pattern = "Natureza de Despesa: 11190000 - OUTRAS CONSIGNATARIAS"
-    end_pattern_to_exclude = "Natureza de Despesa: 11199900 - DESCONTO INTERNO- APROPRIACAO UPAG"
-    exclude_patterns = [
-        "Relatório Emitido em",
-        "Diretoria de Administração",
-        "Subdiretoria",
-        "Competência:",
-        "Abrangência:",
-        "Folha:",
-        "Órgão:",
-        "Módulo de PAGAMENTOS",
-        "Natureza de Despesa:"
-    ]
-
-    # Processamento do primeiro PDF
-    filtered_lines = extract_text_up_to_line(uploaded_file, start_pattern, end_pattern_to_exclude)
-    filtered_lines = filter_exclude_lines(filtered_lines, exclude_patterns)
-
-    # Extração de informações
-    codes_agencias_contas_cnpjs = extract_codes_and_agencia_conta_cnpj(filtered_lines)
-    valores = extract_value_before_total(filtered_lines)
-
-    # Criação de DataFrames
-    df_agencia_conta_cnpj = pd.DataFrame(codes_agencias_contas_cnpjs, columns=["Código", "Agência", "Conta", "CNPJ"])
-    df_valores = pd.DataFrame(valores, columns=["Valor"])
-
-    # Ajuste de índices
-    max_len = max(len(df_agencia_conta_cnpj), len(df_valores))
-    df_agencia_conta_cnpj = df_agencia_conta_cnpj.reindex(range(max_len))
-    df_valores = df_valores.reindex(range(max_len))
-
-    # Concatenar os DataFrames
-    df_final = pd.concat([df_agencia_conta_cnpj, df_valores], axis=1)
-
-    # Exibir o DataFrame
-    st.subheader("Resultados Extraídos")
-    st.dataframe(df_final)
-
-    # Soma os valores
-    if not df_final.empty:
-        total_valor_soma = df_final["Valor"].sum()
-        st.success(f"Valor total DESCONTO EXTERNO - SIGPP: {formatar_valor_brasileiro(total_valor_soma)}")
-else:
-    st.error("Por favor, faça o upload de um arquivo PDF válido.")
-
-# Lógica para lidar com a extração do segundo arquivo PDF (com pdfplumber) e mesclar com o df_final
+# Adicionando CSS para substituir o texto padrão "Drag and drop file here"
+# Inicializa o df_banco_clean como None ou um valor vazio
 df_banco_clean = None
 
 pdf_file = st.file_uploader("Selecione o arquivo PDF do SIGPP de repasse às consignatárias", type="pdf")
@@ -225,7 +232,7 @@ if pdf_file:
     st.write("Processando o PDF... Aguarde um momento enquanto extraímos os dados.")
     
     df_banco_clean = extract_pdf_data(pdf_file)
-
+    
     if df_banco_clean is not None and not df_banco_clean.empty:
         st.write("Códigos de Bancos sincronizados!")
         
@@ -234,14 +241,17 @@ if pdf_file:
 else:
     st.info("Por favor, faça o upload de um arquivo PDF para processar os dados.")
 
-# Verificar e mesclar os DataFrames
-if 'df_final' in locals() and 'df_banco_clean' in locals():
-    df_completo = pd.merge(df_final, df_banco_clean[['Código', 'Banco Agência Conta']], on='Código', how='left')
+if 'df_final' in globals():
+    # Verifica se df_banco_clean existe
+    if 'df_banco_clean' in globals():
+        df_completo = pd.merge(df_final, df_banco_clean[['Código', 'Banco Agência Conta']], on='Código', how='left')
+    else:
+        df_completo = df_final.copy()  # Caso df_banco_clean não exista, mantém df_final sem alterações
 else:
-    st.error("Erro: as variáveis df_final ou df_banco_clean não estão definidas corretamente.")
+    print("Erro: df_final não está definido.")
 
-# Ajustar e exibir o DataFrame final
-df_completo.rename(columns={'Banco Agência Conta': 'bco', 'Agência': 'agencia', 'Conta': 'conta', 'CNPJ': 'cnpj', 'Valor': 'valor'}, inplace=True)
+# Renomeando as colunas para manter consistência
+df_completo.rename(columns={'Banco Agência Conta': 'bco','Agência': 'agencia','Conta': 'conta','CNPJ': 'cnpj','Valor': 'valor'}, inplace=True)
 
 # Remover o caractere '-' da coluna 'conta'
 df_completo['conta'] = df_completo['conta'].str.replace('-', '', regex=False)
