@@ -238,7 +238,7 @@ if pdf_file:
     else:
         st.warning("Nenhum dado foi extraído do PDF.")
 
-# Fazendo a junção entre df_final e df_banco_clean com base na coluna 'Código', mas sem perder as linhas de df_final
+# Fazendo a junção entre df_final e df_banco_clean com base na coluna 'Código', usando 'left' join para garantir que todas as linhas de df_final sejam mantidas
 df_completo = pd.merge(df_final, df_banco_clean[['Código', 'Banco Agência Conta']], on='Código', how='left')
 
 # Renomeando as colunas para manter consistência
