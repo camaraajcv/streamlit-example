@@ -3,55 +3,6 @@ import PyPDF2
 import re
 import pandas as pd
 
-languages = {
-    "pt": {
-        "button": "Escolha um arquivo",
-        "instructions": "Arraste e solte o arquivo aqui",
-        "limits": "Limite de 200MB por arquivo"
-    },
-    "en": {
-        "button": "Choose a file",
-        "instructions": "Drag and drop file here",
-        "limits": "Limit 200MB per file"
-    }
-}
-
-# Definir o idioma desejado
-lang = "pt"  # ou "en" ou qualquer outro idioma presente no dicionário
-
-# Aplicar as substituições corretamente
-hide_label = f"""
-<style>
-    div[data-testid="stFileUploader"]>section[data-testid="stFileUploadDropzone"]>button[data-testid="baseButton-secondary"] {{
-       color:white;
-    }}
-    div[data-testid="stFileUploader"]>section[data-testid="stFileUploadDropzone"]>button[data-testid="baseButton-secondary"]::after {{
-        content: "{languages.get(lang).get('button')}";
-        color:black;
-        display: block;
-        position: absolute;
-    }}
-    div[data-testid="stFileDropzoneInstructions"]>div>span {{
-       visibility:hidden;
-    }}
-    div[data-testid="stFileDropzoneInstructions"]>div>span::after {{
-       content:"{languages.get(lang).get('instructions')}";
-       visibility:visible;
-       display:block;
-    }}
-    div[data-testid="stFileDropzoneInstructions"]>div>small {{
-       visibility:hidden;
-    }}
-    div[data-testid="stFileDropzoneInstructions"]>div>small::before {{
-       content:"{languages.get(lang).get('limits')}";
-       visibility:visible;
-       display:block;
-    }}
-</style>
-"""
-
-# Aplica o CSS com substituições
-st.markdown(hide_label, unsafe_allow_html=True)
 
 # Funções auxiliares diretamente no código
 
