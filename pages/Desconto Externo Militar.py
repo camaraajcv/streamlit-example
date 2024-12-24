@@ -2,6 +2,11 @@ import streamlit as st
 import PyPDF2
 import re
 import pandas as pd
+import logging
+
+# Configuração do logging para capturar os erros
+logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 
 # Funções auxiliares diretamente no código
