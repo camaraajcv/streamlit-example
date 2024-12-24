@@ -306,3 +306,6 @@ df2 = df_completo[~df_completo['cnpj'].isin(cnpjs_a_excluir)]
 # Exiba as primeiras linhas do DataFrame
 
 st.dataframe(df2)
+
+soma_valores = df2['valor'].sum()
+st.success("Valor Total Desconto Externo Sem Clubes: " + formatar_valor_brasileiro(soma_valores))
