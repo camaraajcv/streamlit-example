@@ -237,10 +237,8 @@ if pdf_file:
     df_banco_clean = extract_pdf_data(pdf_file)
     
     if not df_banco_clean.empty:
-        # Exibir os dados extraídos em formato de DataFrame
-        st.write("Dados extraídos do PDF:", df_banco_clean)
-
         # Exibir o DataFrame de forma interativa
         st.dataframe(df_banco_clean)
     else:
         st.warning("Nenhum dado foi extraído do PDF.")
+
