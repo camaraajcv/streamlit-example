@@ -452,11 +452,10 @@ if st.button("Gerar XML"):
                         </cpr:CprDhAlterarDHIncluirItens>
                 </sb:detalhe>'''.format(anoDH, numDH, data_geracao.strftime("%Y-%m-%d"), txtMotivo,
                                        index + 1, dtVenc.strftime("%Y-%m-%d"), dtPgtoReceb.strftime("%Y-%m-%d"),
-                                       row['valor'], row['cnpj'], codTipoOB, row['cnpj'],
-                                       txtCit,  # Aqui txtCit está posicionado corretamente após codCredorDevedor
-                                       row['bco'], row['agencia'], row['conta'],
-                                       f'<numDomiBancPgto><banco>{row["banco_fab"]}</banco><conta>UNICA</conta></numDomiBancPgto>' if include_banco_txtCit else f'<numDomiBancPgto><conta>UNICA</conta></numDomiBancPgto>',
-                                       txtMotivo)
+                                       row['valor'], row['cnpj'],txtMotivo, codTipoOB,row['cnpj'], f'<txtCit>{txtCit}</txtCit>' if include_banco_txtCit and txtCit is not None else '',
+                                row['bco'], row['agencia'], row['conta'],
+                                f'<numDomiBancPgto><banco>{row["banco_fab"]}</banco><conta>UNICA</conta></numDomiBancPgto>' if include_banco_txtCit else f'<numDomiBancPgto><conta>UNICA</conta></numDomiBancPgto>')
+
 
         # Finalize a string XML
         xml_string += '''
