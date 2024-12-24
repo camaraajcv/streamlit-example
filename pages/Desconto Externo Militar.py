@@ -437,17 +437,15 @@ if st.button("Gerar XML"):
                             <txtInscrA>{}</txtInscrA>
                             <numClassA>218810199</numClassA>
                             <predoc>
-                                <txtObser>{}</txtObser>  <!-- Agora o txtObser será igual ao txtMotivo -->
+                                <txtObser>{}</txtObser>  
                                 <predocOB>
                                     <codTipoOB>{}</codTipoOB>
                                     <codCredorDevedor>{}</codCredorDevedor>
-                                    {}
                                     <numDomiBancFavo>
                                         <banco>{}</banco>
                                         <agencia>{}</agencia>
                                         <conta>{}</conta>
                                     </numDomiBancFavo>
-                                    {}
                                 </predocOB>
                             </predoc>
                         </deducao>
