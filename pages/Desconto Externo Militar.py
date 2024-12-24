@@ -392,6 +392,9 @@ st.dataframe(st.session_state.reducoes)
             ###################################XML#########################
 
             # Preenchendo campos do XML
+# Inicializando o DataFrame no session_state, se necessário
+if 'df2' not in st.session_state:
+    st.session_state.df2 = df2.copy()  # Preserva os valores iniciais de df2
 # Preenchendo campos do XML
 st.subheader("Preencher Dados para Gerar XML")
 
