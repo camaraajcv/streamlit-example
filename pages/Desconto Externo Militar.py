@@ -224,24 +224,22 @@ st.title("Extraindo código do Banco de arquivo SIGPP")
 # Adicionando CSS para substituir o texto padrão "Drag and drop file here"
 # Inicializa o df_banco_clean como None ou um valor vazio
 df_banco_clean = None
-# Carregar arquivo PDF através da interface do Streamlit
+
 pdf_file = st.file_uploader("Selecione o arquivo PDF do SIGPP de repasse às consignatárias", type="pdf")
 
 if pdf_file:
-    # Mostrar nome do arquivo selecionado
     st.write(f"Arquivo selecionado: {pdf_file.name}")
-    
-    # Exibir mensagem indicando que a extração está em andamento
     st.write("Processando o PDF... Aguarde um momento enquanto extraímos os dados.")
-
-    # Chamar a função para extrair os dados
+    
     df_banco_clean = extract_pdf_data(pdf_file)
     
-    if not df_banco_clean.empty:
-        # Exibir o DataFrame de forma interativa
+    if df_banco_clean is not None and not df_banco_clean.empty:
         st.write("Códigos de Bancos sincronizados!")
+        st.dataframe(df_banco_clean)
     else:
         st.warning("Nenhum dado foi extraído do PDF.")
+else:
+    st.info("Por favor, faça o upload de um arquivo PDF para processar os dados.")
 
 # Fazendo a junção entre df_final e df_banco_clean com base na coluna 'Código', usando 'left' join para garantir que todas as linhas de df_final sejam mantidas
 df_completo = pd.merge(df_final, df_banco_clean[['Código', 'Banco Agência Conta']], on='Código', how='left')
