@@ -282,7 +282,7 @@ st.warning("Valor Total Desconto Externo: " + formatar_valor_brasileiro(total_va
 ###################################
 
 df_completo['conta'] = df_completo['conta'].astype(str).str.zfill(13)
-
+df_completo['banco'] = df_completo['banco'].astype(str).str.lstrip('0').str.zfill(3)
 # Convert 'bco' column to string, then fill leading zeros
 df_completo['valor'] = pd.to_numeric(df_completo['valor'], errors='coerce')
 df_completo['valor'] = round(df_completo['valor'], 2)
