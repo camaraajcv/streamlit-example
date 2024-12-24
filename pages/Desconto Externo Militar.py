@@ -241,8 +241,10 @@ if pdf_file:
 else:
     st.info("Por favor, faça o upload de um arquivo PDF para processar os dados.")
 
-# Fazendo a junção entre df_final e df_banco_clean com base na coluna 'Código', usando 'left' join para garantir que todas as linhas de df_final sejam mantidas
-df_completo = pd.merge(df_final, df_banco_clean[['Código', 'Banco Agência Conta']], on='Código', how='left')
+if 'df_banco_clean' in globals():
+    df_completo = pd.merge(df_final, df_banco_clean[['Código', 'Banco Agência Conta']], on='Código', how='left')
+else:
+    df_completo = df_final.copy()  # Caso df_banco_clean não exista, mantém df_final sem alterações
 
 # Renomeando as colunas para manter consistência
 df_completo.rename(columns={'Banco Agência Conta': 'bco','Agência': 'agencia','Conta': 'conta','CNPJ': 'cnpj','Valor': 'valor'}, inplace=True)
