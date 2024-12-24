@@ -222,16 +222,14 @@ def extract_pdf_data(pdf_file):
 # Interface do Streamlit
 st.title("Extrator de Dados de PDF")
 # Adicionando CSS para substituir o texto padrão "Drag and drop file here"
-css='''
-<style>
+st.markdown("""
+    <style>
 [data-testid="stFileUploadDropzone"] div div::before {color:red; content:"This text replaces Drag and drop file here"}
 [data-testid="stFileUploadDropzone"] div div span{display:none;}
 [data-testid="stFileUploadDropzone"] div div::after {color:red; font-size: .8em; content:"This text replaces Limit 200MB per file"}
 [data-testid="stFileUploadDropzone"] div div small{display:none;}
 </style>
-'''
-
-st.markdown(css, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 # Carregar arquivo PDF através da interface do Streamlit
 pdf_file = st.file_uploader("Escolha um arquivo PDF", type="pdf")
 
