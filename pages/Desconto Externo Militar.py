@@ -346,8 +346,9 @@ if opcao:
             # Atualizando o valor no df2
             df2.loc[df2['cnpj'] == cnpj_selecionado, 'valor'] -= valor_reducao
 
-            # Adicionando a redução ao DataFrame de reduções
-            reducoes = reducoes.append({'cnpj': cnpj_selecionado, 'valor_reduzido': valor_reducao}, ignore_index=True)
+            # Adicionando a redução ao DataFrame de reduções usando pd.concat
+            nova_reducao = pd.DataFrame({'cnpj': [cnpj_selecionado], 'valor_reduzido': [valor_reducao]})
+            reducoes = pd.concat([reducoes, nova_reducao], ignore_index=True)
 
             # Exibindo os DataFrames atualizados
             st.subheader("df2 Atualizado")
