@@ -367,6 +367,7 @@ if opcao:
             ###################################XML#########################
 
             # Preenchendo campos do XML
+# Preenchendo campos do XML
 st.subheader("Preencher Dados para Gerar XML")
 
 # Campos adicionais que o usuário deve preencher para gerar o XML
@@ -467,15 +468,13 @@ if st.button("Gerar XML"):
         </sb:arquivo>
         '''.format(len(df2))
 
-        # Criação do arquivo XML em memória
-        xml_file = StringIO()
-        xml_file.write(xml_string)
-        xml_file.seek(0)
+        # Converter o conteúdo para bytes
+        xml_bytes = xml_string.encode('utf-8')
 
-        # Permitir que o usuário baixe o arquivo XML gerado
+        # Criação do arquivo XML em memória e permitir o download
         st.download_button(
             label="Baixar XML",
-            data=xml_file,
+            data=xml_bytes,
             file_name="arquivo_militar.xml",
             mime="application/xml"
         )
