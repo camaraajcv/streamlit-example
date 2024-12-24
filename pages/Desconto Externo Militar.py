@@ -278,3 +278,23 @@ total_valor = df_completo['valor'].sum()
 
 # Exibindo o total
 st.warning("Valor Total Desconto Externo: " + formatar_valor_brasileiro(total_valor))
+
+###################################
+
+df_completo['conta'] = df_completo['conta'].astype(str).str.zfill(13)
+
+# Convert 'bco' column to string, then fill leading zeros
+df_completo['valor'] = pd.to_numeric(df_completo['valor'], errors='coerce')
+df_completo['valor'] = round(df_completo['valor'], 2)
+
+# Convert 'cnpj' column to string to avoid AttributeError
+df_completo['cnpj'] = df_completo['cnpj'].astype(str).str.replace('[./-]', '', regex=True)
+
+df_completo = df_completo.dropna()
+
+# Defina 'conta' como 'FOPAG' para CNPJs específicos
+df_completo.loc[df_completo['cnpj'].isin(['00360305000104', '00000000000191']), 'conta'] = 'FOPAG'
+
+df_completo['banco_fab'] = ''
+df_completo.loc[df_completo['cnpj'].isin(['00360305000104', '00000000000191']), 'banco_fab'] = '002'
+st.dataframe(df_completo)
