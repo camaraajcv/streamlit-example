@@ -356,6 +356,7 @@ if st.button("Adicionar Redução"):
         })
         st.session_state.reducoes_temp = pd.concat([st.session_state.reducoes_temp, nova_reducao], ignore_index=True)
         st.success("Redução adicionada com sucesso!")
+        st.success("Valor Líquido Desconto Externo : " + formatar_valor_brasileiro(df2['valor'].sum()))
     else:
         st.error("Por favor, preencha todos os campos antes de adicionar.")
 
