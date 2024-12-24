@@ -225,7 +225,7 @@ def extract_pdf_data(pdf_file):
     return df_banco_clean
 
 # Interface do Streamlit
-st.title("Extraindo código do Banco de arquivo SIGPP")
+st.subheader("Extraindo código do Banco de arquivo SIGPP")
 # Adicionando CSS para substituir o texto padrão "Drag and drop file here"
 # Inicializa o df_banco_clean como None ou um valor vazio
 df_banco_clean = None
