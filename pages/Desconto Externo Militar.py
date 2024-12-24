@@ -307,5 +307,16 @@ df2 = df_completo[~df_completo['cnpj'].isin(cnpjs_a_excluir)]
 
 st.dataframe(df2)
 
+# Cálculo e exibição dos valores de acordo com o CNPJ
+valor_clube_aeronautica = df2[df2['cnpj'] == '34054254000104']['valor'].sum()
+valor_clube_aeronautica_brasilia = df2[df2['cnpj'] == '00753422000138']['valor'].sum()
+
+# Exibindo os valores com as mensagens correspondentes
+if valor_clube_aeronautica > 0:
+    st.success(f"Valor do Clube de Aeronáutica é {formatar_valor_brasileiro(valor_clube_aeronautica)}")
+
+if valor_clube_aeronautica_brasilia > 0:
+    st.success(f"Valor do Clube de Aeronáutica de Brasília é {formatar_valor_brasileiro(valor_clube_aeronautica_brasilia)}")
+
 soma_valores = df2['valor'].sum()
 st.success("Valor Total Desconto Externo Sem Clubes: " + formatar_valor_brasileiro(soma_valores))
