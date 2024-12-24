@@ -453,7 +453,7 @@ if st.button("Gerar XML"):
                 </sb:detalhe>'''.format(anoDH, numDH, data_geracao.strftime("%Y-%m-%d"), txtMotivo,
                                        index + 1, dtVenc.strftime("%Y-%m-%d"), dtPgtoReceb.strftime("%Y-%m-%d"),
                                        row['valor'], row['cnpj'], codTipoOB, row['cnpj'],
-                                       txtCit,  # Agora passando o txtCit aqui, logo após codCredorDevedor
+                                       txtCit,  # Aqui txtCit está posicionado corretamente após codCredorDevedor
                                        row['bco'], row['agencia'], row['conta'],
                                        f'<numDomiBancPgto><banco>{row["banco_fab"]}</banco><conta>UNICA</conta></numDomiBancPgto>' if include_banco_txtCit else f'<numDomiBancPgto><conta>UNICA</conta></numDomiBancPgto>',
                                        txtMotivo)
