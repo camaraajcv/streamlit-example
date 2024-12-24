@@ -266,4 +266,4 @@ st.dataframe(df_completo)
 # Somando todos os valores da coluna 'valor'
 total_valor = df_completo['valor'].sum()
 
-st.warning("Valor Total Desconto Externo:", total_valor)
+st.warning("Valor Total Desconto Externo: " + str(total_valor))
