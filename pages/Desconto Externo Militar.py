@@ -238,14 +238,17 @@ if pdf_file:
     else:
         st.warning("Nenhum dado foi extraído do PDF.")
 
-# Fazendo a junção entre df_soma e df_banco_clean com base na coluna 'Código'
-df_completo = pd.merge(df_final, df_banco_clean[['Código', 'Banco Agência Conta']], on='Código', how='left')
+# Verifique se há duplicatas nas tabelas antes de realizar a junção
+df_final_unique = df_final.drop_duplicates(subset=['Código'])
+df_banco_clean_unique = df_banco_clean.drop_duplicates(subset=['Código'])
 
-# Removendo duplicatas com base na coluna 'Código' para garantir que cada código apareça apenas uma vez
+# Fazendo a junção entre df_final e df_banco_clean com base na coluna 'Código'
+df_completo = pd.merge(df_final_unique, df_banco_clean_unique[['Código', 'Banco Agência Conta']], on='Código', how='left')
+
+# Remover duplicatas com base na coluna 'Código' para garantir que cada código apareça apenas uma vez
 df_completo = df_completo.drop_duplicates(subset=['Código'])
 
-# Renomeando a coluna 'Banco Agência Conta' para 'bco'
-
+# Renomeando as colunas
 df_completo.rename(columns={'Banco Agência Conta': 'bco','Agência': 'agencia','Conta': 'conta','CNPJ': 'cnpj','Valor': 'valor'}, inplace=True)
 
 # Remover o caractere '-' da coluna 'conta'
@@ -257,13 +260,11 @@ df_completo['agencia'] = df_completo['agencia'].apply(lambda x: x.split('-')[0].
 # Extraindo os 4 primeiros dígitos da coluna 'agencia'
 df_completo['agencia'] = df_completo['agencia'].str[:4]
 
-
-
 # Exibindo o DataFrame resultante
-print("\nDataFrame Completo com a coluna 'Banco Agência Conta':")
 st.dataframe(df_completo)
 
 # Somando todos os valores da coluna 'valor'
 total_valor = df_completo['valor'].sum()
 
+# Exibindo o total
 st.warning("Valor Total Desconto Externo: " + str(total_valor))
