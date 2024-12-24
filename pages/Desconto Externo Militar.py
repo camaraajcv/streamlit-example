@@ -238,17 +238,10 @@ if pdf_file:
     else:
         st.warning("Nenhum dado foi extraído do PDF.")
 
-# Verifique se há duplicatas nas tabelas antes de realizar a junção
-df_final_unique = df_final.drop_duplicates(subset=['Código'])
-df_banco_clean_unique = df_banco_clean.drop_duplicates(subset=['Código'])
+# Fazendo a junção entre df_final e df_banco_clean com base na coluna 'Código', mas sem perder as linhas de df_final
+df_completo = pd.merge(df_final, df_banco_clean[['Código', 'Banco Agência Conta']], on='Código', how='left')
 
-# Fazendo a junção entre df_final e df_banco_clean com base na coluna 'Código'
-df_completo = pd.merge(df_final_unique, df_banco_clean_unique[['Código', 'Banco Agência Conta']], on='Código', how='left')
-
-# Remover duplicatas com base na coluna 'Código' para garantir que cada código apareça apenas uma vez
-df_completo = df_completo.drop_duplicates(subset=['Código'])
-
-# Renomeando as colunas
+# Renomeando as colunas para manter consistência
 df_completo.rename(columns={'Banco Agência Conta': 'bco','Agência': 'agencia','Conta': 'conta','CNPJ': 'cnpj','Valor': 'valor'}, inplace=True)
 
 # Remover o caractere '-' da coluna 'conta'
