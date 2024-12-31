@@ -271,7 +271,11 @@ else:
 df_completo.rename(columns={'Banco Agência Conta': 'bco', 'Agência': 'agencia', 'Conta': 'conta', 'CNPJ': 'cnpj', 'Valor': 'valor'}, inplace=True)
 
 # Remover o caractere '-' da coluna 'conta'
-df_completo['conta'] = df_completo['conta'].str.replace('-', '', regex=False)
+# Verificar se a coluna 'conta' existe antes de tentar modificá-la
+if 'conta' in df_completo.columns:
+    df_completo['conta'] = df_completo['conta'].str.replace('-', '', regex=False)
+else:
+    st.warning("A coluna 'conta' não foi encontrada no DataFrame.")
 
 # Ajustando a coluna 'agencia' para garantir que os números antes do '-' tenham 4 dígitos
 df_completo['agencia'] = df_completo['agencia'].apply(lambda x: x.split('-')[0].zfill(4) + '-' + x.split('-')[1] if isinstance(x, str) and '-' in x else x)
