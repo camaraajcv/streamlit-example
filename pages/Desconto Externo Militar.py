@@ -353,13 +353,17 @@ df_completo['valor_final'] = df_completo['valor'] - df_completo['rat'] - df_comp
 cnpjs_a_excluir = ['34054254000104', '00753422000138']
 st.warning("Excluídos os CNPJ 34054254000104 (Clube de Aeronáutica) e 00753422000138 (Clube de Aeronáutica de Brasília)")
 
-# Filtrando o dataframe
+# Garantir que os CNPJs no DataFrame estejam no mesmo formato (sem espaços extras e sem formatação)
+df_completo['cnpj'] = df_completo['cnpj'].str.replace(r'\D', '', regex=True)  # Remove tudo que não for dígito
+df_completo['cnpj'] = df_completo['cnpj'].str.strip()  # Remove espaços extras
+
+# Filtrando o dataframe para excluir os CNPJs
 df2 = df_completo[~df_completo['cnpj'].isin(cnpjs_a_excluir)]
 
 # Exibindo o DataFrame
 st.dataframe(df2)
 
-
+# Calculando a soma dos valores
 soma_valores = df2['valor_final'].sum()
 st.success("Valor Total Desconto Externo Sem Clubes: " + formatar_valor_brasileiro(soma_valores))
 
