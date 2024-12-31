@@ -319,7 +319,19 @@ soma_valores = df2['valor'].sum()
 st.success("Valor Total Desconto Externo Sem Clubes: " + formatar_valor_brasileiro(soma_valores))
 
 ########################################RED8UCAO#########################################################################
+# Preenchendo campos do XML
+st.subheader("Preencher Dados para Gerar XML")
 
+# Campos adicionais que o usuário deve preencher para gerar o XML
+data_geracao = st.date_input("Data de Geração")
+cpf_responsavel = st.text_input("CPF Responsável")
+
+# Preenchendo campos obrigatórios
+numDH = st.text_input("Número do DH (numDH)")
+txtMotivo = st.text_input("Motivo (txtMotivo)", "DESC.EXT.MIL.DEZ")
+txtMotivo = txtMotivo[:16]  # Limitar a 16 caracteres
+dtVenc = st.date_input("Data de Vencimento (dtVenc)")
+#########################################################################################################################
 
 # Inicializando os DataFrames sem usar session_state
 reducoes = pd.DataFrame(columns=['cnpj', 'valor_reduzido', 'tipo'])
@@ -356,7 +368,15 @@ st.subheader("Reduções Temporárias")
 st.dataframe(reducoes_temp)
 
 # Botão para aplicar todas as reduções
-if st.button("Reduzir Valores"):
+
+
+
+################################### XML #########################
+
+
+
+# Quando o usuário clicar para gerar o XML
+if st.button("Gerar XML"):
     if not reducoes_temp.empty:
         # Aplicando as reduções no df2
         for _, row in reducoes_temp.iterrows():
@@ -374,31 +394,6 @@ if st.button("Reduzir Valores"):
         st.success("Valor Líquido Desconto Externo : " + formatar_valor_brasileiro(df2['valor'].sum()))
     else:
         st.error("Nenhuma redução para aplicar.")
-
-# Exibindo os DataFrames atualizados
-st.subheader("df2 Atualizado")
-st.dataframe(df2)
-
-st.subheader("Histórico de Reduções Aplicadas")
-st.dataframe(reducoes)
-
-################################### XML #########################
-
-# Preenchendo campos do XML
-st.subheader("Preencher Dados para Gerar XML")
-
-# Campos adicionais que o usuário deve preencher para gerar o XML
-data_geracao = st.date_input("Data de Geração")
-cpf_responsavel = st.text_input("CPF Responsável")
-
-# Preenchendo campos obrigatórios
-numDH = st.text_input("Número do DH (numDH)")
-txtMotivo = st.text_input("Motivo (txtMotivo)", "DESC.EXT.MIL.DEZ")
-txtMotivo = txtMotivo[:16]  # Limitar a 16 caracteres
-dtVenc = st.date_input("Data de Vencimento (dtVenc)")
-
-# Quando o usuário clicar para gerar o XML
-if st.button("Gerar XML"):
     # Garantindo que os campos obrigatórios sejam preenchidos
     if cpf_responsavel and numDH and txtMotivo and dtVenc:
         # Definindo variáveis fixas
@@ -486,7 +481,10 @@ if st.button("Gerar XML"):
 
         # Converter o conteúdo para bytes
         xml_bytes = xml_string.encode('utf-8')
-
+        # Exibindo os DataFrames atualizados
+        st.subheader("df2 Atualizado")
+        st.dataframe(df2)
+        st.dataframe(reducoes)
         # Criação do arquivo XML em memória e permitir o download
         st.download_button(
             label="Baixar XML",
