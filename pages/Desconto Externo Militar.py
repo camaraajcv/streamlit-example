@@ -370,7 +370,8 @@ st.dataframe(df2)
 
 # Calculando a soma dos valores
 soma_valores = df2['valor_final'].sum()
-st.success("Valor Total Desconto Externo Sem Clubes: " + formatar_valor_brasileiro(soma_valores))
+soma_formatada = f"{soma_valores:.2f}"
+st.success("Valor Total Desconto Externo Sem Clubes: " + formatar_valor_brasileiro(soma_formatada))
 
 ########################################RED8UCAO#########################################################################
 
