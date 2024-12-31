@@ -327,66 +327,7 @@ st.success("Valor Total Desconto Externo Sem Clubes: " + formatar_valor_brasilei
 ########################################RED8UCAO#########################################################################
 
 
-# Inicializando os DataFrames sem usar session_state
-reducoes = pd.DataFrame(columns=['cnpj', 'valor_reduzido', 'tipo'])
-reducoes_temp = pd.DataFrame(columns=['cnpj', 'valor_reduzido', 'tipo'])
 
-# Criando o formulário para redução
-st.title("Redução de Valores")
-
-# Seleção do tipo de redução
-tipo_reducao = st.selectbox("Escolha o tipo de redução", ["", "RAT", "Judicial", "Outros"])
-
-# Seleção do CNPJ
-cnpj_selecionado = st.selectbox("Selecione o CNPJ", df2['cnpj'].tolist())
-
-# Campo para informar o valor de redução
-valor_reducao = st.number_input("Informe o valor a ser reduzido", min_value=0.0, step=0.01)
-
-# Botão para adicionar a redução à tabela temporária
-if st.button("Adicionar Redução"):
-    if tipo_reducao and cnpj_selecionado and valor_reducao > 0:
-        # Adicionando a nova redução ao DataFrame temporário
-        nova_reducao = pd.DataFrame({
-            'cnpj': [cnpj_selecionado],
-            'valor_reduzido': [valor_reducao],
-            'tipo': [tipo_reducao]
-        })
-        reducoes_temp = pd.concat([reducoes_temp, nova_reducao], ignore_index=True)
-        st.success("Redução adicionada com sucesso!")
-    else:
-        st.error("Por favor, preencha todos os campos antes de adicionar.")
-
-# Exibindo as reduções temporárias adicionadas
-st.subheader("Reduções Temporárias")
-st.dataframe(reducoes_temp)
-
-# Botão para aplicar todas as reduções
-if st.button("Reduzir Valores"):
-    if not reducoes_temp.empty:
-        # Aplicando as reduções no df2
-        for _, row in reducoes_temp.iterrows():
-            cnpj = row['cnpj']
-            valor = row['valor_reduzido']
-            # Atualizando o valor no df2
-            df2.loc[df2['cnpj'] == cnpj, 'valor'] -= valor
-
-        # Adicionando as reduções ao DataFrame principal de reduções
-        reducoes = pd.concat([reducoes, reducoes_temp], ignore_index=True)
-        
-        # Limpando as reduções temporárias apenas após aplicar
-        reducoes_temp = pd.DataFrame(columns=['cnpj', 'valor_reduzido', 'tipo'])
-        st.success("Reduções aplicadas com sucesso!")
-        st.success("Valor Líquido Desconto Externo : " + formatar_valor_brasileiro(df2['valor'].sum()))
-    else:
-        st.error("Nenhuma redução para aplicar.")
-
-# Exibindo os DataFrames atualizados
-st.subheader("df2 Atualizado")
-st.dataframe(df2)
-
-st.subheader("Histórico de Reduções Aplicadas")
-st.dataframe(reducoes)
 
 ################################### XML #########################
 
