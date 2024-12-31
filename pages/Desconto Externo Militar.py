@@ -222,14 +222,14 @@ def extract_pdf_data(pdf_file):
     return df_banco_clean
 ####################################################################################################
 # Interface para preenchimento de RAT e JUDICIAL para cada CNPJ
-if 'df_completo' in globals() and not df_completo.empty:
+if 'df_completo' in globals() and not df_banco_clean.empty:
     st.subheader("Preencher valores para RAT e JUDICIAL")
     
     # Criando um novo DataFrame vazio para as reduções
     reducoes = pd.DataFrame(columns=["CNPJ", "RAT", "JUDICIAL"])
     
     # Permite selecionar os CNPJs da lista extraída
-    cnpjs = df_completo['cnpj'].unique()
+    cnpjs = df_banco_clean['cnpj'].unique()
     
     # Campo para selecionar os CNPJs
     selected_cnpjs = st.multiselect("Selecione os CNPJs para os quais deseja adicionar valores de RAT e JUDICIAL", cnpjs)
