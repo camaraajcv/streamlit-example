@@ -292,14 +292,14 @@ df_completo = df_completo.dropna()
 # Defina 'conta' como 'FOPAG' para CNPJs específicos
 df_completo.loc[df_completo['cnpj'].isin(['00360305000104', '00000000000191']), 'conta'] = 'FOPAG'
 
-df_completo['banco_fab'] = ''
+df_completo['banco_fab'] = 0.00
 df_completo.loc[df_completo['cnpj'].isin(['00360305000104', '00000000000191']), 'banco_fab'] = '002'
-df_completo['rat'] = ''
-df_completo['rat']= pd.to_numeric(df_completo['rat'], errors='coerce')
-df_completo['judicial'] = ''
-df_completo['judicial']= pd.to_numeric(df_completo['judicial'], errors='coerce')
-df_completo['outros'] = ''
-df_completo['outros']= pd.to_numeric(df_completo['rat'], errors='coerce')
+df_completo['rat'] = 0.00
+
+df_completo['judicial'] = 0.00
+
+df_completo['outros'] = 0.00
+
 df_completo['valor_final'] = df_completo['valor']-df_completo['rat']-df_completo['judicial']-df_completo['outros']
 # Lista de CNPJs que você deseja excluir
 cnpjs_a_excluir = ['34054254000104', '00753422000138']
