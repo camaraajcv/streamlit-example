@@ -12,7 +12,18 @@ logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %
 
 
 # Funções auxiliares diretamente no código
+# Preenchendo campos do XML
+st.subheader("Preencher Dados para Gerar XML")
 
+# Campos adicionais que o usuário deve preencher para gerar o XML
+data_geracao = st.date_input("Data de Geração")
+cpf_responsavel = st.text_input("CPF Responsável")
+
+# Preenchendo campos obrigatórios
+numDH = st.text_input("Número do DH (numDH)")
+txtMotivo = st.text_input("Motivo (txtMotivo)", "DESC.EXT.MIL.DEZ")
+txtMotivo = txtMotivo[:16]  # Limitar a 16 caracteres
+dtVenc = st.date_input("Data de Vencimento (dtVenc)")
 def extract_text_up_to_line(pdf_file, start_pattern, end_pattern):
     try:
         reader = PyPDF2.PdfReader(pdf_file)
@@ -359,18 +370,7 @@ st.success("Valor Total Desconto Externo Sem Clubes: " + formatar_valor_brasilei
 
 ################################### XML #########################
 
-# Preenchendo campos do XML
-st.subheader("Preencher Dados para Gerar XML")
 
-# Campos adicionais que o usuário deve preencher para gerar o XML
-data_geracao = st.date_input("Data de Geração")
-cpf_responsavel = st.text_input("CPF Responsável")
-
-# Preenchendo campos obrigatórios
-numDH = st.text_input("Número do DH (numDH)")
-txtMotivo = st.text_input("Motivo (txtMotivo)", "DESC.EXT.MIL.DEZ")
-txtMotivo = txtMotivo[:16]  # Limitar a 16 caracteres
-dtVenc = st.date_input("Data de Vencimento (dtVenc)")
 
 # Quando o usuário clicar para gerar o XML
 if st.button("Gerar XML"):
