@@ -275,7 +275,7 @@ df_completo.rename(columns={'Banco Agência Conta': 'bco', 'Agência': 'agencia'
 if 'conta' in df_completo.columns:
     df_completo['conta'] = df_completo['conta'].str.replace('-', '', regex=False)
 else:
-    st.warning("A coluna 'conta' não foi encontrada no DataFrame.")
+    df_completo['conta'] = ""
 
 # Ajustando a coluna 'agencia' para garantir que os números antes do '-' tenham 4 dígitos
 # Verificar se a coluna 'agencia' existe antes de tentar manipulá-la
@@ -285,7 +285,7 @@ if 'agencia' in df_completo.columns:
 else:
     # Se a coluna não existir, criar com valores vazios ou algum valor padrão
     df_completo['agencia'] = ""  # Ou algum valor padrão, dependendo do seu caso
-    st.warning("A coluna 'agencia' não foi encontrada no DataFrame. Ela foi criada com valores vazios.")
+   
 # Extraindo os 4 primeiros dígitos da coluna 'agencia'
 df_completo['agencia'] = df_completo['agencia'].str[:4]
 
@@ -296,7 +296,7 @@ if 'valor' in df_completo.columns:
     df_completo = df_completo[df_completo['valor'] != 0]
 else:
     # Se a coluna 'valor' não existir, crie-a com valores padrão ou vazios
-    st.warning("A coluna 'valor' não foi encontrada no DataFrame. Ela será criada com valores padrão.")
+    
     df_completo['valor'] = 0.00  # Ou algum valor padrão adequado
 
     # Após criar a coluna, você pode então aplicar o filtro
@@ -312,9 +312,7 @@ if 'cnpj' in df_completo.columns:
     # Se a coluna 'cnpj' existir, continue com a lógica
     selected_cnpjs = st.multiselect("Selecione os CNPJs para os quais deseja adicionar valores de RAT e JUDICIAL", df_completo['cnpj'].unique())
 else:
-    # Se a coluna 'cnpj' não existir, mostrar uma mensagem de erro ou criar a coluna
-    st.error("A coluna 'cnpj' não foi encontrada no DataFrame. Verifique o processamento anterior.")
-    # Opcionalmente, você pode criar a coluna com valores padrão se necessário:
+   
     df_completo['cnpj'] = None  # Ou qualquer valor padrão ou vazio
     selected_cnpjs = []  # Inicializa com uma lista vazia
 
