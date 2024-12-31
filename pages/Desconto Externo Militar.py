@@ -168,17 +168,7 @@ if uploaded_file is not None:
     if not df_final.empty:
         total_valor_soma = df_final["Valor"].sum()
         st.success(f"Valor total DESCONTO EXTERNO - SIGPP: {formatar_valor_brasileiro(total_valor_soma)}")
-    # Interface para preencher valores de RAT e Judicial
-    selected_cnpjs = st.multiselect("Selecione os CNPJs para os quais deseja adicionar valores de RAT e JUDICIAL", df_final['CNPJ'].unique())
 
-    for cnpj in selected_cnpjs:
-        # Campos de entrada para RAT e JUDICIAL
-        rat_value = st.number_input(f"Valor para RAT do CNPJ {cnpj}", min_value=0.0, format="%.2f", key=f"rat_{cnpj}")
-        judicial_value = st.number_input(f"Valor para JUDICIAL do CNPJ {cnpj}", min_value=0.0, format="%.2f", key=f"judicial_{cnpj}")
-        
-        # Atualizando as colunas 'rat' e 'judicial' para o CNPJ selecionado
-        df_final.loc[df_final['CNPJ'] == cnpj, 'rat'] = rat_value
-        df_final.loc[df_final['CNPJ'] == cnpj, 'judicial'] = judicial_value
 ####################################################################################################
 
 
@@ -288,7 +278,17 @@ df_completo = df_completo[df_completo['valor'] != 0]
 df_completo['rat'] = 0.00
 df_completo['judicial'] = 0.00
 
+# Interface para preencher valores de RAT e Judicial
+selected_cnpjs = st.multiselect("Selecione os CNPJs para os quais deseja adicionar valores de RAT e JUDICIAL", df_completo['cnpj'].unique())
 
+for cnpj in selected_cnpjs:
+    # Campos de entrada para RAT e JUDICIAL
+    rat_value = st.number_input(f"Valor para RAT do CNPJ {cnpj}", min_value=0.0, format="%.2f", key=f"rat_{cnpj}")
+    judicial_value = st.number_input(f"Valor para JUDICIAL do CNPJ {cnpj}", min_value=0.0, format="%.2f", key=f"judicial_{cnpj}")
+    
+    # Atualizando as colunas 'rat' e 'judicial' para o CNPJ selecionado
+    df_completo.loc[df_completo['cnpj'] == cnpj, 'rat'] = rat_value
+    df_completo.loc[df_completo['cnpj'] == cnpj, 'judicial'] = judicial_value
 
 # Calculando o valor final
 
