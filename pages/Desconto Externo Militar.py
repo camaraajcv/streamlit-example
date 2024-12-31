@@ -291,8 +291,8 @@ for cnpj in selected_cnpjs:
     df_completo.loc[df_completo['cnpj'] == cnpj, 'judicial'] = judicial_value
 
 # Calculando o valor final
-df_completo['outros'] = 0.00
-df_completo['valor_final'] = df_completo['valor'] - df_completo['rat'] - df_completo['judicial'] - df_completo['outros']
+
+df_completo['valor_final'] = df_completo['valor'] - df_completo['rat'] - df_completo['judicial']
 
 # Excluindo os CNPJs especificados
 cnpjs_a_excluir = ['34054254000104', '00753422000138']
