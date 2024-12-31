@@ -174,14 +174,14 @@ def processar_pdf(pdf_content):
             #sequencial_fl = st.text_input("Número Sequencial da FL:", max_chars=4, key='sequencial_fl')
             texto_obs = st.text_input("Texto Observação:",value='DESC.EXT.CV', key='texto_obs')
             mes_referencia_cc = st.text_input("Número Mês Referência CC :",value=str(mes_atual),max_chars=2, key='mes_referencia_cc')
-            
+            processo = st.text_input("Processo:", key='processo')
         # Coluna 2
         with col2:
             cpf_responsavel = st.text_input("CPF do Responsável:",max_chars=11, key='cpf_responsavel')
             data_previsao_pagamento = st.date_input("Data de Previsão de Pagamento - (1° dia útil mês seguinte)", key='data_previsao_pagamento')
             data_vencimento = st.date_input("Data Vencimento", key='data_vencimento')
             sequencial_deducao = st.text_input("Número Sequencial da Dedução:", max_chars=4, key='sequencial_deducao')
-            processo = st.text_input("Processo:", key='processo')
+           
             #ano_referencia_cc = st.text_input("Número Ano Referência CC :",value=str(ano_atual),max_chars=4, key='ano_referencia_cc')
         # Botão para enviar o formulário
         submit_button = st.form_submit_button(label='Gerar XML')
