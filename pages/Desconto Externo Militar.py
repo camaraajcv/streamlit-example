@@ -169,7 +169,7 @@ if uploaded_file is not None:
         total_valor_soma = df_final["Valor"].sum()
         st.success(f"Valor total DESCONTO EXTERNO - SIGPP: {formatar_valor_brasileiro(total_valor_soma)}")
     # Interface para preencher valores de RAT e Judicial
-    selected_cnpjs = st.multiselect("Selecione os CNPJs para os quais deseja adicionar valores de RAT e JUDICIAL", df_completo['cnpj'].unique())
+    selected_cnpjs = st.multiselect("Selecione os CNPJs para os quais deseja adicionar valores de RAT e JUDICIAL", df_final['cnpj'].unique())
 
     for cnpj in selected_cnpjs:
         # Campos de entrada para RAT e JUDICIAL
