@@ -290,7 +290,17 @@ else:
 df_completo['agencia'] = df_completo['agencia'].str[:4]
 
 # Excluir as linhas onde a coluna 'valor' seja igual a zero
-df_completo = df_completo[df_completo['valor'] != 0]
+# Verificar se a coluna 'valor' existe no DataFrame antes de aplicar filtros
+if 'valor' in df_completo.columns:
+    # Excluir as linhas onde a coluna 'valor' seja igual a zero
+    df_completo = df_completo[df_completo['valor'] != 0]
+else:
+    # Se a coluna 'valor' não existir, crie-a com valores padrão ou vazios
+    st.warning("A coluna 'valor' não foi encontrada no DataFrame. Ela será criada com valores padrão.")
+    df_completo['valor'] = 0.00  # Ou algum valor padrão adequado
+
+    # Após criar a coluna, você pode então aplicar o filtro
+    df_completo = df_completo[df_completo['valor'] != 0]
 
 # Preencher os valores de RAT e Judicial
 df_completo['rat'] = 0.00
