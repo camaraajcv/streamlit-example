@@ -171,46 +171,6 @@ if uploaded_file is not None:
 
 ####################################################################################################
 
-# Interface para preenchimento de RAT e JUDICIAL para cada CNPJ
-if 'df_final' in globals() and not df_final.empty:
-    st.subheader("Preencher valores para RAT e JUDICIAL")
-    
-    # Criando um novo DataFrame vazio para as reduções
-    reducoes = pd.DataFrame(columns=["CNPJ", "Tipo", "Valor"])
-    
-    # Permite selecionar os CNPJs da lista extraída
-    cnpjs = df_final['CNPJ'].unique()
-    
-    # Campo para selecionar os CNPJs
-    selected_cnpjs = st.multiselect("Selecione os CNPJs para os quais deseja adicionar valores de RAT e JUDICIAL", cnpjs, key="cnpjs_multiselect")
-    
-    # Para cada CNPJ selecionado, cria campos para RAT e JUDICIAL
-    for cnpj in selected_cnpjs:
-        st.write(f"Preencha os valores para o CNPJ: {cnpj}")
-        
-        # Campo para selecionar o tipo (RAT ou JUDICIAL)
-        tipo_selecionado = st.selectbox(f"Selecione o tipo para o CNPJ {cnpj}", ["RAT", "JUDICIAL"], key=f"tipo_{cnpj}")
-        
-        # Campo para inserir o valor para o tipo selecionado
-        valor = st.number_input(f"Valor para {tipo_selecionado} do CNPJ {cnpj}", min_value=0.0, format="%.2f", key=f"valor_{cnpj}_{tipo_selecionado}")
-        
-        # Adicionando ao DataFrame 'reducoes' conforme o tipo
-        if valor is not None:
-            # Criando o DataFrame com a nova linha a ser adicionada
-            nova_linha = pd.DataFrame({
-                "CNPJ": [cnpj],
-                "Tipo": [tipo_selecionado],
-                "Valor": [valor]
-            })
-            # Usando pd.concat para adicionar a nova linha ao DataFrame 'reducoes'
-            reducoes = pd.concat([reducoes, nova_linha], ignore_index=True)
-    
-    # Exibindo o DataFrame 'reducoes' com os valores preenchidos
-    if not reducoes.empty:
-        st.write("Valores preenchidos para RAT e JUDICIAL:")
-        st.dataframe(reducoes)
-
-####################################################################################################
 
 # Função para extrair os dados do PDF
 def extract_pdf_data(pdf_file):
