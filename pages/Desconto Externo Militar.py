@@ -277,7 +277,6 @@ if pdf_file:
     
     if df_banco_clean is not None and not df_banco_clean.empty:
         st.write("Códigos de Bancos sincronizados!")
-        
     else:
         st.warning("Nenhum dado foi extraído do PDF.")
 else:
@@ -293,7 +292,7 @@ else:
     print("Erro: df_final não está definido.")
 
 # Renomeando as colunas para manter consistência
-df_completo.rename(columns={'Banco Agência Conta': 'bco','Agência': 'agencia','Conta': 'conta','CNPJ': 'cnpj','Valor': 'valor'}, inplace=True)
+df_completo.rename(columns={'Banco Agência Conta': 'bco', 'Agência': 'agencia', 'Conta': 'conta', 'CNPJ': 'cnpj', 'Valor': 'valor'}, inplace=True)
 
 # Remover o caractere '-' da coluna 'conta'
 df_completo['conta'] = df_completo['conta'].str.replace('-', '', regex=False)
@@ -307,47 +306,34 @@ df_completo['agencia'] = df_completo['agencia'].str[:4]
 # Excluir as linhas onde a coluna 'valor' seja igual a zero
 df_completo = df_completo[df_completo['valor'] != 0]
 
-# Exibindo o DataFrame após a remoção das linhas
-st.dataframe(df_completo)
-
-# Somando todos os valores da coluna 'valor'
-total_valor = df_completo['valor'].sum()
-
-# Exibindo o total
-st.warning("Valor Total Desconto Externo: " + formatar_valor_brasileiro(total_valor))
-
-###################################
-
-df_completo['conta'] = df_completo['conta'].astype(str).str.zfill(13)
-df_completo['bco'] = df_completo['bco'].astype(str).str.lstrip('0').str.zfill(3)
-# Convert 'bco' column to string, then fill leading zeros
-df_completo['valor'] = pd.to_numeric(df_completo['valor'], errors='coerce')
-df_completo['valor'] = round(df_completo['valor'], 2)
-
-# Convert 'cnpj' column to string to avoid AttributeError
-df_completo['cnpj'] = df_completo['cnpj'].astype(str).str.replace('[./-]', '', regex=True)
-
-df_completo = df_completo.dropna()
-
-# Defina 'conta' como 'FOPAG' para CNPJs específicos
-df_completo.loc[df_completo['cnpj'].isin(['00360305000104', '00000000000191']), 'conta'] = 'FOPAG'
-
-df_completo['banco_fab'] = 0.00
-df_completo.loc[df_completo['cnpj'].isin(['00360305000104', '00000000000191']), 'banco_fab'] = '002'
+# Preencher os valores de RAT e Judicial
 df_completo['rat'] = 0.00
-
 df_completo['judicial'] = 0.00
 
-df_completo['outros'] = 0.00
+# Interface para preencher valores de RAT e Judicial
+selected_cnpjs = st.multiselect("Selecione os CNPJs para os quais deseja adicionar valores de RAT e JUDICIAL", df_completo['cnpj'].unique())
 
-df_completo['valor_final'] = df_completo['valor']-df_completo['rat']-df_completo['judicial']-df_completo['outros']
-# Lista de CNPJs que você deseja excluir
+for cnpj in selected_cnpjs:
+    # Campos de entrada para RAT e JUDICIAL
+    rat_value = st.number_input(f"Valor para RAT do CNPJ {cnpj}", min_value=0.0, format="%.2f", key=f"rat_{cnpj}")
+    judicial_value = st.number_input(f"Valor para JUDICIAL do CNPJ {cnpj}", min_value=0.0, format="%.2f", key=f"judicial_{cnpj}")
+    
+    # Atualizando as colunas 'rat' e 'judicial' para o CNPJ selecionado
+    df_completo.loc[df_completo['cnpj'] == cnpj, 'rat'] = rat_value
+    df_completo.loc[df_completo['cnpj'] == cnpj, 'judicial'] = judicial_value
+
+# Calculando o valor final
+df_completo['outros'] = 0.00
+df_completo['valor_final'] = df_completo['valor'] - df_completo['rat'] - df_completo['judicial'] - df_completo['outros']
+
+# Excluindo os CNPJs especificados
 cnpjs_a_excluir = ['34054254000104', '00753422000138']
 st.warning("Excluídos os CNPJ 34054254000104 (Clube de Aeronáutica) e 00753422000138 (Clube de Aeronáutica de Brasília)")
-# Filtrar o dataframe para manter apenas os CNPJs que não estão na lista
-df2 = df_completo[~df_completo['cnpj'].isin(cnpjs_a_excluir)]
-# Exiba as primeiras linhas do DataFrame
 
+# Filtrando o dataframe
+df2 = df_completo[~df_completo['cnpj'].isin(cnpjs_a_excluir)]
+
+# Exibindo o DataFrame
 st.dataframe(df2)
 
 # Cálculo e exibição dos valores de acordo com o CNPJ
