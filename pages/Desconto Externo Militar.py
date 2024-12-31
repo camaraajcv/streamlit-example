@@ -163,9 +163,7 @@ if uploaded_file is not None:
         total_valor_soma = df_final["Valor"].sum()
         st.success(f"Valor total DESCONTO EXTERNO - SIGPP: {formatar_valor_brasileiro(total_valor_soma)}")
 ####################################################################################################
-# Interface para preenchimento de RAT e JUDICIAL para cada CNPJ
-
-   
+ #Interface para preenchimento de RAT e JUDICIAL para cada CNPJ
 if 'df_final' in globals() and not df_final.empty:
     st.subheader("Preencher valores para RAT e JUDICIAL")
     
@@ -190,11 +188,14 @@ if 'df_final' in globals() and not df_final.empty:
         
         # Adicionando ao DataFrame 'reducoes' conforme o tipo
         if valor is not None:
-            reducoes = reducoes.append({
-                "CNPJ": cnpj,
-                "Tipo": tipo_selecionado,
-                "Valor": valor
-            }, ignore_index=True)
+            # Criando o DataFrame com a nova linha a ser adicionada
+            nova_linha = pd.DataFrame({
+                "CNPJ": [cnpj],
+                "Tipo": [tipo_selecionado],
+                "Valor": [valor]
+            })
+            # Usando pd.concat para adicionar a nova linha ao DataFrame 'reducoes'
+            reducoes = pd.concat([reducoes, nova_linha], ignore_index=True)
     
     # Exibindo o DataFrame 'reducoes' com os valores preenchidos
     if not reducoes.empty:
