@@ -12,18 +12,7 @@ logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %
 
 
 # Funções auxiliares diretamente no código
-# Preenchendo campos do XML
-st.subheader("Preencher Dados para Gerar XML")
 
-# Campos adicionais que o usuário deve preencher para gerar o XML
-data_geracao = st.date_input("Data de Geração")
-cpf_responsavel = st.text_input("CPF Responsável")
-
-# Preenchendo campos obrigatórios
-numDH = st.text_input("Número do DH (numDH)")
-txtMotivo = st.text_input("Motivo (txtMotivo)", "DESC.EXT.MIL.DEZ")
-txtMotivo = txtMotivo[:16]  # Limitar a 16 caracteres
-dtVenc = st.date_input("Data de Vencimento (dtVenc)")
 def extract_text_up_to_line(pdf_file, start_pattern, end_pattern):
     try:
         reader = PyPDF2.PdfReader(pdf_file)
@@ -132,7 +121,18 @@ st.markdown("<h3 style='text-align: center; font-size: 1em; text-decoration: und
 
 # Texto explicativo
 st.write("Desconto Externo Militar - Extração dados PDF SIGPP para SIAFI")
+# Preenchendo campos do XML
+st.subheader("Preencher Dados para Gerar XML")
 
+# Campos adicionais que o usuário deve preencher para gerar o XML
+data_geracao = st.date_input("Data de Geração")
+cpf_responsavel = st.text_input("CPF Responsável")
+
+# Preenchendo campos obrigatórios
+numDH = st.text_input("Número do DH (numDH)")
+txtMotivo = st.text_input("Motivo (txtMotivo)", "DESC.EXT.MIL.DEZ")
+txtMotivo = txtMotivo[:16]  # Limitar a 16 caracteres
+dtVenc = st.date_input("Data de Vencimento (dtVenc)")
 # Interface para upload de arquivo PDF
 uploaded_file = st.file_uploader("Faça o upload do primeiro arquivo PDF. Este arquivo deve ser retirado no SIGPP em relatórios de empenho. (LEMBRAR DE MARCAR SOMENTE CONSIGNATÁRIAS)", type="pdf")
 
