@@ -162,7 +162,42 @@ if uploaded_file is not None:
     if not df_final.empty:
         total_valor_soma = df_final["Valor"].sum()
         st.success(f"Valor total DESCONTO EXTERNO - SIGPP: {formatar_valor_brasileiro(total_valor_soma)}")
+####################################################################################################
+# Interface para preenchimento de RAT e JUDICIAL para cada CNPJ
 
+    if 'df_final' in globals() and not df_final.empty:
+        st.subheader("Preencher valores para RAT e JUDICIAL")
+        
+        # Criando um novo DataFrame vazio para as reduções
+        reducoes = pd.DataFrame(columns=["CNPJ", "RAT", "JUDICIAL"])
+        
+        # Permite selecionar os CNPJs da lista extraída
+        cnpjs = df_final['cnpj'].unique()
+        
+        # Campo para selecionar os CNPJs
+        selected_cnpjs = st.multiselect("Selecione os CNPJs para os quais deseja adicionar valores de RAT e JUDICIAL", cnpjs)
+        
+        # Para cada CNPJ selecionado, cria campos para RAT e JUDICIAL
+        for cnpj in selected_cnpjs:
+            st.write(f"Preencha os valores para o CNPJ: {cnpj}")
+            
+            # Campos de entrada para RAT e JUDICIAL
+            rat_value = st.number_input(f"Valor para RAT do CNPJ {cnpj}", min_value=0.0, format="%.2f")
+            judicial_value = st.number_input(f"Valor para JUDICIAL do CNPJ {cnpj}", min_value=0.0, format="%.2f")
+            
+            # Adicionando ao DataFrame 'reducoes'
+            if rat_value is not None and judicial_value is not None:
+                reducoes = reducoes.append({
+                    "CNPJ": cnpj,
+                    "RAT": rat_value,
+                    "JUDICIAL": judicial_value
+                }, ignore_index=True)
+        
+        # Exibindo o DataFrame 'reducoes' com os valores preenchidos
+        if not reducoes.empty:
+            st.write("Valores preenchidos para RAT e JUDICIAL:")
+            st.dataframe(reducoes)
+####################################################################################################
 
 # Função para extrair os dados do PDF
 def extract_pdf_data(pdf_file):
@@ -220,42 +255,7 @@ def extract_pdf_data(pdf_file):
     df_banco_clean = df_banco_clean.drop_duplicates(subset='Código')
 
     return df_banco_clean
-####################################################################################################
-# Interface para preenchimento de RAT e JUDICIAL para cada CNPJ
 
-    if 'df_banco_clean' in globals() and not df_banco_clean.empty:
-        st.subheader("Preencher valores para RAT e JUDICIAL")
-        
-        # Criando um novo DataFrame vazio para as reduções
-        reducoes = pd.DataFrame(columns=["CNPJ", "RAT", "JUDICIAL"])
-        
-        # Permite selecionar os CNPJs da lista extraída
-        cnpjs = df_banco_clean['cnpj'].unique()
-        
-        # Campo para selecionar os CNPJs
-        selected_cnpjs = st.multiselect("Selecione os CNPJs para os quais deseja adicionar valores de RAT e JUDICIAL", cnpjs)
-        
-        # Para cada CNPJ selecionado, cria campos para RAT e JUDICIAL
-        for cnpj in selected_cnpjs:
-            st.write(f"Preencha os valores para o CNPJ: {cnpj}")
-            
-            # Campos de entrada para RAT e JUDICIAL
-            rat_value = st.number_input(f"Valor para RAT do CNPJ {cnpj}", min_value=0.0, format="%.2f")
-            judicial_value = st.number_input(f"Valor para JUDICIAL do CNPJ {cnpj}", min_value=0.0, format="%.2f")
-            
-            # Adicionando ao DataFrame 'reducoes'
-            if rat_value is not None and judicial_value is not None:
-                reducoes = reducoes.append({
-                    "CNPJ": cnpj,
-                    "RAT": rat_value,
-                    "JUDICIAL": judicial_value
-                }, ignore_index=True)
-        
-        # Exibindo o DataFrame 'reducoes' com os valores preenchidos
-        if not reducoes.empty:
-            st.write("Valores preenchidos para RAT e JUDICIAL:")
-            st.dataframe(reducoes)
-####################################################################################################
 # Interface do Streamlit
 st.subheader("Extraindo código do Banco de arquivo SIGPP")
 # Adicionando CSS para substituir o texto padrão "Drag and drop file here"
