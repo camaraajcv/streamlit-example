@@ -279,13 +279,14 @@ if 'df_completo' in globals() and not df_completo.empty:
     df_completo.rename(columns={'Banco Agência Conta': 'bco', 'Agência': 'agencia', 'Conta': 'conta', 'CNPJ': 'cnpj', 'Valor': 'valor'}, inplace=True)
 
 if 'df_final' in globals():
-    # Verifica se df_banco_clean existe
-    if 'df_banco_clean' in globals():
+   
+    # Verifique se df_banco_clean é um DataFrame válido antes de tentar o merge
+    if df_banco_clean is not None and not df_banco_clean.empty:
+        # Se df_banco_clean for válido, prossiga com o merge
         df_completo = pd.merge(df_final, df_banco_clean[['Código', 'Banco Agência Conta']], on='Código', how='left')
     else:
-        df_completo = df_final.copy()  # Caso df_banco_clean não exista, mantém df_final sem alterações
-else:
-    print("Erro: df_final não está definido.")
+        st.error("Erro: df_banco_clean não foi carregado ou está vazio.")
+ 
 
 # Renomeando as colunas para manter consistência
 df_completo.rename(columns={'Banco Agência Conta': 'bco', 'Agência': 'agencia', 'Conta': 'conta', 'CNPJ': 'cnpj', 'Valor': 'valor'}, inplace=True)
