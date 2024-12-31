@@ -278,8 +278,14 @@ else:
     st.warning("A coluna 'conta' não foi encontrada no DataFrame.")
 
 # Ajustando a coluna 'agencia' para garantir que os números antes do '-' tenham 4 dígitos
-df_completo['agencia'] = df_completo['agencia'].apply(lambda x: x.split('-')[0].zfill(4) + '-' + x.split('-')[1] if isinstance(x, str) and '-' in x else x)
-
+# Verificar se a coluna 'agencia' existe antes de tentar manipulá-la
+if 'agencia' in df_completo.columns:
+    # Se a coluna existe, aplicar a transformação desejada
+    df_completo['agencia'] = df_completo['agencia'].apply(lambda x: x.split('-')[0].zfill(4) + '-' + x.split('-')[1] if isinstance(x, str) and '-' in x else x)
+else:
+    # Se a coluna não existir, criar com valores vazios ou algum valor padrão
+    df_completo['agencia'] = ""  # Ou algum valor padrão, dependendo do seu caso
+    st.warning("A coluna 'agencia' não foi encontrada no DataFrame. Ela foi criada com valores vazios.")
 # Extraindo os 4 primeiros dígitos da coluna 'agencia'
 df_completo['agencia'] = df_completo['agencia'].str[:4]
 
