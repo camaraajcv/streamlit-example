@@ -172,7 +172,7 @@ if uploaded_file is not None:
         reducoes = pd.DataFrame(columns=["CNPJ", "RAT", "JUDICIAL"])
         
         # Permite selecionar os CNPJs da lista extraída
-        cnpjs = df_final['cnpj'].unique()
+        cnpjs = df_final['CNPJ'].unique()
         
         # Campo para selecionar os CNPJs
         selected_cnpjs = st.multiselect("Selecione os CNPJs para os quais deseja adicionar valores de RAT e JUDICIAL", cnpjs)
