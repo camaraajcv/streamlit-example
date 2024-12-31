@@ -375,7 +375,6 @@ if st.button("Reduzir Valores"):
         st.session_state.reducoes_temp = pd.DataFrame(columns=['cnpj', 'valor_reduzido', 'tipo'])
         st.success("Reduções aplicadas com sucesso!")
         st.success("Valor Líquido Desconto Externo : " + formatar_valor_brasileiro(df2['valor'].sum()))
-        df_atualizado = df2
     else:
         st.error("Nenhuma redução para aplicar.")
 
