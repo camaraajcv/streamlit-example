@@ -177,7 +177,7 @@ def processar_pdf(pdf_content):
             numero_sb = st.text_input("Número do Subelemento: :red[(PARA FL)]", max_chars=2, key='numero_sb')
             numero_fl= st.text_input("Número da FL:", max_chars=6, key='numero_fl')
             ano_empenho = st.text_input("Ano de Referência (4 dígitos): :red[(PARA FL)]",  value=str(ano_atual), max_chars=4, key='ano_empenho')
-            sequencial_fl = st.text_input("Número Sequencial da FL::red[(PARA FL)]", max_chars=4, key='sequencial_fl')
+            sequencial_fl = st.text_input("Número Sequencial da FL: :red[(PARA FL)]", max_chars=4, key='sequencial_fl')
             texto_obs = st.text_input("Texto Observação:",value='DESC.EXT.CV', key='texto_obs')
             mes_referencia_cc = st.text_input("Número Mês Referência CC : :red[(PARA FL)]",value=str(mes_atual),max_chars=2, key='mes_referencia_cc')
             
