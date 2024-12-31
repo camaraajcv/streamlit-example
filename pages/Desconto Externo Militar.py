@@ -307,7 +307,16 @@ df_completo['rat'] = 0.00
 df_completo['judicial'] = 0.00
 
 # Interface para preencher valores de RAT e Judicial
-selected_cnpjs = st.multiselect("Selecione os CNPJs para os quais deseja adicionar valores de RAT e JUDICIAL", df_completo['cnpj'].unique())
+# Verificar se a coluna 'cnpj' existe no DataFrame antes de usá-la
+if 'cnpj' in df_completo.columns:
+    # Se a coluna 'cnpj' existir, continue com a lógica
+    selected_cnpjs = st.multiselect("Selecione os CNPJs para os quais deseja adicionar valores de RAT e JUDICIAL", df_completo['cnpj'].unique())
+else:
+    # Se a coluna 'cnpj' não existir, mostrar uma mensagem de erro ou criar a coluna
+    st.error("A coluna 'cnpj' não foi encontrada no DataFrame. Verifique o processamento anterior.")
+    # Opcionalmente, você pode criar a coluna com valores padrão se necessário:
+    df_completo['cnpj'] = None  # Ou qualquer valor padrão ou vazio
+    selected_cnpjs = []  # Inicializa com uma lista vazia
 
 for cnpj in selected_cnpjs:
     # Campos de entrada para RAT e JUDICIAL
