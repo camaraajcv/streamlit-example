@@ -222,7 +222,7 @@ def extract_pdf_data(pdf_file):
     return df_banco_clean
 ####################################################################################################
 # Interface para preenchimento de RAT e JUDICIAL para cada CNPJ
-if 'df_completo' in globals() and not df_banco_clean.empty:
+if 'df_banco_clean' in globals() and not df_banco_clean.empty:
     st.subheader("Preencher valores para RAT e JUDICIAL")
     
     # Criando um novo DataFrame vazio para as reduções
