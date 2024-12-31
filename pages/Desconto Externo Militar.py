@@ -33,6 +33,7 @@ def extract_text_up_to_line(pdf_file, start_pattern, end_pattern):
         st.error(f"Erro ao processar o PDF: {e}")
         return []
 
+
 def filter_exclude_lines(filtered_text, exclude_patterns):
     filtered_lines = []
     for line in filtered_text:
@@ -40,8 +41,10 @@ def filter_exclude_lines(filtered_text, exclude_patterns):
             filtered_lines.append(line)
     return filtered_lines
 
+
 def formatar_valor_brasileiro(valor):
     return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
 
 def extract_codes_and_agencia_conta_cnpj(filtered_text):
     codes_agencias_contas_cnpjs = []
@@ -52,6 +55,7 @@ def extract_codes_and_agencia_conta_cnpj(filtered_text):
             agencia, conta, cnpj = extract_agencia_conta_cnpj(filtered_text, i)
             codes_agencias_contas_cnpjs.append((code, agencia, conta, cnpj))
     return codes_agencias_contas_cnpjs
+
 
 def extract_agencia_conta_cnpj(filtered_text, start_index):
     agencia = None
@@ -73,6 +77,7 @@ def extract_agencia_conta_cnpj(filtered_text, start_index):
             cnpj = cnpj_match.group(1)
 
     return agencia, conta, cnpj
+
 
 def extract_value_before_total(filtered_text):
     valores = []
@@ -98,6 +103,7 @@ def extract_value_before_total(filtered_text):
             collecting = False
 
     return valores
+
 
 # URL da imagem
 image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
@@ -162,8 +168,10 @@ if uploaded_file is not None:
     if not df_final.empty:
         total_valor_soma = df_final["Valor"].sum()
         st.success(f"Valor total DESCONTO EXTERNO - SIGPP: {formatar_valor_brasileiro(total_valor_soma)}")
+
 ####################################################################################################
- #Interface para preenchimento de RAT e JUDICIAL para cada CNPJ
+
+# Interface para preenchimento de RAT e JUDICIAL para cada CNPJ
 if 'df_final' in globals() and not df_final.empty:
     st.subheader("Preencher valores para RAT e JUDICIAL")
     
@@ -174,7 +182,7 @@ if 'df_final' in globals() and not df_final.empty:
     cnpjs = df_final['CNPJ'].unique()
     
     # Campo para selecionar os CNPJs
-    selected_cnpjs = st.multiselect("Selecione os CNPJs para os quais deseja adicionar valores de RAT e JUDICIAL", cnpjs)
+    selected_cnpjs = st.multiselect("Selecione os CNPJs para os quais deseja adicionar valores de RAT e JUDICIAL", cnpjs, key="cnpjs_multiselect")
     
     # Para cada CNPJ selecionado, cria campos para RAT e JUDICIAL
     for cnpj in selected_cnpjs:
