@@ -228,7 +228,12 @@ def extract_pdf_data(pdf_file):
     df_banco_clean = df_banco_clean.drop_duplicates(subset='Código')
 
     return df_banco_clean
-
+if 'df_completo' in globals():
+    # O DataFrame já foi criado, você pode usá-lo aqui
+    st.dataframe(df_completo)
+else:
+    # O DataFrame não foi criado ainda
+    st.warning("O DataFrame df_completo ainda não foi gerado.")
 # Interface do Streamlit
 st.subheader("Extraindo código do Banco de arquivo SIGPP")
 # Adicionando CSS para substituir o texto padrão "Drag and drop file here"
