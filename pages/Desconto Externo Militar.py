@@ -336,13 +336,7 @@ else:
    
     df_completo['cnpj'] = None  # Ou qualquer valor padrão ou vazio
     selected_cnpjs = []  # Inicializa com uma lista vazia
-df_completo = df_completo.dropna()
 
-# Defina 'conta' como 'FOPAG' para CNPJs específicos
-df_completo.loc[df_completo['cnpj'].isin(['00360305000104', '00000000000191']), 'conta'] = 'FOPAG'
-
-df_completo['banco_fab'] = ''
-df_completo.loc[df_completo['cnpj'].isin(['00360305000104', '00000000000191']), 'banco_fab'] = '002'
 for cnpj in selected_cnpjs:
     # Campos de entrada para RAT e JUDICIAL
     rat_value = st.number_input(f"Valor para RAT do CNPJ {cnpj}", min_value=0.0, format="%.2f", key=f"rat_{cnpj}")
@@ -363,7 +357,11 @@ st.warning("Excluídos os CNPJ 34054254000104 (Clube de Aeronáutica) e 00753422
 # Garantir que os CNPJs no DataFrame estejam no mesmo formato (sem espaços extras e sem formatação)
 df_completo['cnpj'] = df_completo['cnpj'].str.replace(r'\D', '', regex=True)  # Remove tudo que não for dígito
 df_completo['cnpj'] = df_completo['cnpj'].str.strip()  # Remove espaços extras
+# Defina 'conta' como 'FOPAG' para CNPJs específicos
+df_completo.loc[df_completo['cnpj'].isin(['00360305000104', '00000000000191']), 'conta'] = 'FOPAG'
 
+df_completo['banco_fab'] = ''
+df_completo.loc[df_completo['cnpj'].isin(['00360305000104', '00000000000191']), 'banco_fab'] = '002'
 # Filtrando o dataframe para excluir os CNPJs
 df2 = df_completo[~df_completo['cnpj'].isin(cnpjs_a_excluir)]
 
