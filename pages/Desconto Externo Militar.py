@@ -3,6 +3,7 @@ import PyPDF2
 import re
 import pandas as pd
 import logging
+import pdfplumber
 from datetime import datetime
 from io import StringIO
 from io import BytesIO
