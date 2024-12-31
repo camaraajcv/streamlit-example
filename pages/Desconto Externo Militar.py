@@ -249,12 +249,15 @@ if pdf_file:
         st.warning("Nenhum dado foi extraído do PDF.")
 else:
     st.info("Por favor, faça o upload de um arquivo PDF para processar os dados.")
-if 'df_completo' in globals():
-    # O DataFrame já foi criado, você pode usá-lo aqui
-    st.dataframe(df_completo)
+# Inicializar df_completo como um DataFrame vazio antes de qualquer operação
+df_completo = pd.DataFrame()
+
+# Verifica se 'df_completo' tem dados antes de tentar fazer qualquer operação com ele
+if 'df_completo' in globals() and not df_completo.empty:
+    # Renomeando as colunas para manter consistência
+    df_completo.rename(columns={'Banco Agência Conta': 'bco', 'Agência': 'agencia', 'Conta': 'conta', 'CNPJ': 'cnpj', 'Valor': 'valor'}, inplace=True)
 else:
-    # O DataFrame não foi criado ainda
-    st.warning("O DataFrame df_completo ainda não foi gerado.")
+    st.warning("O DataFrame df_completo ainda não foi gerado ou está vazio.")
 if 'df_final' in globals():
     # Verifica se df_banco_clean existe
     if 'df_banco_clean' in globals():
