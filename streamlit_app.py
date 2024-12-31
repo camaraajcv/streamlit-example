@@ -6,6 +6,8 @@ import tempfile
 import streamlit as st
 import os
 from datetime import datetime
+from colorama import Fore, Style  # Se você quiser usar cores
+
 #rr
 # URL da imagem
 image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
@@ -150,8 +152,8 @@ def processar_pdf(pdf_content):
 
     # Exibe os valores formatados
     # Sequência de escape ANSI para cor vermelha
-    RED = '\033[91m'
-    RESET = '\033[0m'
+    RED = Fore.RED
+    RESET = Style.RESET_ALL
     st.warning(f"Valor Líquido SIAPE: {valor_formatado}")
     st.success(f"Soma da coluna Valor Líquido': {soma_valor_formatado}")
     st.error(f"Diferença: {diferenca_valor_formatado}")
