@@ -323,7 +323,7 @@ soma_valores = df2['valor'].sum()
 st.success("Valor Total Desconto Externo Sem Clubes: " + formatar_valor_brasileiro(soma_valores))
 
 #################################################################################################################
- import streamlit as st
+import streamlit as st
 import PyPDF2
 import re
 import pandas as pd
