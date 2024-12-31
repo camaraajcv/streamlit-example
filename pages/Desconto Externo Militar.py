@@ -319,7 +319,19 @@ soma_valores = df2['valor'].sum()
 st.success("Valor Total Desconto Externo Sem Clubes: " + formatar_valor_brasileiro(soma_valores))
 
 ########################################RED8UCAO#########################################################################
+# Preenchendo campos do XML
+st.subheader("Preencher Dados para Gerar XML")
 
+# Campos adicionais que o usuário deve preencher para gerar o XML
+data_geracao = st.date_input("Data de Geração")
+cpf_responsavel = st.text_input("CPF Responsável")
+
+# Preenchendo campos obrigatórios
+numDH = st.text_input("Número do DH (numDH)")
+txtMotivo = st.text_input("Motivo (txtMotivo)", "DESC.EXT.MIL.DEZ")
+txtMotivo = txtMotivo[:16]  # Limitar a 16 caracteres
+dtVenc = st.date_input("Data de Vencimento (dtVenc)")
+#########################################################################################################################
 
 # Inicializando os DataFrames sem usar session_state
 reducoes = pd.DataFrame(columns=['cnpj', 'valor_reduzido', 'tipo'])
@@ -384,18 +396,7 @@ st.dataframe(reducoes)
 
 ################################### XML #########################
 
-# Preenchendo campos do XML
-st.subheader("Preencher Dados para Gerar XML")
 
-# Campos adicionais que o usuário deve preencher para gerar o XML
-data_geracao = st.date_input("Data de Geração")
-cpf_responsavel = st.text_input("CPF Responsável")
-
-# Preenchendo campos obrigatórios
-numDH = st.text_input("Número do DH (numDH)")
-txtMotivo = st.text_input("Motivo (txtMotivo)", "DESC.EXT.MIL.DEZ")
-txtMotivo = txtMotivo[:16]  # Limitar a 16 caracteres
-dtVenc = st.date_input("Data de Vencimento (dtVenc)")
 
 # Quando o usuário clicar para gerar o XML
 if st.button("Gerar XML"):
