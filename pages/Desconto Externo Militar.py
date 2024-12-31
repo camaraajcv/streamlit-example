@@ -256,8 +256,7 @@ df_completo = pd.DataFrame()
 if 'df_completo' in globals() and not df_completo.empty:
     # Renomeando as colunas para manter consistência
     df_completo.rename(columns={'Banco Agência Conta': 'bco', 'Agência': 'agencia', 'Conta': 'conta', 'CNPJ': 'cnpj', 'Valor': 'valor'}, inplace=True)
-else:
-    st.warning("O PDF com os códigos dos bancos ainda não foi baixado.")
+
 if 'df_final' in globals():
     # Verifica se df_banco_clean existe
     if 'df_banco_clean' in globals():
