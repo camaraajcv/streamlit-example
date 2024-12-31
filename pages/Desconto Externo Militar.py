@@ -7,6 +7,7 @@ import pdfplumber
 from datetime import datetime
 from io import StringIO
 from io import BytesIO
+import locale
 # Configuração do logging para capturar os erros
 logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -43,7 +44,17 @@ def filter_exclude_lines(filtered_text, exclude_patterns):
 
 
 def formatar_valor_brasileiro(valor):
-    return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    """Formata um valor numérico para o padrão monetário brasileiro.
+
+    Args:
+        valor (float): Valor a ser formatado.
+
+    Returns:
+        str: Valor formatado como string.
+    """
+
+    locale.setlocale(locale.LC_MONETARY, 'pt_BR.UTF-8')
+    return locale.currency(valor, grouping=True)
 
 
 def extract_codes_and_agencia_conta_cnpj(filtered_text):
@@ -370,8 +381,8 @@ st.dataframe(df2)
 
 # Calculando a soma dos valores
 soma_valores = df2['valor_final'].sum()
-soma_formatada = f"{soma_valores:.2f}"
-st.success("Valor Total Desconto Externo Sem Clubes: " + formatar_valor_brasileiro(soma_formatada))
+
+st.success("Valor Total Desconto Externo Sem Clubes: " + formatar_valor_brasileiro(soma_valores))
 
 ########################################RED8UCAO#########################################################################
 
