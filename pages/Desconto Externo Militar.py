@@ -44,17 +44,9 @@ def filter_exclude_lines(filtered_text, exclude_patterns):
 
 
 def formatar_valor_brasileiro(valor):
-    """Formata um valor numérico para o padrão monetário brasileiro.
-
-    Args:
-        valor (float): Valor a ser formatado.
-
-    Returns:
-        str: Valor formatado como string.
-    """
-
-    locale.setlocale(locale.LC_MONETARY, 'pt_BR.UTF-8')
-    return locale.currency(valor, grouping=True)
+    partes = str(valor).split('.')
+    inteiro, decimal = partes[0], partes[1][:2]
+    return f"R$ {int(inteiro):,}.{decimal}"
 
 
 def extract_codes_and_agencia_conta_cnpj(filtered_text):
