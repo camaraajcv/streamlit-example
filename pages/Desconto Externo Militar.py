@@ -180,8 +180,8 @@ if uploaded_file is not None:
         total_valor_soma = df_final["Valor"].sum()
         st.success(f"Valor total DESCONTO EXTERNO - SIGPP: {formatar_valor_brasileiro(total_valor_soma)}")
         # Cálculo e exibição dos valores de acordo com o CNPJ
-        valor_clube_aeronautica = df_final[df_final['cnpj'] == '34054254000104']['valor'].sum()
-        valor_clube_aeronautica_brasilia = df_final[df_final['cnpj'] == '00753422000138']['valor'].sum()
+        valor_clube_aeronautica = df_final[df_final['CNPJ'] == '34054254000104']['valor'].sum()
+        valor_clube_aeronautica_brasilia = df_final[df_final['CNPJ'] == '00753422000138']['valor'].sum()
 
         # Exibindo os valores com as mensagens correspondentes
         if valor_clube_aeronautica > 0:
