@@ -5,3 +5,4 @@ PyMuPDF
 openpyxl
 PyPDF2
 pdfplumber
+locale
