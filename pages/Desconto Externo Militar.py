@@ -315,7 +315,7 @@ if valor_clube_aeronautica > 0:
 if valor_clube_aeronautica_brasilia > 0:
     st.success(f"Valor do Clube de Aeronáutica de Brasília é {formatar_valor_brasileiro(valor_clube_aeronautica_brasilia)}")
 
-soma_valores = df2['valor'].sum()
+soma_valores = df2['valor_final'].sum()
 st.success("Valor Total Desconto Externo Sem Clubes: " + formatar_valor_brasileiro(soma_valores))
 
 ########################################RED8UCAO#########################################################################
