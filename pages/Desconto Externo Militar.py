@@ -336,7 +336,13 @@ else:
    
     df_completo['cnpj'] = None  # Ou qualquer valor padrão ou vazio
     selected_cnpjs = []  # Inicializa com uma lista vazia
+df_completo = df_completo.dropna()
 
+# Defina 'conta' como 'FOPAG' para CNPJs específicos
+df_completo.loc[df_completo['cnpj'].isin(['00360305000104', '00000000000191']), 'conta'] = 'FOPAG'
+
+df_completo['banco_fab'] = ''
+df_completo.loc[df_completo['cnpj'].isin(['00360305000104', '00000000000191']), 'banco_fab'] = '002'
 for cnpj in selected_cnpjs:
     # Campos de entrada para RAT e JUDICIAL
     rat_value = st.number_input(f"Valor para RAT do CNPJ {cnpj}", min_value=0.0, format="%.2f", key=f"rat_{cnpj}")
@@ -453,7 +459,7 @@ if st.button("Gerar XML"):
                                        index + 1, dtVenc.strftime("%Y-%m-%d"), dtPgtoReceb.strftime("%Y-%m-%d"),
                                        row['valor_final'], row['cnpj'], txtMotivo, codTipoOB, row['cnpj'], f'<txtCit>{txtCit}</txtCit>' if include_banco_txtCit and txtCit is not None else '',
                                        row['bco'], row['agencia'], row['conta'],
-                                       f'<numDomiBancPgto><banco>{row['banco_fab']}</banco><conta>UNICA</conta></numDomiBancPgto>' if include_banco_txtCit else f'<numDomiBancPgto><conta>UNICA</conta></numDomiBancPgto>')
+                                       f'<numDomiBancPgto><banco>{row["banco_fab"]}</banco><conta>UNICA</conta></numDomiBancPgto>' if include_banco_txtCit else f'<numDomiBancPgto><conta>UNICA</conta></numDomiBancPgto>')
 
         # Finalize a string XML
         xml_string += '''
