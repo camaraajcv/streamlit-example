@@ -323,93 +323,19 @@ soma_valores = df2['valor'].sum()
 st.success("Valor Total Desconto Externo Sem Clubes: " + formatar_valor_brasileiro(soma_valores))
 
 #################################################################################################################
-# Inicializando o DataFrame de reduções no session_state, se ainda não existir
+# Ajuste na lógica para evitar perda de reduções durante a geração do XML
 
-
-# Inicializando os DataFrames no session_state, se necessário
-if 'reducoes_temp' not in st.session_state:
-    st.session_state.reducoes_temp = pd.DataFrame(columns=['cnpj', 'valor_reduzido', 'tipo'])
-
-if 'reducoes' not in st.session_state:
-    st.session_state.reducoes = pd.DataFrame(columns=['cnpj', 'valor_reduzido', 'tipo'])
-
-# Criando o formulário para redução
-st.title("Redução de Valores")
-
-# Seleção do tipo de redução
-tipo_reducao = st.selectbox("Escolha o tipo de redução", ["", "RAT", "Judicial", "Outros"])
-
-# Seleção do CNPJ
-cnpj_selecionado = st.selectbox("Selecione o CNPJ", df2['cnpj'].tolist())
-
-# Campo para informar o valor de redução
-valor_reducao = st.number_input("Informe o valor a ser reduzido", min_value=0.0, step=0.01)
-
-# Botão para adicionar a redução à tabela temporária
-if st.button("Adicionar Redução"):
-    if tipo_reducao and cnpj_selecionado and valor_reducao > 0:
-        # Adicionando a nova redução ao DataFrame temporário
-        nova_reducao = pd.DataFrame({
-            'cnpj': [cnpj_selecionado],
-            'valor_reduzido': [valor_reducao],
-            'tipo': [tipo_reducao]
-        })
-        st.session_state.reducoes_temp = pd.concat([st.session_state.reducoes_temp, nova_reducao], ignore_index=True)
-        st.success("Redução adicionada com sucesso!")
-        
-    else:
-        st.error("Por favor, preencha todos os campos antes de adicionar.")
-
-# Exibindo as reduções temporárias adicionadas
-st.subheader("Reduções Temporárias")
-st.dataframe(st.session_state.reducoes_temp)
-
-# Botão para aplicar todas as reduções
-if st.button("Reduzir Valores"):
-    if not st.session_state.reducoes_temp.empty:
-        # Aplicando as reduções no df2
-        for _, row in st.session_state.reducoes_temp.iterrows():
-            cnpj = row['cnpj']
-            valor = row['valor_reduzido']
-            # Atualizando o valor no df2
-            df2.loc[df2['cnpj'] == cnpj, 'valor'] -= valor
-
-        # Adicionando as reduções ao DataFrame principal de reduções
-        st.session_state.reducoes = pd.concat([st.session_state.reducoes, st.session_state.reducoes_temp], ignore_index=True)
-        st.session_state.reducoes_temp = pd.DataFrame(columns=['cnpj', 'valor_reduzido', 'tipo'])  # Limpando reduções temporárias
-        st.success("Reduções aplicadas com sucesso!")
-        st.success("Valor Líquido Desconto Externo : " + formatar_valor_brasileiro(df2['valor'].sum()))
-        df_atualizado=df2
-    else:
-        st.error("Nenhuma redução para aplicar.")
-
-# Exibindo os DataFrames atualizados
-st.subheader("df2 Atualizado")
-st.dataframe(df2)
-
-st.subheader("Histórico de Reduções Aplicadas")
-st.dataframe(st.session_state.reducoes)
-            ###################################XML#########################
-
-            # Preenchendo campos do XML
-
-# Preenchendo campos do XML
-st.subheader("Preencher Dados para Gerar XML")
-
-# Campos adicionais que o usuário deve preencher para gerar o XML
-data_geracao = st.date_input("Data de Geração")
-cpf_responsavel = st.text_input("CPF Responsável")
-
-# Preenchendo campos obrigatórios
-numDH = st.text_input("Número do DH (numDH)")
-txtMotivo = st.text_input("Motivo (txtMotivo)", "DESC.EXT.MIL.DEZ")
-txtMotivo = txtMotivo[:16]  # Limitar a 16 caracteres
-dtVenc = st.date_input("Data de Vencimento (dtVenc)")
-
-# Quando o usuário clicar para gerar o XML
+# Geração do XML ajustada para usar sempre o DataFrame atualizado
 if st.button("Gerar XML"):
     # Garantindo que os campos obrigatórios sejam preenchidos
     if cpf_responsavel and numDH and txtMotivo and dtVenc:
+        # Certifique-se de que o df_atualizado reflete as reduções
+        if 'df_atualizado' not in st.session_state or st.session_state.df_atualizado.empty:
+            st.session_state.df_atualizado = df2.copy()
+
+        # Use o DataFrame atualizado para evitar perder as reduções
+        df_atualizado = st.session_state.df_atualizado
+
         # Definindo variáveis fixas
         sequencial_geracao = "100"
         ano_referencia = datetime.now().year
@@ -429,9 +355,8 @@ if st.button("Gerar XML"):
             <sb:detalhes>
         '''.format("DH002", data_geracao.strftime("%d/%m/%Y"), sequencial_geracao, ano_referencia, "120052", cpf_responsavel)
 
-        # Loop sobre as linhas do DataFrame
+        # Loop sobre as linhas do DataFrame atualizado
         for index, row in df_atualizado.iterrows():
-            # Define o valor de codTipoOB com base no valor de codCredorDevedor
             if row['cnpj'] == '00000000000191':
                 codTipoOB = 'OBF'
                 txtCit = '120052ECFP999'
@@ -442,8 +367,8 @@ if st.button("Gerar XML"):
                 include_banco_txtCit = True
             else:
                 codTipoOB = 'OBC'
-                include_banco_txtCit = False  # Não incluir para outros CNPJs
-                txtCit = None  # Definir txtCit como None para indicar que não deve ser incluído
+                include_banco_txtCit = False
+                txtCit = None
 
             xml_string += '''<sb:detalhe>
                     <cpr:CprDhAlterarDHIncluirItens>
@@ -463,7 +388,7 @@ if st.button("Gerar XML"):
                             <txtInscrA>{}</txtInscrA>
                             <numClassA>218810199</numClassA>
                             <predoc>
-                                <txtObser>{}</txtObser>  
+                                <txtObser>{}</txtObser>
                                 <predocOB>
                                     <codTipoOB>{}</codTipoOB>
                                     <codCredorDevedor>{}</codCredorDevedor>
@@ -477,33 +402,30 @@ if st.button("Gerar XML"):
                                 </predocOB>
                             </predoc>
                         </deducao>
-                        </cpr:CprDhAlterarDHIncluirItens>
-                </sb:detalhe>'''.format(anoDH, numDH, data_geracao.strftime("%Y-%m-%d"), txtMotivo,
-                                       index + 1, dtVenc.strftime("%Y-%m-%d"), dtPgtoReceb.strftime("%Y-%m-%d"),
-                                       row['valor'], row['cnpj'],txtMotivo, codTipoOB,row['cnpj'], f'<txtCit>{txtCit}</txtCit>' if include_banco_txtCit and txtCit is not None else '',
-                                row['bco'], row['agencia'], row['conta'],
-                                f'<numDomiBancPgto><banco>{row["banco_fab"]}</banco><conta>UNICA</conta></numDomiBancPgto>' if include_banco_txtCit else f'<numDomiBancPgto><conta>UNICA</conta></numDomiBancPgto>')
+                    </cpr:CprDhAlterarDHIncluirItens>
+                </sb:detalhe>'''.format(anoDH, numDH, data_geracao.strftime("%Y-%m-%d"), txtMotivo, index + 1,
+                                       dtVenc.strftime("%Y-%m-%d"), dtPgtoReceb.strftime("%Y-%m-%d"), row['valor'],
+                                       row['cnpj'], txtMotivo, codTipoOB, row['cnpj'],
+                                       f'<txtCit>{txtCit}</txtCit>' if include_banco_txtCit and txtCit else '',
+                                       row['bco'], row['agencia'], row['conta'],
+                                       f'<numDomiBancPgto><banco>{row["banco_fab"]}</banco><conta>UNICA</conta></numDomiBancPgto>' if include_banco_txtCit else '<numDomiBancPgto><conta>UNICA</conta></numDomiBancPgto>')
 
-
-        # Finalize a string XML
+        # Finalizando o XML
         xml_string += '''
             </sb:detalhes>
             <sb:trailler>
                 <sb:quantidadeDetalhe>{}</sb:quantidadeDetalhe>
             </sb:trailler>
         </sb:arquivo>
-        '''.format(len(df2))
+        '''.format(len(df_atualizado))
 
-        # Converter o conteúdo para bytes
+        # Converter para bytes e permitir download
         xml_bytes = xml_string.encode('utf-8')
-
-        # Criação do arquivo XML em memória e permitir o download
         st.download_button(
             label="Baixar XML",
             data=xml_bytes,
             file_name="arquivo_militar.xml",
             mime="application/xml"
         )
-
     else:
         st.error("Por favor, preencha todos os campos obrigatórios antes de gerar o XML.")
