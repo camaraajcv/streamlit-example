@@ -179,6 +179,16 @@ if uploaded_file is not None:
     if not df_final.empty:
         total_valor_soma = df_final["Valor"].sum()
         st.success(f"Valor total DESCONTO EXTERNO - SIGPP: {formatar_valor_brasileiro(total_valor_soma)}")
+        # Cálculo e exibição dos valores de acordo com o CNPJ
+        valor_clube_aeronautica = df_final[df_final['cnpj'] == '34054254000104']['valor'].sum()
+        valor_clube_aeronautica_brasilia = df_final[df_final['cnpj'] == '00753422000138']['valor'].sum()
+
+        # Exibindo os valores com as mensagens correspondentes
+        if valor_clube_aeronautica > 0:
+            st.success(f"Valor do Clube de Aeronáutica é {formatar_valor_brasileiro(valor_clube_aeronautica)}")
+
+        if valor_clube_aeronautica_brasilia > 0:
+            st.success(f"Valor do Clube de Aeronáutica de Brasília é {formatar_valor_brasileiro(valor_clube_aeronautica_brasilia)}")
 
 ####################################################################################################
 
@@ -349,16 +359,6 @@ df2 = df_completo[~df_completo['cnpj'].isin(cnpjs_a_excluir)]
 # Exibindo o DataFrame
 st.dataframe(df2)
 
-# Cálculo e exibição dos valores de acordo com o CNPJ
-valor_clube_aeronautica = df_completo[df_completo['cnpj'] == '34054254000104']['valor'].sum()
-valor_clube_aeronautica_brasilia = df_completo[df_completo['cnpj'] == '00753422000138']['valor'].sum()
-
-# Exibindo os valores com as mensagens correspondentes
-if valor_clube_aeronautica > 0:
-    st.success(f"Valor do Clube de Aeronáutica é {formatar_valor_brasileiro(valor_clube_aeronautica)}")
-
-if valor_clube_aeronautica_brasilia > 0:
-    st.success(f"Valor do Clube de Aeronáutica de Brasília é {formatar_valor_brasileiro(valor_clube_aeronautica_brasilia)}")
 
 soma_valores = df2['valor_final'].sum()
 st.success("Valor Total Desconto Externo Sem Clubes: " + formatar_valor_brasileiro(soma_valores))
