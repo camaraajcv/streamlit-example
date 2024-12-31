@@ -165,7 +165,7 @@ if uploaded_file is not None:
 ####################################################################################################
 # Interface para preenchimento de RAT e JUDICIAL para cada CNPJ
 
-    # Interface para preenchimento de RAT e JUDICIAL para cada CNPJ
+   
 if 'df_final' in globals() and not df_final.empty:
     st.subheader("Preencher valores para RAT e JUDICIAL")
     
@@ -183,10 +183,10 @@ if 'df_final' in globals() and not df_final.empty:
         st.write(f"Preencha os valores para o CNPJ: {cnpj}")
         
         # Campo para selecionar o tipo (RAT ou JUDICIAL)
-        tipo_selecionado = st.selectbox(f"Selecione o tipo para o CNPJ {cnpj}", ["RAT", "JUDICIAL"])
+        tipo_selecionado = st.selectbox(f"Selecione o tipo para o CNPJ {cnpj}", ["RAT", "JUDICIAL"], key=f"tipo_{cnpj}")
         
         # Campo para inserir o valor para o tipo selecionado
-        valor = st.number_input(f"Valor para {tipo_selecionado} do CNPJ {cnpj}", min_value=0.0, format="%.2f")
+        valor = st.number_input(f"Valor para {tipo_selecionado} do CNPJ {cnpj}", min_value=0.0, format="%.2f", key=f"valor_{cnpj}_{tipo_selecionado}")
         
         # Adicionando ao DataFrame 'reducoes' conforme o tipo
         if valor is not None:
@@ -200,6 +200,7 @@ if 'df_final' in globals() and not df_final.empty:
     if not reducoes.empty:
         st.write("Valores preenchidos para RAT e JUDICIAL:")
         st.dataframe(reducoes)
+
 ####################################################################################################
 
 # Função para extrair os dados do PDF
