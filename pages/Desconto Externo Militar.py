@@ -318,14 +318,15 @@ if valor_clube_aeronautica_brasilia > 0:
 soma_valores = df2['valor'].sum()
 st.success("Valor Total Desconto Externo Sem Clubes: " + formatar_valor_brasileiro(soma_valores))
 
-#################################################################################################################
+########################################RED8UCAO#########################################################################
 
-# Inicializando os DataFrames no session_state, se necessário
-if 'reducoes_temp' not in st.session_state:
-    st.session_state.reducoes_temp = pd.DataFrame(columns=['cnpj', 'valor_reduzido', 'tipo'])
 
+# Inicializando os DataFrames no session_state
 if 'reducoes' not in st.session_state:
     st.session_state.reducoes = pd.DataFrame(columns=['cnpj', 'valor_reduzido', 'tipo'])
+
+if 'reducoes_temp' not in st.session_state:
+    st.session_state.reducoes_temp = pd.DataFrame(columns=['cnpj', 'valor_reduzido', 'tipo'])
 
 # Criando o formulário para redução
 st.title("Redução de Valores")
@@ -350,7 +351,6 @@ if st.button("Adicionar Redução"):
         })
         st.session_state.reducoes_temp = pd.concat([st.session_state.reducoes_temp, nova_reducao], ignore_index=True)
         st.success("Redução adicionada com sucesso!")
-        
     else:
         st.error("Por favor, preencha todos os campos antes de adicionar.")
 
@@ -370,10 +370,12 @@ if st.button("Reduzir Valores"):
 
         # Adicionando as reduções ao DataFrame principal de reduções
         st.session_state.reducoes = pd.concat([st.session_state.reducoes, st.session_state.reducoes_temp], ignore_index=True)
-        st.session_state.reducoes_temp = pd.DataFrame(columns=['cnpj', 'valor_reduzido', 'tipo'])  # Limpando reduções temporárias
+        
+        # Limpando as reduções temporárias apenas após aplicar
+        st.session_state.reducoes_temp = pd.DataFrame(columns=['cnpj', 'valor_reduzido', 'tipo'])
         st.success("Reduções aplicadas com sucesso!")
         st.success("Valor Líquido Desconto Externo : " + formatar_valor_brasileiro(df2['valor'].sum()))
-        df_atualizado=df2
+        df_atualizado = df2
     else:
         st.error("Nenhuma redução para aplicar.")
 
@@ -383,9 +385,8 @@ st.dataframe(df2)
 
 st.subheader("Histórico de Reduções Aplicadas")
 st.dataframe(st.session_state.reducoes)
-            ###################################XML#########################
 
-            # Preenchendo campos do XML
+################################### XML #########################
 
 # Preenchendo campos do XML
 st.subheader("Preencher Dados para Gerar XML")
@@ -474,10 +475,9 @@ if st.button("Gerar XML"):
                         </cpr:CprDhAlterarDHIncluirItens>
                 </sb:detalhe>'''.format(anoDH, numDH, data_geracao.strftime("%Y-%m-%d"), txtMotivo,
                                        index + 1, dtVenc.strftime("%Y-%m-%d"), dtPgtoReceb.strftime("%Y-%m-%d"),
-                                       row['valor'], row['cnpj'],txtMotivo, codTipoOB,row['cnpj'], f'<txtCit>{txtCit}</txtCit>' if include_banco_txtCit and txtCit is not None else '',
-                                row['bco'], row['agencia'], row['conta'],
-                                f'<numDomiBancPgto><banco>{row["banco_fab"]}</banco><conta>UNICA</conta></numDomiBancPgto>' if include_banco_txtCit else f'<numDomiBancPgto><conta>UNICA</conta></numDomiBancPgto>')
-
+                                       row['valor'], row['cnpj'], txtMotivo, codTipoOB, row['cnpj'], f'<txtCit>{txtCit}</txtCit>' if include_banco_txtCit and txtCit is not None else '',
+                                       row['bco'], row['agencia'], row['conta'],
+                                       f'<numDomiBancPgto><banco>{row["banco_fab"]}</banco><conta>UNICA</conta></numDomiBancPgto>' if include_banco_txtCit else f'<numDomiBancPgto><conta>UNICA</conta></numDomiBancPgto>')
 
         # Finalize a string XML
         xml_string += '''
