@@ -173,7 +173,7 @@ def processar_pdf(pdf_content):
             #ano_empenho = st.text_input("Ano de Referência (4 dígitos):",  value=str(ano_atual), max_chars=4, key='ano_empenho')
             #sequencial_fl = st.text_input("Número Sequencial da FL:", max_chars=4, key='sequencial_fl')
             texto_obs = st.text_input("Texto Observação:",value='DESC.EXT.CV', key='texto_obs')
-            mes_referencia_cc = st.text_input("Número Mês Referência CC :",value=str(mes_atual),max_chars=2, key='mes_referencia_cc')
+            #mes_referencia_cc = st.text_input("Número Mês Referência CC :",value=str(mes_atual),max_chars=2, key='mes_referencia_cc')
             processo = st.text_input("Processo:", key='processo')
         # Coluna 2
         with col2:
@@ -182,7 +182,7 @@ def processar_pdf(pdf_content):
             data_vencimento = st.date_input("Data Vencimento", key='data_vencimento')
             sequencial_deducao = st.text_input("Número Sequencial da Dedução:", max_chars=4, key='sequencial_deducao')
            
-            ano_referencia_cc = st.text_input("Número Ano Referência CC :",value=str(ano_atual),max_chars=4, key='ano_referencia_cc')
+            #ano_referencia_cc = st.text_input("Número Ano Referência CC :",value=str(ano_atual),max_chars=4, key='ano_referencia_cc')
         # Botão para enviar o formulário
         submit_button = st.form_submit_button(label='Gerar XML')
 
@@ -191,7 +191,7 @@ def processar_pdf(pdf_content):
 
     # Se o formulário foi enviado, chame a função para exportar XML
     if submit_button:
-        exportar_xml(df_final,cpf_responsavel,data_previsao_pagamento,valor_liquido,data_vencimento,sequencial_deducao,texto_obs,processo,indice_mais_um,soma_valor_liquido,mes_referencia_cc,ano_referencia_cc,numero_fl,valor_liquido_ajustado)
+        exportar_xml(df_final,cpf_responsavel,data_previsao_pagamento,valor_liquido,data_vencimento,sequencial_deducao,texto_obs,processo,indice_mais_um,soma_valor_liquido,numero_fl,valor_liquido_ajustado)
         
 # Função para exportar o DataFrame para um arquivo XML
 def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, data_previsao_pagamento,valor_liquido,data_vencimento,sequencial_fl,sequencial_deducao,texto_obs,processo,indice_mais_um,soma_valor_liquido,mes_referencia_cc,ano_referencia_cc,numero_fl,valor_liquido_ajustado):
