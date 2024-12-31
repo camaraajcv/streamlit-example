@@ -170,7 +170,7 @@ def processar_pdf(pdf_content):
         # Coluna 1
         with col1:
             
-            numero_ne = st.text_inputst.write(f"Número da NE: {RED}(PARA FL){RESET}", value=str(ano_atual)+'NE', max_chars=12, key='numero_ne')
+            numero_ne = st.text_input.write(f"Número da NE: {RED}(PARA FL){RESET}", value=str(ano_atual)+'NE', max_chars=12, key='numero_ne')
             numero_sb = st.text_input("Número do Subelemento: (PARA FL)", max_chars=2, key='numero_sb')
             numero_fl= st.text_input("Número da FL:", max_chars=6, key='numero_fl')
             ano_empenho = st.text_input("Ano de Referência (4 dígitos): (PARA FL)",  value=str(ano_atual), max_chars=4, key='ano_empenho')
