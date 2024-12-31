@@ -174,12 +174,12 @@ def processar_pdf(pdf_content):
             
             # Criando o campo de entrada de texto com placeholder colorido
             numero_ne = st.text_input("Número da NE: :red[(PARA FL)]", value=str(ano_atual)+'NE', max_chars=12, key='numero_ne')
-            numero_sb = st.text_input("Número do Subelemento: :red[(PARA FL)", max_chars=2, key='numero_sb')
+            numero_sb = st.text_input("Número do Subelemento: :red[(PARA FL)]", max_chars=2, key='numero_sb')
             numero_fl= st.text_input("Número da FL:", max_chars=6, key='numero_fl')
-            ano_empenho = st.text_input("Ano de Referência (4 dígitos): :red[(PARA FL)",  value=str(ano_atual), max_chars=4, key='ano_empenho')
-            sequencial_fl = st.text_input("Número Sequencial da FL::red[(PARA FL)", max_chars=4, key='sequencial_fl')
+            ano_empenho = st.text_input("Ano de Referência (4 dígitos): :red[(PARA FL)]",  value=str(ano_atual), max_chars=4, key='ano_empenho')
+            sequencial_fl = st.text_input("Número Sequencial da FL::red[(PARA FL)]", max_chars=4, key='sequencial_fl')
             texto_obs = st.text_input("Texto Observação:",value='DESC.EXT.CV', key='texto_obs')
-            mes_referencia_cc = st.text_input("Número Mês Referência CC : :red[(PARA FL)",value=str(mes_atual),max_chars=2, key='mes_referencia_cc')
+            mes_referencia_cc = st.text_input("Número Mês Referência CC : :red[(PARA FL)]",value=str(mes_atual),max_chars=2, key='mes_referencia_cc')
             
         # Coluna 2
         with col2:
@@ -188,7 +188,7 @@ def processar_pdf(pdf_content):
             data_vencimento = st.date_input("Data Vencimento", key='data_vencimento')
             sequencial_deducao = st.text_input("Número Sequencial da Dedução:", max_chars=4, key='sequencial_deducao')
             processo = st.text_input("Processo:", key='processo')
-            ano_referencia_cc = st.text_input("Número Ano Referência CC ::red[(PARA FL)",value=str(ano_atual),max_chars=4, key='ano_referencia_cc')
+            ano_referencia_cc = st.text_input("Número Ano Referência CC ::red[(PARA FL)]",value=str(ano_atual),max_chars=4, key='ano_referencia_cc')
         # Botão para enviar o formulário
         submit_button = st.form_submit_button(label='Gerar XML')
 
