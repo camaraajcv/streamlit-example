@@ -167,11 +167,11 @@ def processar_pdf(pdf_content):
         # Coluna 1
         with col1:
             
-            numero_ne = st.text_input("Número da NE:", value=str(ano_atual)+'NE', max_chars=12, key='numero_ne')
-            numero_sb = st.text_input("Número do Subelemento:", max_chars=2, key='numero_sb')
+            #numero_ne = st.text_input("Número da NE:", value=str(ano_atual)+'NE', max_chars=12, key='numero_ne')
+            #numero_sb = st.text_input("Número do Subelemento:", max_chars=2, key='numero_sb')
             numero_fl= st.text_input("Número da FL:", max_chars=6, key='numero_fl')
-            ano_empenho = st.text_input("Ano de Referência (4 dígitos):",  value=str(ano_atual), max_chars=4, key='ano_empenho')
-            sequencial_fl = st.text_input("Número Sequencial da FL:", max_chars=4, key='sequencial_fl')
+            #ano_empenho = st.text_input("Ano de Referência (4 dígitos):",  value=str(ano_atual), max_chars=4, key='ano_empenho')
+            #sequencial_fl = st.text_input("Número Sequencial da FL:", max_chars=4, key='sequencial_fl')
             texto_obs = st.text_input("Texto Observação:",value='DESC.EXT.CV', key='texto_obs')
             mes_referencia_cc = st.text_input("Número Mês Referência CC :",value=str(mes_atual),max_chars=2, key='mes_referencia_cc')
             
@@ -182,7 +182,7 @@ def processar_pdf(pdf_content):
             data_vencimento = st.date_input("Data Vencimento", key='data_vencimento')
             sequencial_deducao = st.text_input("Número Sequencial da Dedução:", max_chars=4, key='sequencial_deducao')
             processo = st.text_input("Processo:", key='processo')
-            ano_referencia_cc = st.text_input("Número Ano Referência CC :",value=str(ano_atual),max_chars=4, key='ano_referencia_cc')
+            #ano_referencia_cc = st.text_input("Número Ano Referência CC :",value=str(ano_atual),max_chars=4, key='ano_referencia_cc')
         # Botão para enviar o formulário
         submit_button = st.form_submit_button(label='Gerar XML')
 
@@ -364,13 +364,13 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
     xml_io = io.BytesIO(xml_content.encode())
 
     # Adiciona um botão de download para o arquivo XML
-    st.download_button(
-        label="Baixar XML para FL",
-        data=xml_io,
-        key='download_button',
-        file_name=f"xml_FL_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
-        mime="text/xml"
-    )
+   # st.download_button(
+       # label="Baixar XML para FL",
+       # data=xml_io,
+       # key='download_button',
+        #file_name=f"xml_FL_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml",
+       # mime="text/xml"
+   # )
     st.download_button(
         label="Baixar XML para DEDUÇÃO",
         data=io.BytesIO(xml_content_modelo2.encode()),
