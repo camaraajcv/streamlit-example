@@ -310,7 +310,7 @@ else:
    
 # Extraindo os 4 primeiros dígitos da coluna 'agencia'
 df_completo['agencia'] = df_completo['agencia'].str[:4]
-df_completo['bco'] = df_completo['bco'].astype(str).str.zfill(3)
+df_completo['bco'] = df_completo['bco'].astype(str).str[-3:]
 
 # Excluir as linhas onde a coluna 'valor' seja igual a zero
 # Verificar se a coluna 'valor' existe no DataFrame antes de aplicar filtros
