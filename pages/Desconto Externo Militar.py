@@ -422,7 +422,12 @@ if st.button("Gerar XML"):
                 codTipoOB = 'OBC'
                 include_banco_txtCit = False  # Não incluir para outros CNPJs
                 txtCit = None  # Definir txtCit como None para indicar que não deve ser incluído
-
+            
+             # Verifica se o banco é 001 e a conta termina com "0"
+            conta_corrigida = row['conta']
+            if row['bco'] == '001' and row['conta'].endswith('0'):
+                conta_corrigida = row['conta'][:-1] + 'X'  # Substitui o último caractere por 'X'
+           
             xml_string += '''<sb:detalhe>
                     <cpr:CprDhAlterarDHIncluirItens>
                         <codUgEmit>120052</codUgEmit>
