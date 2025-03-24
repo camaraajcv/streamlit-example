@@ -464,7 +464,7 @@ if st.button("Gerar XML"):
                 </sb:detalhe>'''.format(anoDH, numDH, data_geracao.strftime("%Y-%m-%d"), txtMotivo,
                                        index + 1, dtVenc.strftime("%Y-%m-%d"), dtPgtoReceb.strftime("%Y-%m-%d"),
                                        round(row['valor_final'],2), row['cnpj'], txtMotivo, codTipoOB, row['cnpj'], f'<txtCit>{txtCit}</txtCit>' if include_banco_txtCit and txtCit is not None else '',
-                                       row['bco'], row['agencia'], row['conta'],
+                                       row['bco'], row['agencia'], conta_corrigida,
                                        f'<numDomiBancPgto><banco>{row["banco_fab"]}</banco><conta>UNICA</conta></numDomiBancPgto>' if include_banco_txtCit else f'<numDomiBancPgto><conta>UNICA</conta></numDomiBancPgto>')
 
         # Finalize a string XML
