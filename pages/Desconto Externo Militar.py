@@ -42,10 +42,8 @@ def filter_exclude_lines(filtered_text, exclude_patterns):
             filtered_lines.append(line)
     return filtered_lines
 
-
 def formatar_valor_brasileiro(valor):
     return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-
 
 def extract_codes_and_agencia_conta_cnpj(filtered_text):
     codes_agencias_contas_cnpjs = []
@@ -56,7 +54,6 @@ def extract_codes_and_agencia_conta_cnpj(filtered_text):
             agencia, conta, cnpj = extract_agencia_conta_cnpj(filtered_text, i)
             codes_agencias_contas_cnpjs.append((code, agencia, conta, cnpj))
     return codes_agencias_contas_cnpjs
-
 
 def extract_agencia_conta_cnpj(filtered_text, start_index):
     agencia = None
@@ -69,7 +66,7 @@ def extract_agencia_conta_cnpj(filtered_text, start_index):
         if agencia_match:
             agencia = agencia_match.group(1)
 
-        conta_match = re.search(r"Conta Corrente:\s*([\d\-]+)\s*CNPJ:", line)
+        conta_match = re.search(r"Conta Corrente:\s*([\w\-]+)\s*CNPJ:", line)  # Modificado para incluir letras
         if conta_match:
             conta = conta_match.group(1)
 
