@@ -424,9 +424,9 @@ if st.button("Gerar XML"):
                 txtCit = None  # Definir txtCit como None para indicar que não deve ser incluído
             
              # Verifica se o banco é 001 e a conta termina com "0"
-            conta_corrigida = row['conta']
-            if row['bco'] == '001' and row['conta'].endswith('0'):
-                conta_corrigida = row['conta'][:-1] + 'X'  # Substitui o último caractere por 'X'
+           #conta_corrigida = row['conta']
+           # if row['bco'] == '001' and row['conta'].endswith('0'):
+               # conta_corrigida = row['conta'][:-1] + 'X'  # Substitui o último caractere por 'X'
            
             xml_string += '''<sb:detalhe>
                     <cpr:CprDhAlterarDHIncluirItens>
@@ -464,7 +464,7 @@ if st.button("Gerar XML"):
                 </sb:detalhe>'''.format(anoDH, numDH, data_geracao.strftime("%Y-%m-%d"), txtMotivo,
                                        index + 1, dtVenc.strftime("%Y-%m-%d"), dtPgtoReceb.strftime("%Y-%m-%d"),
                                        round(row['valor_final'],2), row['cnpj'], txtMotivo, codTipoOB, row['cnpj'], f'<txtCit>{txtCit}</txtCit>' if include_banco_txtCit and txtCit is not None else '',
-                                       row['bco'], row['agencia'], conta_corrigida,
+                                       row['bco'], row['agencia'], row['conta'],
                                        f'<numDomiBancPgto><banco>{row["banco_fab"]}</banco><conta>UNICA</conta></numDomiBancPgto>' if include_banco_txtCit else f'<numDomiBancPgto><conta>UNICA</conta></numDomiBancPgto>')
 
         # Finalize a string XML
