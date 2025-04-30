@@ -363,6 +363,7 @@ df_completo['banco_fab'] = ''
 df_completo.loc[df_completo['cnpj'].isin(['00360305000104', '00000000000191']), 'banco_fab'] = '002'
 
 # Agrupar pelas colunas-chave e somar os valores
+# Agrupar pelas colunas-chave e somar os valores
 df_completo = df_completo.groupby(['cnpj', 'agencia', 'conta', 'bco', 'banco_fab'], as_index=False).agg({
     'valor': 'sum'
 })
@@ -383,6 +384,8 @@ for cnpj in selected_cnpjs:
 
 # Calcular valor final após aplicar RAT e Judicial
 df_completo['valor_final'] = df_completo['valor'] - df_completo['rat'] - df_completo['judicial']
+# Filtrando o dataframe para excluir os CNPJs
+df2 = df_completo[~df_completo['cnpj'].isin(cnpjs_a_excluir)]
 
 # Exibindo o DataFrame
 st.dataframe(df2)
