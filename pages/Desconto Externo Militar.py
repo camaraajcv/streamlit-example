@@ -364,15 +364,25 @@ df_completo.loc[df_completo['cnpj'].isin(['00360305000104', '00000000000191']), 
 
 # Agrupar pelas colunas-chave e somar os valores
 df_completo = df_completo.groupby(['cnpj', 'agencia', 'conta', 'bco', 'banco_fab'], as_index=False).agg({
-    'valor': 'sum',
-    'rat': 'sum',
-    'judicial': 'sum'
+    'valor': 'sum'
 })
 
-# Recalcular o valor final após o agrupamento
+# Zerar colunas de RAT e Judicial após o agrupamento
+df_completo['rat'] = 0.00
+df_completo['judicial'] = 0.00
+
+# Interface para preenchimento dos valores de RAT e Judicial por CNPJ (após agrupar)
+selected_cnpjs = st.multiselect("Selecione os CNPJs para os quais deseja adicionar valores de RAT e JUDICIAL", df_completo['cnpj'].unique())
+
+for cnpj in selected_cnpjs:
+    rat_value = st.number_input(f"Valor TOTAL de RAT para o CNPJ {cnpj}", min_value=0.0, format="%.2f", key=f"rat_{cnpj}")
+    judicial_value = st.number_input(f"Valor TOTAL de JUDICIAL para o CNPJ {cnpj}", min_value=0.0, format="%.2f", key=f"judicial_{cnpj}")
+    
+    df_completo.loc[df_completo['cnpj'] == cnpj, 'rat'] = rat_value
+    df_completo.loc[df_completo['cnpj'] == cnpj, 'judicial'] = judicial_value
+
+# Calcular valor final após aplicar RAT e Judicial
 df_completo['valor_final'] = df_completo['valor'] - df_completo['rat'] - df_completo['judicial']
-# Filtrando o dataframe para excluir os CNPJs
-df2 = df_completo[~df_completo['cnpj'].isin(cnpjs_a_excluir)]
 
 # Exibindo o DataFrame
 st.dataframe(df2)
