@@ -136,6 +136,7 @@ uploaded_file = st.file_uploader("Faça o upload do primeiro arquivo PDF. Este a
 
 if uploaded_file is not None:
     start_pattern = "Natureza de Despesa: 11190000 - OUTRAS CONSIGNATARIAS"
+    st.write(f"Arquivo recebido: {uploaded_file.name}")
     end_pattern_to_exclude = "Natureza de Despesa: 11199900 - DESCONTO INTERNO- APROPRIACAO UPAG"
     exclude_patterns = [
         "Relatório Emitido em",
