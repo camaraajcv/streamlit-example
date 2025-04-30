@@ -133,8 +133,7 @@ txtMotivo = txtMotivo[:16]  # Limitar a 16 caracteres
 dtVenc = st.date_input("Data de Vencimento (dtVenc)")
 # Interface para upload de arquivo PDF
 uploaded_file = st.file_uploader("Faça o upload do primeiro arquivo PDF. Este arquivo deve ser retirado no SIGPP em relatórios de empenho. (LEMBRAR DE MARCAR SOMENTE CONSIGNATÁRIAS)", type="pdf")
-if uploaded_file is not None:
-    st.write(f"Nome do arquivo: {repr(uploaded_file.name)}")
+
 if uploaded_file is not None:
     start_pattern = "Natureza de Despesa: 11190000 - OUTRAS CONSIGNATARIAS"
     end_pattern_to_exclude = "Natureza de Despesa: 11199900 - DESCONTO INTERNO- APROPRIACAO UPAG"
