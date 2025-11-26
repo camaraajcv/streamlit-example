@@ -292,7 +292,7 @@ def exportar_xml(df_final, numero_ne, numero_sb,ano_empenho, cpf_responsavel, da
             banco_fab = '002'
         elif row['CNPJ'] == '00360305000104':
             codTipoOB = 'OBF'
-            txtCit = '120052ECFPC019950'
+            txtCit = '120052ECFPC128910'
             conta = 'FOPAG'
             banco_fab = '002'
         else:
