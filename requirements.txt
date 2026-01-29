@@ -1,8 +1,10 @@
 streamlit
-
+pandas
 numpy
 PyMuPDF
 openpyxl
 PyPDF2
 pdfplumber
 colorama
+streamlit==1.29.0
+altair==4.2.2
