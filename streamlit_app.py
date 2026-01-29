@@ -51,7 +51,7 @@ def processar_pdf(pdf_content):
     pdf_reader = fitz.open(temp_pdf_path)
 
     if pdf_reader.needs_pass:
-        st.error("O arquivo PDF possui senha. Você precisa desbloqueá-lo primeiro.")
+        st.error("O arquivo PDF possui senha.Você precisa desbloqueá-lo primeiro.")
         os.remove(temp_pdf_path)
         return
     text = ""
