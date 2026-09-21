@@ -1,4 +1,4 @@
-```python
+
 import re
 import pandas as pd
 import fitz
@@ -617,5 +617,4 @@ uploaded_file = st.file_uploader(
 if uploaded_file:
     pdf_content = uploaded_file.read()
     processar_pdf(pdf_content)
-```
 
