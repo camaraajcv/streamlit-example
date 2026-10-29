@@ -7,38 +7,16 @@ import tempfile
 import streamlit as st
 import os
 from datetime import datetime
-from colorama import Fore, Style  # Se você quiser usar cores
+import dirad_ui as ui
 
-#rr
+# Configuração visual (antes de qualquer elemento do Streamlit)
+ui.setup()
+ui.header()
+ui.sidebar()
 
-# URL da imagem
-image_url = "https://www.fab.mil.br/om/logo/mini/dirad2.jpg"
-
-# Código HTML e CSS para ajustar a largura da imagem para 20% da largura da coluna e centralizar
-html_code = f'<div style="display: flex; justify-content: center;"><img src="{image_url}" alt="Imagem" style="width:8vw;"/></div>'
-
+# Datas usadas nos XMLs (inalteradas)
 data_geracao = datetime.now().strftime('%Y-%m-%d')
 data_geracao2 = datetime.now().strftime('%d/%m/%Y')
-
-# Exibir a imagem usando HTML
-st.markdown(html_code, unsafe_allow_html=True)
-
-# Centralizar o texto abaixo da imagem
-st.markdown(
-    "<h1 style='text-align: center; font-size: 1.5em;'>DIRETORIA DE ADMINISTRAÇÃO DA AERONÁUTICA</h1>",
-    unsafe_allow_html=True
-)
-st.markdown(
-    "<h2 style='text-align: center; font-size: 1.2em;'>SUBDIRETORIA DE PAGAMENTO DE PESSOAL</h2>",
-    unsafe_allow_html=True
-)
-st.markdown(
-    "<h3 style='text-align: center; font-size: 1em; text-decoration: underline;'>PP1 - DIVISÃO DE DESCONTOS</h3>",
-    unsafe_allow_html=True
-)
-
-# Texto explicativo
-st.write("Desconto Externo Civil - Extração dados PDF SIAPE para SIAFI")
 
 
 def remove_newlines(text):
@@ -208,22 +186,42 @@ def processar_pdf(pdf_content):
     soma_valor_formatado = formatar_moeda(soma_valor_liquido)
     diferenca_valor_formatado = formatar_moeda(diferenca_valor)
 
-    # Exibe os valores formatados
-    RED = Fore.RED
-    RESET = Style.RESET_ALL
+    ui.section(
+        "02 · CONFERÊNCIA",
+        "Resumo financeiro",
+        "Compare os valores apurados pelo SIAPE com a soma das consignações extraídas."
+    )
+    card_siape, card_extraido, card_diferenca = st.columns(3)
+    with card_siape:
+        st.metric("Valor líquido · SIAPE", valor_formatado)
+    with card_extraido:
+        st.metric("Soma extraída do PDF", soma_valor_formatado)
+    with card_diferenca:
+        st.metric("Diferença da conferência", diferenca_valor_formatado)
 
-    st.warning(f"Valor Líquido SIAPE: {valor_formatado}")
-    st.success(f"Soma da coluna Valor Líquido': {soma_valor_formatado}")
-    st.error(f"Diferença: {diferenca_valor_formatado}")
     if round(diferenca_valor, 2) != 0:
-        st.error('O total dos registros diverge do total SIAPE. A geração do XML foi bloqueada por segurança.')
+        st.error(
+            "Os valores extraídos não conferem com o total do SIAPE. "
+            "A geração do XML foi bloqueada por segurança."
+        )
         os.remove(temp_pdf_path)
         return
+    st.success("Conferência concluída: valores extraídos e total do SIAPE coincidem.")
 
-    st.dataframe(df_final)
-
-    st.write("Rubricas que serão excluídas do SIAFI")
-    st.dataframe(df_rubricas_excluidas)
+    ui.section(
+        "03 · LANÇAMENTOS",
+        "Detalhamento das consignações",
+        "Analise os registros identificados no PDF e as rubricas que não serão enviadas ao SIAFI."
+    )
+    aba_registros, aba_exclusoes = st.tabs([
+        f"Todos os lançamentos ({len(df_final)})",
+        f"Rubricas excluídas ({len(df_rubricas_excluidas)})"
+    ])
+    with aba_registros:
+        st.dataframe(df_final, use_container_width=True, height=410)
+    with aba_exclusoes:
+        st.dataframe(df_rubricas_excluidas, use_container_width=True, height=330)
+        st.caption("Rubricas excluídas conforme a regra já existente no aplicativo.")
 
     df_final = df_final[
         ~df_final['Rubrica'].isin(valores_para_filtrar)
@@ -234,15 +232,27 @@ def processar_pdf(pdf_content):
         2
     )
 
-    st.success(
-        f"Valor Líquido sem as Rubricas excluídas: "
-        f"{formatar_moeda(round(df_final['Valor Líquido'].sum(), 2))}"
+    ui.section(
+        "04 · PREPARAÇÃO",
+        "Valores para integração com o SIAFI",
+        "O valor destinado aos XMLs considera as rubricas que devem ser excluídas."
     )
+    col_liquido, col_registros = st.columns(2)
+    with col_liquido:
+        st.metric("Valor líquido após exclusões", formatar_moeda(valor_liquido_ajustado))
+    with col_registros:
+        st.metric("Registros para exportação", len(df_final))
 
-    st.subheader("Formulário para Geração de Arquivos .XML")
+    ui.section(
+        "05 · EXPORTAÇÃO",
+        "Dados para geração dos arquivos XML",
+        "Preencha os campos do documento e confira as informações antes da exportação."
+    )
 
     # Adicione um formulário para capturar variáveis
     with st.form(key='my_form'):
+        st.markdown('**Identificação do documento e dados da dedução**')
+        st.caption('Os campos relativos à FL estão identificados nas descrições.')
 
         # Organize os elementos do formulário em duas colunas
         col1, col2 = st.columns(2)
@@ -334,7 +344,9 @@ def processar_pdf(pdf_content):
 
         # Botão para enviar o formulário
         submit_button = st.form_submit_button(
-            label='Gerar XML'
+            label='Gerar arquivos XML',
+            type='primary',
+            use_container_width=True
         )
 
     # Remover o arquivo temporário após o processamento
@@ -600,9 +612,8 @@ def exportar_xml(
         xml_content_modelo2
     )
 
-    st.success(
-        "Arquivo XML com DataFrame gerado com sucesso."
-    )
+    ui.section("06 · ARQUIVOS", "Downloads disponíveis", "Arquivos de FL e deduções gerados com os dados preenchidos.")
+    st.success("Arquivos XML gerados. Confira os dados antes de importá-los no SIAFI.")
 
     # Cria um objeto BytesIO para armazenar o conteúdo do XML
     xml_io = io.BytesIO(
@@ -611,19 +622,20 @@ def exportar_xml(
 
     # Botão de download para FL
     st.download_button(
-        label="Baixar XML para FL",
+        label="Baixar XML da FL",
         data=xml_io,
         key='download_button',
         file_name=(
             f"xml_FL_"
             f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml"
         ),
-        mime="text/xml"
+        mime="text/xml",
+        use_container_width=True
     )
 
     # Botão de download para DEDUÇÃO
     st.download_button(
-        label="Baixar XML para DEDUÇÃO",
+        label="Baixar XML das deduções",
         data=io.BytesIO(
             xml_content_modelo2.encode()
         ),
@@ -632,18 +644,31 @@ def exportar_xml(
             f"xml_deducao_"
             f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xml"
         ),
-        mime="text/xml"
+        mime="text/xml",
+        use_container_width=True
     )
 
 
-# Solicitar ao usuário o upload do arquivo PDF
+# Upload e estado inicial do painel
+ui.section(
+    "01 · ARQUIVO",
+    "Importar relatório do SIAPE",
+    "Selecione o relatório PDF de consignações gerado pela transação GRCOCGRECO."
+)
+ui.note("O aplicativo confere o total de cada relatório e impede a emissão de XML quando houver divergência.")
+
 uploaded_file = st.file_uploader(
-    "Faça o UPLOAD do arquivo PDF do SIAPE gerado na transação GRCOCGRECO",
-    type="pdf"
+    "Arquivo PDF do SIAPE",
+    type="pdf",
+    help="Utilize o arquivo original gerado pelo SIAPE, sem alterações."
 )
 
 # Obter o conteúdo do arquivo PDF
 if uploaded_file:
     pdf_content = uploaded_file.read()
     processar_pdf(pdf_content)
+else:
+    st.caption('Nenhum arquivo selecionado. Envie um PDF para visualizar a conferência e habilitar a geração dos XMLs.')
+
+ui.footer()
 
