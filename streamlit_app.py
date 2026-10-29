@@ -52,6 +52,46 @@ def remove_newlines(text):
     return text
 
 
+def extrair_registros_siape(pdf_reader):
+    """Extrai lançamentos SIAPE por linhas, inclusive páginas com outro layout."""
+    cnpj = r'\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}'
+    inicio = re.compile(rf'^\s*{cnpj}(?=\s)')
+    cabecalho = re.compile(rf'^\s*({cnpj})\s+(.+?)\s+([\d.]+)\s+([\d.]+,\d{{2}})\s*$')
+    rubrica = re.compile(r'^\s*(\d{5})\s+(.+?)\s+([\d.]+)\s+([\d.]+,\d{2})\s*$')
+    banco = re.compile(r'^\s*(\d{3})/([A-Z0-9]+)/([A-Z0-9]+)\s*(.*?)\s+([\d.]+,\d{2})\s*$')
+    registros = []
+    for pagina in pdf_reader:
+        linhas = pagina.get_text().splitlines()
+        for i, linha in enumerate(linhas):
+            if not inicio.match(linha):
+                continue
+            a = cabecalho.match(linha)
+            r = rubrica.match(linhas[i+1]) if i+1 < len(linhas) else None
+            s = re.search(r'([\d.]+,\d{2})\s*$', linhas[i+2]) if i+2 < len(linhas) else None
+            b = banco.match(linhas[i+3]) if i+3 < len(linhas) else None
+            if not all((a, r, s, b)):
+                raise ValueError(
+                    f'Página {pagina.number+1}, CNPJ {linha.strip()[:18]}: '
+                    'registro incompleto ou formato não reconhecido.'
+                )
+            cnpj_valor, nome, qtd_serv, bruto = a.groups()
+            codigo, tipo, qtd_linha, valor_linha = r.groups()
+            banco_num, agencia_siape, conta, _, liquido = b.groups()
+            if len(agencia_siape) != 6:
+                raise ValueError(f'Agência inesperada na página {pagina.number+1}: {agencia_siape}')
+            registros.append({
+                'CNPJ': cnpj_valor, 'Empresa': nome, 'Qtd.Serv': qtd_serv,
+                'Valor Bruto': bruto, 'Rubrica': codigo, 'tipo': tipo,
+                'Qtd.Linha': qtd_linha, 'ValorLinha': valor_linha,
+                'ValorSerpro': s.group(1), 'BCO': banco_num,
+                # Preserva a agência de quatro dígitos utilizada no XML anterior.
+                'AG': agencia_siape[1:5], 'Conta': conta, 'Valor Líquido': liquido
+            })
+    if not registros:
+        raise ValueError('Nenhuma consignação encontrada no PDF.')
+    return pd.DataFrame(registros)
+
+
 # Função para processar o PDF e exibir o resultado
 def processar_pdf(pdf_content):
 
@@ -85,10 +125,6 @@ def processar_pdf(pdf_content):
         os.remove(temp_pdf_path)
         return
 
-    cnpj_pattern = r'\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}'
-    cnpjs = re.findall(cnpj_pattern, text)
-    text_parts = re.split(cnpj_pattern, text)
-
     def formatar_moeda(valor):
         try:
             valor = float(valor)
@@ -107,25 +143,14 @@ def processar_pdf(pdf_content):
         href = f'data:application/octet-stream;base64,{bin_str}'
         return f'<a href="{href}" download="{file_label}.xml"><button>{button_label}</button></a>'
 
-    data = {
-        'CNPJ': cnpjs,
-        'Texto_Após_CNPJ': text_parts[1:]
-    }
-
-    df = pd.DataFrame(data)
-
-    df['Empresa'] = df['Texto_Após_CNPJ'].str[:33]
-    df['Qtd.Serv'] = df['Texto_Após_CNPJ'].str[38:46]
-    df['Valor Bruto'] = df['Texto_Após_CNPJ'].str[46:60]
-    df['Rubrica'] = df['Texto_Após_CNPJ'].str[60:65]
-    df['tipo'] = df['Texto_Após_CNPJ'].str[86:112]
-    df['Qtd.Linha'] = df['Texto_Após_CNPJ'].str[116:122]
-    df['ValorLinha'] = df['Texto_Após_CNPJ'].str[127:138]
-    df['ValorSerpro'] = df['Texto_Após_CNPJ'].str[208:216]
-    df['BCO'] = df['Texto_Após_CNPJ'].str[216:219]
-    df['AG'] = df['Texto_Após_CNPJ'].str[221:225]
-    df['Conta'] = df['Texto_Após_CNPJ'].str[227:240]
-    df['Valor Líquido'] = df['Texto_Após_CNPJ'].str[279:295]
+    try:
+        df = extrair_registros_siape(pdf_reader)
+    except ValueError as erro:
+        st.error(f'Falha na leitura do SIAPE: {erro}')
+        pdf_reader.close()
+        os.remove(temp_pdf_path)
+        return
+    pdf_reader.close()
 
     # Remova os pontos dos milhares e substitua a vírgula pelo ponto
     df['Valor Líquido'] = df['Valor Líquido'].str.replace('.', '').str.replace(',', '.')
@@ -161,7 +186,7 @@ def processar_pdf(pdf_content):
         df['Rubrica'].isin(valores_para_filtrar)
     ][['Rubrica', 'Empresa', 'Valor Líquido']]
 
-    df_final = df.drop('Texto_Após_CNPJ', axis=1)
+    df_final = df.copy()
 
     # Obter o índice da primeira linha do DataFrame df_final
     primeiro_indice = df_final.index[0]
@@ -190,6 +215,10 @@ def processar_pdf(pdf_content):
     st.warning(f"Valor Líquido SIAPE: {valor_formatado}")
     st.success(f"Soma da coluna Valor Líquido': {soma_valor_formatado}")
     st.error(f"Diferença: {diferenca_valor_formatado}")
+    if round(diferenca_valor, 2) != 0:
+        st.error('O total dos registros diverge do total SIAPE. A geração do XML foi bloqueada por segurança.')
+        os.remove(temp_pdf_path)
+        return
 
     st.dataframe(df_final)
 
